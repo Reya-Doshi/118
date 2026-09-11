@@ -3,6 +3,7 @@ import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { ExplanationModal } from './components/ExplanationModal';
+import { LoginModal } from './components/LoginModal';
 import { LandingPage } from './pages/LandingPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ScanPage } from './pages/ScanPage';
@@ -45,6 +46,7 @@ const MainContent: React.FC = () => {
 
       {/* Modals & Dialogs */}
       <ExplanationModal />
+      <LoginModal />
 
       {/* Footer */}
       <Footer />

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Worker, ExposureReading, DemoSample, PageView } from '../types';
+import type { Worker, ExposureReading, DemoSample, PageView, UserProfile } from '../types';
 import { INITIAL_WORKERS, INITIAL_READINGS, DEMO_SAMPLES } from '../data/mockData';
 
 interface AppContextType {
@@ -8,6 +8,11 @@ interface AppContextType {
   isExplanationOpen: boolean;
   openExplanation: () => void;
   closeExplanation: () => void;
+  isLoginModalOpen: boolean;
+  openLoginModal: () => void;
+  closeLoginModal: () => void;
+  currentUser: UserProfile | null;
+  setCurrentUser: (user: UserProfile | null) => void;
   workers: Worker[];
   readings: ExposureReading[];
   latestReading: ExposureReading | null;
@@ -26,12 +31,32 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_WORKERS_KEY = '118_workers_v1';
 const STORAGE_READINGS_KEY = '118_readings_v1';
+const STORAGE_USER_KEY = '118_user_profile_v1';
+
+const DEFAULT_USER: UserProfile = {
+  id: 'usr_officer_01',
+  name: 'K. Sharma',
+  role: 'OFFICER',
+  employeeId: 'HSE-4012',
+  department: 'Plant HSE & Safety Audit',
+  avatarText: 'KS'
+};
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activePage, setActivePage] = useState<PageView>('landing');
   const [isExplanationOpen, setIsExplanationOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [selectedSample, setSelectedSample] = useState<DemoSample>(DEMO_SAMPLES[1]); // Default Sample B (Monitor)
   
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_USER_KEY);
+      return saved ? JSON.parse(saved) : DEFAULT_USER;
+    } catch {
+      return DEFAULT_USER;
+    }
+  });
+
   // Local storage state initialization
   const [workers, setWorkers] = useState<Worker[]>(() => {
     try {
@@ -72,8 +97,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [readings]);
 
+  useEffect(() => {
+    try {
+      if (currentUser) {
+        localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(currentUser));
+      } else {
+        localStorage.removeItem(STORAGE_USER_KEY);
+      }
+    } catch (e) {
+      console.error('Failed to save currentUser to localStorage', e);
+    }
+  }, [currentUser]);
+
   const openExplanation = () => setIsExplanationOpen(true);
   const closeExplanation = () => setIsExplanationOpen(false);
+
+  const openLoginModal = () => setIsLoginModalOpen(true);
+  const closeLoginModal = () => setIsLoginModalOpen(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -125,6 +165,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isExplanationOpen,
         openExplanation,
         closeExplanation,
+        isLoginModalOpen,
+        openLoginModal,
+        closeLoginModal,
+        currentUser,
+        setCurrentUser,
         workers,
         readings,
         latestReading,

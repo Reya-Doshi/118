@@ -10,11 +10,19 @@ import {
   Menu,
   X,
   ChevronRight,
-  ShieldCheck
+  LogIn,
+  Users
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
-  const { activePage, setActivePage, openExplanation, resetDemoData } = useApp();
+  const { 
+    activePage, 
+    setActivePage, 
+    openExplanation, 
+    resetDemoData, 
+    currentUser, 
+    openLoginModal 
+  } = useApp();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -147,6 +155,18 @@ export const Navbar: React.FC = () => {
               </button>
 
               <button
+                onClick={() => handleNavClick('workers')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                  activePage === 'workers'
+                    ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                    : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                }`}
+              >
+                <Users className="w-3.5 h-3.5" />
+                <span>Workers</span>
+              </button>
+
+              <button
                 onClick={() => handleNavClick('calibration')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
                   activePage === 'calibration'
@@ -155,7 +175,7 @@ export const Navbar: React.FC = () => {
                 }`}
               >
                 <Database className="w-3.5 h-3.5" />
-                <span>Calibration Data</span>
+                <span>Calibration</span>
               </button>
             </nav>
           </div>
@@ -164,7 +184,7 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={openExplanation}
-              className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded border text-xs font-medium transition-colors cursor-pointer ${
+              className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded border text-xs font-medium transition-colors cursor-pointer ${
                 isTransparentOnHero
                   ? 'border-white/30 bg-white/10 text-[#F6F1E7] hover:bg-white/20'
                   : 'border-[#D8D0C2] bg-[#EDE5D6] text-[#292925] hover:bg-[#E5DDCB]'
@@ -188,32 +208,35 @@ export const Navbar: React.FC = () => {
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
 
-            {/* Demo Mode Badge */}
-            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-semibold border ${
-              isTransparentOnHero
-                ? 'bg-black/30 border-[#B08A55]/40 text-[#EDE5D6]'
-                : 'bg-[#EDE5D6] border-[#D8D0C2] text-[#826235]'
-            }`}>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#B08A55]" />
-              <span>Demo</span>
-            </div>
-
-            {/* User Avatar / Safety Officer (Desktop) */}
-            <div className={`hidden sm:flex items-center gap-2 pl-2 border-l ${
-              isTransparentOnHero ? 'border-white/20' : 'border-[#D8D0C2]'
-            }`}>
-              <div className="w-6 h-6 rounded bg-[#4F5D4B] text-[#F6F1E7] flex items-center justify-center text-[10px] font-bold font-mono">
-                KS
+            {/* Top Login / Account Option (Desktop) */}
+            <button
+              onClick={openLoginModal}
+              className={`flex items-center gap-2 pl-2 pr-3 py-1 rounded-lg border transition-all cursor-pointer shadow-xs active:scale-95 ${
+                isTransparentOnHero
+                  ? 'border-white/35 bg-white/15 text-[#F6F1E7] hover:bg-white/25'
+                  : 'border-[#D8D0C2] bg-[#EDE5D6] text-[#292925] hover:bg-[#E2D8C5] hover:border-[#71806B]'
+              }`}
+              title="Click to Switch Account or Role (Worker, Safety Officer, Admin)"
+            >
+              <div className={`w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold font-mono shadow-xs ${
+                currentUser?.role === 'WORKER'
+                  ? 'bg-[#B08A55] text-white'
+                  : currentUser?.role === 'ADMIN'
+                  ? 'bg-[#292925] text-white'
+                  : 'bg-[#4F5D4B] text-white'
+              }`}>
+                {currentUser?.avatarText || 'OP'}
               </div>
-              <div className="hidden xl:block text-left">
-                <div className={`text-xs font-semibold leading-none ${isTransparentOnHero ? 'text-[#F6F1E7]' : 'text-[#292925]'}`}>
-                  K. Sharma
+              <div className="text-left">
+                <div className={`text-xs font-bold leading-none flex items-center gap-1 ${isTransparentOnHero ? 'text-[#F6F1E7]' : 'text-[#292925]'}`}>
+                  <span>{currentUser?.name || 'Sign In'}</span>
+                  <LogIn className="w-2.5 h-2.5 opacity-60" />
                 </div>
-                <div className={`text-[10px] leading-tight ${isTransparentOnHero ? 'text-[#EDE5D6]/70' : 'text-[#878377]'}`}>
-                  Safety Officer
+                <div className={`text-[9px] font-mono leading-tight mt-0.5 ${isTransparentOnHero ? 'text-[#EDE5D6]/80' : 'text-[#71806B] font-bold'}`}>
+                  {currentUser ? `${currentUser.role} · Login` : 'Login / Switch'}
                 </div>
               </div>
-            </div>
+            </button>
 
             {/* Mobile Menu Toggle Button */}
             <button
@@ -303,6 +326,21 @@ export const Navbar: React.FC = () => {
               </button>
 
               <button
+                onClick={() => handleNavClick('workers')}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                  activePage === 'workers'
+                    ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                    : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  <span>Workers Roster</span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-[#878377]" />
+              </button>
+
+              <button
                 onClick={() => handleNavClick('calibration')}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                   activePage === 'calibration'
@@ -312,7 +350,7 @@ export const Navbar: React.FC = () => {
               >
                 <div className="flex items-center gap-2">
                   <Database className="w-4 h-4" />
-                  <span>Calibration Dataset (120 Rows)</span>
+                  <span>Calibration Dataset</span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-[#878377]" />
               </button>
@@ -345,22 +383,41 @@ export const Navbar: React.FC = () => {
                 </button>
               </div>
 
-              {/* Safety Officer Card on mobile */}
-              <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#EDE5D6]/40 border border-[#D8D0C2] text-xs">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded bg-[#4F5D4B] text-[#F6F1E7] flex items-center justify-center text-[10px] font-bold font-mono">
-                    KS
+              {/* Login / Role Switcher Card on mobile */}
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  openLoginModal();
+                }}
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#EDE5D6]/70 border border-[#D8D0C2] hover:border-[#71806B] text-xs transition-colors cursor-pointer text-left"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-8 h-8 rounded-lg text-white flex items-center justify-center text-xs font-bold font-mono shadow-xs ${
+                    currentUser?.role === 'WORKER'
+                      ? 'bg-[#B08A55]'
+                      : currentUser?.role === 'ADMIN'
+                      ? 'bg-[#292925]'
+                      : 'bg-[#4F5D4B]'
+                  }`}>
+                    {currentUser?.avatarText || 'OP'}
                   </div>
                   <div>
-                    <div className="font-semibold text-[#292925]">K. Sharma</div>
-                    <div className="text-[10px] text-[#878377]">Safety Officer · Plant Zone A</div>
+                    <div className="font-bold text-[#292925] flex items-center gap-1.5">
+                      <span>{currentUser?.name || 'Sign In'}</span>
+                      <span className="text-[9px] font-mono px-1 py-0.2 rounded border border-[#D8D0C2] text-[#5D5B53]">
+                        {currentUser?.role || 'Guest'}
+                      </span>
+                    </div>
+                    <div className="text-[10px] text-[#71806B] font-medium font-serif">
+                      Tap to switch role or account
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 text-[10px] text-[#71806B] font-mono">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Active</span>
+                <div className="flex items-center gap-1 text-[10px] text-[#4F5D4B] font-mono font-bold">
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Login</span>
                 </div>
-              </div>
+              </button>
             </div>
 
           </div>

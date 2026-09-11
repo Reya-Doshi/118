@@ -91,3 +91,15 @@ export interface AlertItem {
 }
 
 export type PageView = 'landing' | 'dashboard' | 'scan' | 'result' | 'workers' | 'history' | 'calibration';
+
+export type UserRole = 'WORKER' | 'OFFICER' | 'ADMIN';
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  role: UserRole;
+  employeeId: string;
+  department: string;
+  assignedBandId?: string;
+  avatarText: string;
+}
