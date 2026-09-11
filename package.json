@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
+    "backend:dev": "python backend/main.py",
+    "backend:test": "python backend/test_backend_api.py",
     "mobile:dev": "npm --prefix mobile run dev",
     "mobile:build": "npm --prefix mobile run build",
     "predeploy": "npm run build",
