@@ -12,9 +12,11 @@ This pipeline provides automated computer-vision color extraction and machine-le
 
 ```mermaid
 graph TD
-    A["Wristband Photograph<br/>(Camera / Upload)"] --> B["OpenCV Auto-Detection<br/>(Housing & Strip ROI)"]
-    B --> C["White Balance Normalization<br/>(Reference Patch Scaling)"]
-    C --> D["Extract Sensing Strip Color<br/>(Trimmed Median RGB)"]
+    A["Wristband Photograph<br/>(Camera / Upload)"] --> B["Gemini Vision Quality & Localization<br/>(Server-Side API / Optical Audit)"]
+    B -->|Fallback if Key Unset or Network Error| B_fallback["OpenCV Spatial Geometric Fallback"]
+    B --> C["Structured JSON<br/>(Strip BBox, Ref Scale BBox, Quality Audit)"]
+    B_fallback --> C
+    C --> D["OpenCV Strip Color Extraction<br/>(Trimmed Median Core RGB)"]
     D --> E["CIE Color Conversion<br/>(sRGB → CIE L*a*b*)"]
     E --> F["Compute Delta E (CIE76)<br/>vs Baseline L0*=40.5, a0*=26.0, b0*=-22.0"]
     F --> G["Environmental Feature Fusion<br/>(Temp °C, RH %, Shelf Age days)"]
@@ -22,6 +24,13 @@ graph TD
     H --> I["Quantitative Dose (ppm·h)<br/>+ 95% Confidence Interval"]
     I --> J["Safety Status Classification<br/>(NORMAL / MONITOR / REVIEW)"]
 ```
+
+> [!IMPORTANT]
+> **Strict Separation of Duties & Security Policy**
+> 1. **No Direct Exposure Prediction by Gemini**: Gemini Vision NEVER predicts ppm·h or H₂S exposure. It is strictly used for wristband presence detection, region localization, and optical quality verification (blur, darkness, glare, missing strip).
+> 2. **Credential Isolation**: The Gemini API key remains strictly on the server/backend (`GEMINI_API_KEY`). It is never embedded in client apps or the Android frontend.
+> 3. **Guaranteed Fallback**: If the Gemini API is unreachable, unconfigured, or fails, the pipeline automatically falls back to OpenCV spatial contour localization without interrupting measurement.
+
 
 ---
 
