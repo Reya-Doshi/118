@@ -1,15 +1,18 @@
 import React from 'react';
-import type { ExposureStatus, DemoSampleBadge, Reading } from '../../types/mobile';
+import type { ExposureStatus, DemoSampleBadge, Reading, Worker } from '../../types/mobile';
 import { CalibrationResult } from '../../services/CalibrationEngine';
 import { repository } from '../../services/DosimeterRepository';
 import { useMobileAuth } from '../../context/MobileAuthContext';
-import { ShieldAlert, ShieldCheck, AlertCircle, Check, RotateCcw, Thermometer, Droplets, Clock, Tag } from 'lucide-react';
+import { ShieldAlert, ShieldCheck, AlertCircle, Check, RotateCcw, Thermometer, Droplets, Clock, Tag, MapPin, UserCheck } from 'lucide-react';
 
 interface ResultModalProps {
   isOpen: boolean;
   result: CalibrationResult;
   sample?: DemoSampleBadge | null;
   imageUri?: string | null;
+  targetWorker?: Worker | null;
+  inspectionLocation?: string;
+  officerNotes?: string;
   onSaveComplete: (savedReading: Reading) => void;
   onRetake: () => void;
 }
@@ -19,16 +22,21 @@ export const ResultModal: React.FC<ResultModalProps> = ({
   result,
   sample,
   imageUri,
+  targetWorker,
+  inspectionLocation,
+  officerNotes,
   onSaveComplete,
   onRetake
 }) => {
-  const { currentUser } = useMobileAuth();
+  const { currentUser, role } = useMobileAuth();
 
   if (!isOpen) return null;
 
-  const bandId = sample?.bandId || (currentUser?.workerId ? repository.getWorkerById(currentUser.workerId)?.assignedBandId : 'DS-1088') || 'DS-1088';
-  const workerId = currentUser?.workerId || sample?.workerId || 'WRK-2048';
-  const workerName = currentUser?.name || sample?.workerName || 'Rahul Shetty';
+  const isWorkerRole = role === 'WORKER';
+  const resolvedWorker = targetWorker || (currentUser?.workerId ? repository.getWorkerById(currentUser.workerId) : null) || repository.getWorkers()[0];
+  const bandId = sample?.bandId || resolvedWorker.assignedBandId || 'DS-1088';
+  const workerId = resolvedWorker.workerId;
+  const workerName = resolvedWorker.name;
 
   const handleSave = () => {
     const saved = repository.saveReading({
@@ -43,6 +51,9 @@ export const ResultModal: React.FC<ResultModalProps> = ({
       temperature: result.temperature,
       humidity: result.humidity,
       isSimulated: true,
+      scanType: isWorkerRole ? 'PERSONAL_WORKER_SCAN' : 'OFFICER_FIELD_AUDIT',
+      inspectionLocation: inspectionLocation || resolvedWorker.workLocation,
+      officerNotes: isWorkerRole ? undefined : officerNotes,
       notes: result.notes,
       imageUri: imageUri || undefined,
       deltaE: result.deltaE,
@@ -86,18 +97,25 @@ export const ResultModal: React.FC<ResultModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 bg-[#F6F1E7] overflow-y-auto flex flex-col justify-between p-5 max-w-md mx-auto">
       {/* Header */}
-      <div className="pt-3 pb-2 border-b border-[#D8D0C2]">
-        <span className="text-[11px] font-mono uppercase tracking-wider text-[#71806B] font-semibold">
-          AI-Assisted Colorimetric Result
-        </span>
+      <div className="pt-2 pb-2 border-b border-[#D8D0C2]">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-[#71806B] font-semibold">
+            {isWorkerRole ? 'Personal Dosimeter Result' : 'Field Audit Inspection Result'}
+          </span>
+          <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
+            isWorkerRole ? 'bg-[#5A7456]/20 text-[#385034]' : 'bg-[#B08A55]/20 text-[#795726]'
+          }`}>
+            {isWorkerRole ? 'OPERATOR SCAN' : 'INSPECTOR AUDIT'}
+          </span>
+        </div>
         <h2 className="text-xl font-serif font-bold text-[#292925]">
           Exposure Estimation
         </h2>
       </div>
 
-      {/* Main Content Area */}
-      <div className="py-4 space-y-4">
-        {/* Expiry Alert Warning if Expired */}
+      {/* Main Content */}
+      <div className="py-3 space-y-3.5">
+        {/* Expiry Warning */}
         {result.isExpired && (
           <div className="bg-[#9A6258]/15 border border-[#9A6258] rounded-xl p-3.5 text-[#7A342B]">
             <div className="flex items-center gap-2 font-semibold text-sm mb-1">
@@ -125,7 +143,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
             </span>
           </div>
 
-          <div className="mb-4">
+          <div className="mb-3">
             {getStatusBadge(result.status, result.isExpired)}
           </div>
 
@@ -134,72 +152,55 @@ export const ResultModal: React.FC<ResultModalProps> = ({
           </div>
         </div>
 
-        {/* Details Grid */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3">
-            <div className="flex items-center gap-1.5 text-xs text-[#5D5B53] mb-1">
-              <Tag className="w-3.5 h-3.5" />
-              <span>Band ID</span>
+        {/* Worker & Location Details */}
+        <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3.5 text-xs space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 font-medium text-[#292925]">
+              <UserCheck className="w-4 h-4 text-[#71806B]" />
+              <span>{workerName} ({workerId})</span>
             </div>
-            <div className="font-mono font-bold text-sm text-[#292925]">
+            <span className="font-mono font-bold bg-[#F6F1E7] px-2 py-0.5 rounded border border-[#D8D0C2]">
               {bandId}
-            </div>
+            </span>
           </div>
 
-          <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3">
-            <div className="flex items-center gap-1.5 text-xs text-[#5D5B53] mb-1">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Confidence</span>
-            </div>
-            <div className="font-mono font-bold text-sm text-[#292925]">
-              {result.confidence}%
-            </div>
+          <div className="flex items-start gap-1.5 text-[11px] text-[#5D5B53] pt-1 border-t border-[#D8D0C2]/50">
+            <MapPin className="w-3.5 h-3.5 text-[#71806B] shrink-0 mt-0.5" />
+            <span>{inspectionLocation || resolvedWorker.workLocation}</span>
           </div>
 
-          <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3">
-            <div className="flex items-center gap-1.5 text-xs text-[#5D5B53] mb-1">
-              <Thermometer className="w-3.5 h-3.5" />
-              <span>Temperature</span>
+          {officerNotes && (
+            <div className="bg-[#F6F1E7] p-2 rounded-lg border border-[#D8D0C2] text-[11px] text-[#5D5B53] italic">
+              Officer Note: "{officerNotes}"
             </div>
-            <div className="font-mono font-bold text-sm text-[#292925]">
-              {result.temperature}°C
-            </div>
+          )}
+        </div>
+
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-2.5">
+            <span className="text-[10px] text-[#5D5B53] font-mono block">Confidence</span>
+            <span className="font-mono font-bold text-sm text-[#292925]">{result.confidence}%</span>
           </div>
 
-          <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3">
-            <div className="flex items-center gap-1.5 text-xs text-[#5D5B53] mb-1">
-              <Droplets className="w-3.5 h-3.5" />
-              <span>Humidity</span>
-            </div>
-            <div className="font-mono font-bold text-sm text-[#292925]">
-              {result.humidity}%
-            </div>
+          <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-2.5">
+            <span className="text-[10px] text-[#5D5B53] font-mono block">Temperature</span>
+            <span className="font-mono font-bold text-sm text-[#292925]">{result.temperature}°C</span>
+          </div>
+
+          <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-2.5">
+            <span className="text-[10px] text-[#5D5B53] font-mono block">Relative Hum</span>
+            <span className="font-mono font-bold text-sm text-[#292925]">{result.humidity}%</span>
           </div>
         </div>
 
-        {/* Worker and Shift Info */}
-        <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3 text-xs space-y-1">
-          <div className="flex justify-between">
-            <span className="text-[#5D5B53]">Worker:</span>
-            <span className="font-medium text-[#292925]">{workerName} ({workerId})</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-[#5D5B53]">Shift:</span>
-            <span className="font-medium text-[#292925]">Morning · 06:00–14:00</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-[#5D5B53]">Reference ΔE:</span>
-            <span className="font-mono text-[#292925]">ΔE*ab {result.deltaE.toFixed(1)}</span>
-          </div>
-        </div>
-
-        {/* Prototype Honesty Notice */}
+        {/* Honest Disclaimer */}
         <div className="p-2.5 bg-[#F6F1E7] border border-dashed border-[#D8D0C2] rounded-lg text-center">
           <span className="text-[10px] font-mono text-[#878377] uppercase tracking-wider block">
             SIMULATED / PROTOTYPE READING
           </span>
           <p className="text-[11px] text-[#5D5B53] mt-0.5">
-            Derived from prototype calibration mapping. Phone reads optical color response, not ambient gas directly.
+            AI-assisted colorimetric analysis · Corrected for illuminant & temperature.
           </p>
         </div>
       </div>
@@ -211,7 +212,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
           className="w-full py-3.5 bg-[#292925] text-[#F6F1E7] rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:bg-[#1a1a17] active:scale-[0.98] transition-all shadow-md font-semibold"
         >
           <Check className="w-4 h-4" />
-          Save Reading to Log
+          {isWorkerRole ? 'Save to My Shift Log' : 'Log Officer Inspection'}
         </button>
 
         <button

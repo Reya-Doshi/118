@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Reading } from '../types/mobile';
-import { Clock, Filter, ArrowLeft, Thermometer, Droplets, ShieldCheck } from 'lucide-react';
+import { Clock, Filter, ArrowLeft, Thermometer, Droplets, ShieldCheck, MapPin, UserCheck, ShieldAlert } from 'lucide-react';
 
 interface HistoryViewProps {
   readings: Reading[];
@@ -9,10 +9,14 @@ interface HistoryViewProps {
 
 export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) => {
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
+  const [filterType, setFilterType] = useState<string>('ALL');
 
   const filtered = readings.filter((r) => {
-    if (filterStatus === 'ALL') return true;
-    return r.status === filterStatus;
+    const matchesStatus = filterStatus === 'ALL' || r.status === filterStatus;
+    const matchesType = filterType === 'ALL' || 
+      (filterType === 'PERSONAL' && r.scanType === 'PERSONAL_WORKER_SCAN') ||
+      (filterType === 'AUDIT' && r.scanType === 'OFFICER_FIELD_AUDIT');
+    return matchesStatus && matchesType;
   });
 
   const getStatusBadge = (status: string) => {
@@ -29,7 +33,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
   };
 
   return (
-    <div className="space-y-4 pb-20">
+    <div className="space-y-4 pb-24">
       {/* Top Header */}
       <div className="flex items-center gap-3 pt-1 border-b border-[#D8D0C2] pb-3">
         <button
@@ -43,33 +47,63 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
             Exposure History
           </h1>
           <span className="text-[11px] font-mono text-[#71806B]">
-            All Quantitative Dosimeter Scans
+            All Quantitative Dosimeter Scans & Field Audits
           </span>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-2">
-        {['ALL', 'NORMAL', 'MONITOR', 'REVIEW'].map((status) => (
+      <div className="space-y-2">
+        <div className="flex gap-1.5 overflow-x-auto pb-1">
+          {['ALL', 'NORMAL', 'MONITOR', 'REVIEW'].map((status) => (
+            <button
+              key={status}
+              onClick={() => setFilterStatus(status)}
+              className={`px-3 py-1 rounded-lg text-xs font-mono font-medium transition-all shrink-0 ${
+                filterStatus === status
+                  ? 'bg-[#292925] text-[#F6F1E7] shadow-xs'
+                  : 'bg-[#EDE5D6] border border-[#D8D0C2] text-[#5D5B53]'
+              }`}
+            >
+              {status}
+            </button>
+          ))}
+        </div>
+
+        {/* Scan Type Filter */}
+        <div className="flex gap-1.5">
           <button
-            key={status}
-            onClick={() => setFilterStatus(status)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
-              filterStatus === status
-                ? 'bg-[#292925] text-[#F6F1E7] shadow-xs'
-                : 'bg-[#EDE5D6] border border-[#D8D0C2] text-[#5D5B53]'
+            onClick={() => setFilterType('ALL')}
+            className={`px-2 py-0.5 rounded text-[10px] font-mono ${
+              filterType === 'ALL' ? 'bg-[#71806B] text-white' : 'bg-[#EDE5D6] text-[#5D5B53] border border-[#D8D0C2]'
             }`}
           >
-            {status}
+            All Scans ({readings.length})
           </button>
-        ))}
+          <button
+            onClick={() => setFilterType('PERSONAL')}
+            className={`px-2 py-0.5 rounded text-[10px] font-mono ${
+              filterType === 'PERSONAL' ? 'bg-[#71806B] text-white' : 'bg-[#EDE5D6] text-[#5D5B53] border border-[#D8D0C2]'
+            }`}
+          >
+            Operator Self-Scans
+          </button>
+          <button
+            onClick={() => setFilterType('AUDIT')}
+            className={`px-2 py-0.5 rounded text-[10px] font-mono ${
+              filterType === 'AUDIT' ? 'bg-[#71806B] text-white' : 'bg-[#EDE5D6] text-[#5D5B53] border border-[#D8D0C2]'
+            }`}
+          >
+            Inspector Audits
+          </button>
+        </div>
       </div>
 
       {/* Readings Timeline List */}
       <div className="space-y-3">
         {filtered.length === 0 ? (
           <div className="text-center py-12 text-[#878377] text-xs">
-            No readings found for selected filter.
+            No readings found for selected filter criteria.
           </div>
         ) : (
           filtered.map((reading) => (
@@ -79,9 +113,18 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="font-semibold text-sm text-[#292925] block">
-                    {reading.workerName}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-semibold text-sm text-[#292925]">
+                      {reading.workerName}
+                    </span>
+                    <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ${
+                      reading.scanType === 'OFFICER_FIELD_AUDIT'
+                        ? 'bg-[#B08A55]/20 text-[#795726]'
+                        : 'bg-[#5A7456]/20 text-[#385034]'
+                    }`}>
+                      {reading.scanType === 'OFFICER_FIELD_AUDIT' ? 'AUDIT' : 'SELF'}
+                    </span>
+                  </div>
                   <span className="text-[11px] font-mono text-[#878377]">
                     Band {reading.bandId} · {reading.timestamp}
                   </span>
@@ -89,6 +132,15 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
                 <div>{getStatusBadge(reading.status)}</div>
               </div>
 
+              {/* Location indicator */}
+              {reading.inspectionLocation && (
+                <div className="flex items-center gap-1.5 text-[11px] text-[#5D5B53]">
+                  <MapPin className="w-3.5 h-3.5 text-[#71806B] shrink-0" />
+                  <span className="truncate">{reading.inspectionLocation}</span>
+                </div>
+              )}
+
+              {/* Dose display */}
               <div className="flex items-baseline gap-2 pt-1 border-t border-[#D8D0C2]/60">
                 <span className="text-2xl font-mono font-bold text-[#292925]">
                   {reading.estimatedDose.toFixed(2)}
@@ -96,10 +148,11 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
                 <span className="text-xs text-[#5D5B53] font-serif">ppm·h estimated dose</span>
               </div>
 
+              {/* Ambient Info */}
               <div className="flex items-center gap-4 text-[11px] font-mono text-[#5D5B53] pt-1">
                 <div className="flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#71806B]" />
-                  <span>{reading.confidence}% confidence</span>
+                  <span>{reading.confidence}%</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Thermometer className="w-3.5 h-3.5 text-[#71806B]" />
@@ -111,7 +164,13 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
                 </div>
               </div>
 
-              {reading.notes && (
+              {reading.officerNotes && (
+                <p className="text-[11px] text-[#795726] bg-[#F5EEDB] p-2 rounded-lg border border-[#DDC69E]/50 italic">
+                  Officer Note: "{reading.officerNotes}"
+                </p>
+              )}
+
+              {reading.notes && !reading.officerNotes && (
                 <p className="text-[11px] text-[#5D5B53] italic pt-1 border-t border-[#D8D0C2]/40">
                   {reading.notes}
                 </p>

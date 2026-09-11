@@ -41,6 +41,9 @@ const MainAppContent: React.FC = () => {
   // Calibration pipeline data
   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
   const [selectedDemoSample, setSelectedDemoSample] = useState<DemoSampleBadge | null>(null);
+  const [targetWorker, setTargetWorker] = useState<Worker | null>(null);
+  const [inspectionLocation, setInspectionLocation] = useState<string>('');
+  const [officerNotes, setOfficerNotes] = useState<string>('');
   const [currentResult, setCurrentResult] = useState<CalibrationResult | null>(null);
 
   // Subscribe to repository changes
@@ -69,17 +72,26 @@ const MainAppContent: React.FC = () => {
   const workerReadings = readings.filter(r => r.workerId === activeWorker.workerId);
 
   // Handler: When user clicks "Use Photo" in CameraCaptureModal
-  const handlePhotoSelected = (imageData: { imageUri?: string; sample?: DemoSampleBadge }) => {
+  const handlePhotoSelected = (data: {
+    imageUri?: string;
+    sample?: DemoSampleBadge;
+    targetWorker?: Worker;
+    inspectionLocation?: string;
+    officerNotes?: string;
+  }) => {
     setIsCameraOpen(false);
-    setSelectedImageUri(imageData.imageUri || null);
-    setSelectedDemoSample(imageData.sample || null);
+    setSelectedImageUri(data.imageUri || null);
+    setSelectedDemoSample(data.sample || null);
+    setTargetWorker(data.targetWorker || activeWorker);
+    setInspectionLocation(data.inspectionLocation || '');
+    setOfficerNotes(data.officerNotes || '');
 
     // Compute calibration result
     let res: CalibrationResult;
-    if (imageData.sample) {
-      res = CalibrationEngine.analyzeSample(imageData.sample);
-    } else if (imageData.imageUri) {
-      res = CalibrationEngine.analyzeRawImage(imageData.imageUri);
+    if (data.sample) {
+      res = CalibrationEngine.analyzeSample(data.sample);
+    } else if (data.imageUri) {
+      res = CalibrationEngine.analyzeRawImage(data.imageUri);
     } else {
       res = CalibrationEngine.analyzeRawImage('');
     }
@@ -101,6 +113,9 @@ const MainAppContent: React.FC = () => {
     setSelectedImageUri(null);
     setSelectedDemoSample(null);
     setCurrentResult(null);
+    setTargetWorker(null);
+    setInspectionLocation('');
+    setOfficerNotes('');
     setActiveTab('HISTORY');
   };
 
@@ -199,14 +214,14 @@ const MainAppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F1E7] text-[#292925] flex flex-col max-w-md mx-auto relative px-4 pt-4">
+    <div className="min-h-screen bg-[#F6F1E7] text-[#292925] flex flex-col max-w-md mx-auto relative px-4 pt-3 pb-8">
       {/* Main Viewport Content */}
       <main className="flex-1">
         {renderCurrentView()}
       </main>
 
       {/* Role-Specific Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#EDE5D6]/95 backdrop-blur-md border-t border-[#D8D0C2] px-3 py-2 flex items-center justify-around z-40">
+      <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#EDE5D6]/95 backdrop-blur-md border-t border-[#D8D0C2] px-3 py-2 flex items-center justify-around z-40 shadow-lg">
         <button
           onClick={() => setActiveTab('HOME')}
           className={`flex flex-col items-center gap-0.5 text-[10px] font-mono transition-colors ${
@@ -222,10 +237,10 @@ const MainAppContent: React.FC = () => {
             onClick={() => setIsCameraOpen(true)}
             className="flex flex-col items-center gap-0.5 text-[10px] font-mono text-[#292925] active:scale-95 transition-transform"
           >
-            <div className="w-10 h-10 -mt-5 rounded-full bg-[#292925] text-[#F6F1E7] flex items-center justify-center shadow-lg border-2 border-[#F6F1E7]">
+            <div className="w-11 h-11 -mt-5 rounded-full bg-[#292925] text-[#F6F1E7] flex items-center justify-center shadow-lg border-2 border-[#F6F1E7]">
               <Camera className="w-5 h-5 text-[#EDE5D6]" />
             </div>
-            <span className="font-bold">Scan</span>
+            <span className="font-bold">Scan Band</span>
           </button>
         )}
 
@@ -245,10 +260,10 @@ const MainAppContent: React.FC = () => {
               onClick={() => setIsCameraOpen(true)}
               className="flex flex-col items-center gap-0.5 text-[10px] font-mono text-[#292925] active:scale-95 transition-transform"
             >
-              <div className="w-10 h-10 -mt-5 rounded-full bg-[#292925] text-[#F6F1E7] flex items-center justify-center shadow-lg border-2 border-[#F6F1E7]">
+              <div className="w-11 h-11 -mt-5 rounded-full bg-[#292925] text-[#F6F1E7] flex items-center justify-center shadow-lg border-2 border-[#F6F1E7]">
                 <Camera className="w-5 h-5 text-[#EDE5D6]" />
               </div>
-              <span className="font-bold">Scan</span>
+              <span className="font-bold">Audit Scan</span>
             </button>
 
             <button
@@ -314,6 +329,8 @@ const MainAppContent: React.FC = () => {
       {/* Real Camera Capture Modal */}
       <CameraCaptureModal
         isOpen={isCameraOpen}
+        userRole={role || 'WORKER'}
+        currentWorker={activeWorker}
         onClose={() => setIsCameraOpen(false)}
         onPhotoSelected={handlePhotoSelected}
       />
@@ -331,6 +348,9 @@ const MainAppContent: React.FC = () => {
           result={currentResult}
           sample={selectedDemoSample}
           imageUri={selectedImageUri}
+          targetWorker={targetWorker}
+          inspectionLocation={inspectionLocation}
+          officerNotes={officerNotes}
           onSaveComplete={handleSaveComplete}
           onRetake={handleRetake}
         />

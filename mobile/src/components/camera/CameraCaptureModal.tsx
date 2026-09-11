@@ -1,17 +1,27 @@
 import React, { useState, useRef } from 'react';
 import { CameraService } from '../../services/CameraService';
-import { DEMO_SAMPLES } from '../../services/DosimeterRepository';
-import type { DemoSampleBadge } from '../../types/mobile';
-import { Camera, Image as ImageIcon, RotateCcw, Check, X, AlertTriangle, Sparkles, ChevronDown } from 'lucide-react';
+import { DEMO_SAMPLES, repository } from '../../services/DosimeterRepository';
+import type { DemoSampleBadge, Worker, UserRole } from '../../types/mobile';
+import { Camera, Image as ImageIcon, RotateCcw, Check, X, AlertTriangle, Sparkles, ChevronDown, User, MapPin, FileText, Info, HelpCircle } from 'lucide-react';
 
 interface CameraCaptureModalProps {
   isOpen: boolean;
+  userRole: UserRole;
+  currentWorker?: Worker | null;
   onClose: () => void;
-  onPhotoSelected: (imageData: { imageUri?: string; sample?: DemoSampleBadge }) => void;
+  onPhotoSelected: (data: {
+    imageUri?: string;
+    sample?: DemoSampleBadge;
+    targetWorker?: Worker;
+    inspectionLocation?: string;
+    officerNotes?: string;
+  }) => void;
 }
 
 export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   isOpen,
+  userRole,
+  currentWorker,
   onClose,
   onPhotoSelected
 }) => {
@@ -20,9 +30,24 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   const [permissionError, setPermissionError] = useState<string | null>(null);
   const [isCapturing, setIsCapturing] = useState(false);
   const [showDemoPicker, setShowDemoPicker] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
+
+  // Safety Officer specific fields
+  const allWorkers = repository.getWorkers();
+  const [selectedWorkerId, setSelectedWorkerId] = useState<string>(
+    currentWorker?.workerId || allWorkers[0]?.workerId || ''
+  );
+  const [inspectionLocation, setInspectionLocation] = useState<string>(
+    currentWorker?.workLocation || 'Field Location Spot-Check'
+  );
+  const [officerNotes, setOfficerNotes] = useState<string>('');
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
+
+  const isWorkerRole = userRole === 'WORKER';
+  const targetWorker = allWorkers.find(w => w.workerId === selectedWorkerId) || currentWorker || allWorkers[0];
 
   // Real Camera Capture
   const handleLiveCameraCapture = async () => {
@@ -33,10 +58,8 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
       if (result.success && result.dataUrl) {
         setCapturedImage(result.dataUrl);
         setSelectedDemoSample(null);
-      } else {
-        if (result.error) {
-          setPermissionError(result.error);
-        }
+      } else if (result.error) {
+        setPermissionError(result.error);
       }
     } catch (err: any) {
       setPermissionError(err?.message || 'Unable to open rear camera. You can upload an image instead.');
@@ -54,7 +77,6 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
         setCapturedImage(result.dataUrl);
         setSelectedDemoSample(null);
       } else if (result.error) {
-        // Fallback to standard input file
         fileInputRef.current?.click();
       }
     } catch {
@@ -62,7 +84,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
     }
   };
 
-  // HTML5 File Input Fallback for browsers or restricted permissions
+  // File fallback
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -79,11 +101,13 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
     }
   };
 
-  // Demo Sample Selection
   const handleSelectSample = (sample: DemoSampleBadge) => {
     setSelectedDemoSample(sample);
     setCapturedImage(null);
     setShowDemoPicker(false);
+    if (!isWorkerRole && sample.workerId) {
+      setSelectedWorkerId(sample.workerId);
+    }
   };
 
   const handleRetake = () => {
@@ -94,104 +118,204 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
 
   const handleUsePhoto = () => {
     if (capturedImage) {
-      onPhotoSelected({ imageUri: capturedImage });
+      onPhotoSelected({
+        imageUri: capturedImage,
+        targetWorker,
+        inspectionLocation: isWorkerRole ? targetWorker?.workLocation : inspectionLocation,
+        officerNotes: isWorkerRole ? undefined : officerNotes
+      });
     } else if (selectedDemoSample) {
-      onPhotoSelected({ sample: selectedDemoSample });
+      onPhotoSelected({
+        sample: selectedDemoSample,
+        targetWorker,
+        inspectionLocation: isWorkerRole ? targetWorker?.workLocation : inspectionLocation,
+        officerNotes: isWorkerRole ? undefined : officerNotes
+      });
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 flex flex-col justify-between p-4 max-w-md mx-auto text-[#F6F1E7]">
+    <div className="fixed inset-0 z-50 bg-black/90 flex flex-col justify-between p-4 max-w-md mx-auto text-[#F6F1E7] overflow-y-auto">
       {/* Top Header */}
-      <div className="flex items-center justify-between pt-2 pb-3 border-b border-white/15">
-        <div>
-          <h2 className="text-base font-serif font-bold text-white tracking-wide">
-            Wristband Scanner
-          </h2>
-          <span className="text-[11px] text-[#C9BFAE] font-mono">
-            {capturedImage || selectedDemoSample ? 'Photo Review' : 'Align Band Within Frame'}
-          </span>
+      <div className="pt-2 pb-3 border-b border-white/15">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                isWorkerRole ? 'bg-[#5A7456]/40 text-[#BACDB2]' : 'bg-[#B08A55]/40 text-[#EDE5D6]'
+              }`}>
+                {isWorkerRole ? 'PERSONAL DOSIMETER SCAN' : 'OFFICER FIELD AUDIT'}
+              </span>
+            </div>
+            <h2 className="text-base font-serif font-bold text-white tracking-wide mt-1">
+              {isWorkerRole ? 'Scan My Wristband' : 'Field Worker Inspection'}
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowGuide(!showGuide)}
+              className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 active:bg-white/20"
+              title="How to scan"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 active:bg-white/20"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
-        <button
-          onClick={onClose}
-          className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 active:bg-white/20"
-        >
-          <X className="w-5 h-5" />
-        </button>
+
+        {/* Worker Personal Badge Bar (for Worker) */}
+        {isWorkerRole ? (
+          <div className="mt-2 bg-white/10 rounded-lg p-2 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-[#5A7456] flex items-center justify-center font-bold text-xs text-white">
+                {targetWorker.name.slice(0, 2).toUpperCase()}
+              </div>
+              <div>
+                <span className="font-semibold text-white block">{targetWorker.name}</span>
+                <span className="text-[10px] text-[#C9BFAE] font-mono">Assigned Band: {targetWorker.assignedBandId}</span>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono bg-black/40 px-2 py-0.5 rounded text-[#EDE5D6]">
+              {targetWorker.workLocation.split('(')[0]}
+            </span>
+          </div>
+        ) : (
+          /* Safety Officer / Admin Target Selector */
+          <div className="mt-2 bg-[#292925] border border-white/20 rounded-xl p-3 space-y-2 text-xs">
+            <div>
+              <label className="text-[10px] font-mono text-[#C9BFAE] uppercase block mb-1 flex items-center gap-1">
+                <User className="w-3 h-3 text-[#B08A55]" />
+                Select Operator to Inspect:
+              </label>
+              <select
+                value={selectedWorkerId}
+                onChange={(e) => {
+                  setSelectedWorkerId(e.target.value);
+                  const w = allWorkers.find(x => x.workerId === e.target.value);
+                  if (w) setInspectionLocation(w.workLocation);
+                }}
+                className="w-full bg-[#1a1a17] border border-white/30 rounded-lg p-2 text-xs text-white font-medium focus:outline-none"
+              >
+                {allWorkers.map((w) => (
+                  <option key={w.workerId} value={w.workerId}>
+                    {w.name} · {w.assignedBandId} ({w.department})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-mono text-[#C9BFAE] uppercase block mb-1 flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-[#B08A55]" />
+                Inspection Spot / Deck:
+              </label>
+              <input
+                type="text"
+                value={inspectionLocation}
+                onChange={(e) => setInspectionLocation(e.target.value)}
+                placeholder="e.g. Column 4 Platform Deck B"
+                className="w-full bg-[#1a1a17] border border-white/30 rounded-lg p-2 text-xs text-white placeholder-white/40 focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Main Viewport: Either Photo Preview OR Live Viewfinder Prompt */}
-      <div className="flex-1 flex flex-col justify-center items-center my-auto w-full relative">
+      {/* Interactive Scan Guide Overlay (if opened) */}
+      {showGuide && (
+        <div className="my-2 bg-[#1a1a17] border border-[#71806B] rounded-xl p-3.5 space-y-2 text-xs">
+          <div className="flex items-center justify-between text-white font-semibold">
+            <span className="flex items-center gap-1.5 text-[#EDE5D6]">
+              <Info className="w-4 h-4 text-[#71806B]" />
+              Wristband Scanning Guidelines
+            </span>
+            <button onClick={() => setShowGuide(false)} className="text-[10px] text-[#C9BFAE] underline">
+              Close
+            </button>
+          </div>
+          <ul className="space-y-1.5 text-[11px] text-[#C9BFAE] leading-relaxed">
+            <li>• <strong>Distance:</strong> Hold phone 10–15 cm directly above wristband.</li>
+            <li>• <strong>Reference Scale:</strong> Ensure the printed 4-step reference color scale is in frame.</li>
+            <li>• <strong>Lighting:</strong> Avoid direct flashlight glare or deep shadow across the strip.</li>
+            <li>• <strong>Sensing Strip:</strong> Do not touch or scratch the chemical colorimetric zone.</li>
+          </ul>
+        </div>
+      )}
+
+      {/* Viewport Area */}
+      <div className="flex-1 flex flex-col justify-center items-center my-3 w-full relative min-h-[260px]">
         {capturedImage ? (
-          /* Captured Photo Preview */
-          <div className="w-full max-h-[380px] bg-[#1a1a17] rounded-xl overflow-hidden border border-white/20 relative flex items-center justify-center shadow-lg">
+          <div className="w-full max-h-[340px] bg-[#1a1a17] rounded-xl overflow-hidden border border-white/20 relative flex items-center justify-center shadow-lg">
             <img
               src={capturedImage}
               alt="Wristband Captured"
-              className="max-h-[360px] w-auto object-contain rounded-lg"
+              className="max-h-[320px] w-auto object-contain rounded-lg"
             />
-            <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded text-[11px] font-mono text-[#D8D0C2]">
-              Image Captured
+            <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-xs px-2.5 py-1 rounded text-[10px] font-mono text-[#D8D0C2]">
+              Photo Ready · Review Alignment
             </div>
           </div>
         ) : selectedDemoSample ? (
-          /* Demo Sample Preview */
-          <div className="w-full bg-[#292925] border border-[#71806B]/50 rounded-xl p-5 text-center shadow-lg">
-            <div className="w-full h-32 rounded-lg bg-[#1a1a17] border border-white/10 flex flex-col items-center justify-center relative mb-4 overflow-hidden">
+          <div className="w-full bg-[#292925] border border-[#71806B]/50 rounded-xl p-4 text-center shadow-lg">
+            <div className="w-full h-28 rounded-lg bg-[#1a1a17] border border-white/10 flex flex-col items-center justify-center relative mb-3 overflow-hidden">
               <img 
                 src="/band_design.png" 
                 alt="Band Anatomy" 
-                className="w-3/4 object-contain opacity-70"
+                className="w-3/4 object-contain opacity-75"
                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
               <div 
-                className="w-16 h-8 rounded border border-white/40 shadow-sm mt-1"
+                className="w-16 h-7 rounded border border-white/40 shadow-sm mt-1"
                 style={{ backgroundColor: selectedDemoSample.colorHex }}
               ></div>
-              <span className="text-[10px] font-mono text-[#C9BFAE] mt-1">Colorimetric Sensing Strip</span>
+              <span className="text-[9px] font-mono text-[#C9BFAE] mt-1">Simulated Sensing Strip</span>
             </div>
 
             <div className="text-left space-y-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono text-[#C9BFAE]">DEMO BADGE:</span>
+                <span className="text-[11px] font-mono text-[#C9BFAE]">CALIBRATION SAMPLE:</span>
                 <span className="text-xs font-mono font-bold text-white">{selectedDemoSample.bandId}</span>
               </div>
-              <div className="text-sm font-semibold text-white">{selectedDemoSample.label}</div>
-              <div className="text-xs text-[#C9BFAE]">{selectedDemoSample.description}</div>
+              <div className="text-xs font-semibold text-white">{selectedDemoSample.label}</div>
+              <div className="text-[11px] text-[#C9BFAE]">{selectedDemoSample.description}</div>
               {selectedDemoSample.isExpired && (
-                <div className="mt-2 text-xs bg-[#9A6258]/30 border border-[#9A6258] text-[#F6E2DF] px-2.5 py-1 rounded">
-                  ⚠️ Prototype Expiry Condition Triggered (&gt;90 days)
+                <div className="mt-1 text-[10px] bg-[#9A6258]/30 border border-[#9A6258] text-[#F6E2DF] px-2 py-0.5 rounded">
+                  ⚠️ Prototype Expiry (&gt;90d shelf age)
                 </div>
               )}
             </div>
           </div>
         ) : (
-          /* Viewfinder Overlay */
-          <div className="w-full h-[320px] border-2 border-dashed border-[#D8D0C2]/40 rounded-2xl flex flex-col items-center justify-center p-6 text-center relative bg-white/5">
-            {/* Corner Alignment Markers */}
-            <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-[#D8D0C2]"></div>
-            <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-[#D8D0C2]"></div>
-            <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-[#D8D0C2]"></div>
-            <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-[#D8D0C2]"></div>
+          <div className="w-full h-[280px] border-2 border-dashed border-[#D8D0C2]/40 rounded-2xl flex flex-col items-center justify-center p-5 text-center relative bg-white/5">
+            {/* Viewfinder Reticle */}
+            <div className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-[#D8D0C2]"></div>
+            <div className="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-[#D8D0C2]"></div>
+            <div className="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-[#D8D0C2]"></div>
+            <div className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-[#D8D0C2]"></div>
 
-            <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-3">
-              <Camera className="w-8 h-8 text-[#EDE5D6]" />
+            <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center mb-2">
+              <Camera className="w-7 h-7 text-[#EDE5D6]" />
             </div>
 
-            <p className="text-sm font-medium text-white mb-1">
-              Position sensing strip in view
+            <p className="text-sm font-semibold text-white mb-0.5">
+              {isWorkerRole ? 'Position your wristband in frame' : `Frame ${targetWorker.name}'s wristband`}
             </p>
-            <p className="text-xs text-[#C9BFAE] max-w-xs leading-relaxed">
-              Hold camera ~10–15 cm from wristband. Ensure reference scale is clearly illuminated.
+            <p className="text-[11px] text-[#C9BFAE] max-w-xs leading-relaxed">
+              Align the sensing strip and printed reference scale within the borders.
             </p>
 
-            {/* Error Message banner if camera permission was denied */}
             {permissionError && (
-              <div className="mt-4 bg-[#9A6258]/30 border border-[#9A6258]/70 rounded-lg p-2.5 text-xs text-[#F6E2DF] flex items-start gap-2 text-left">
+              <div className="mt-3 bg-[#9A6258]/30 border border-[#9A6258]/70 rounded-lg p-2 text-xs text-[#F6E2DF] flex items-start gap-1.5 text-left">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-semibold block">Camera Access Issue</span>
-                  {permissionError}. Please tap 'Upload Photo' or select a demo sample below.
+                  {permissionError}. You can upload an image or choose a demo sample.
                 </div>
               </div>
             )}
@@ -199,7 +323,6 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
         )}
       </div>
 
-      {/* Hidden File Input for fallback gallery upload */}
       <input
         type="file"
         ref={fileInputRef}
@@ -208,28 +331,26 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
         className="hidden"
       />
 
-      {/* Controls & Action Buttons */}
-      <div className="pt-3 pb-2 space-y-3">
+      {/* Bottom Controls */}
+      <div className="pt-2 pb-2 space-y-2">
         {capturedImage || selectedDemoSample ? (
-          /* Preview Actions: Retake vs. Use Photo */
-          <div className="flex gap-3">
+          <div className="flex gap-2.5">
             <button
               onClick={handleRetake}
-              className="flex-1 py-3.5 bg-white/15 hover:bg-white/20 border border-white/20 rounded-xl font-medium text-sm flex items-center justify-center gap-2 active:scale-95 transition-all text-white"
+              className="flex-1 py-3 bg-white/15 hover:bg-white/20 border border-white/20 rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all text-white"
             >
               <RotateCcw className="w-4 h-4" />
               Retake
             </button>
             <button
               onClick={handleUsePhoto}
-              className="flex-1 py-3.5 bg-[#5A7456] hover:bg-[#4F5D4B] text-white rounded-xl font-medium text-sm flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md font-semibold"
+              className="flex-1 py-3 bg-[#5A7456] hover:bg-[#4F5D4B] text-white rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-md"
             >
               <Check className="w-4 h-4" />
-              Use Photo
+              {isWorkerRole ? 'Analyze My Exposure' : 'Confirm & Audit Scan'}
             </button>
           </div>
         ) : (
-          /* Initial Capture Buttons */
           <div className="space-y-2">
             <button
               onClick={handleLiveCameraCapture}
@@ -237,32 +358,31 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
               className="w-full py-3.5 bg-[#EDE5D6] hover:bg-white text-[#292925] rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all"
             >
               <Camera className="w-5 h-5 text-[#292925]" />
-              {isCapturing ? 'Opening Camera...' : 'Open Rear Camera'}
+              {isCapturing ? 'Opening Camera...' : (isWorkerRole ? 'Open Camera for My Band' : 'Open Camera for Inspection')}
             </button>
 
             <div className="flex gap-2">
               <button
                 onClick={handleGalleryPick}
-                className="flex-1 py-2.5 bg-white/10 hover:bg-white/15 border border-white/20 rounded-lg text-xs font-medium flex items-center justify-center gap-2 text-white/90 active:scale-95 transition-all"
+                className="flex-1 py-2 bg-white/10 hover:bg-white/15 border border-white/20 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 text-white/90 active:scale-95 transition-all"
               >
-                <ImageIcon className="w-4 h-4" />
+                <ImageIcon className="w-3.5 h-3.5" />
                 Upload Photo
               </button>
 
               <button
                 onClick={() => setShowDemoPicker(!showDemoPicker)}
-                className="flex-1 py-2.5 bg-[#71806B]/30 hover:bg-[#71806B]/40 border border-[#71806B]/50 rounded-lg text-xs font-medium flex items-center justify-center gap-2 text-[#EDE5D6] active:scale-95 transition-all"
+                className="flex-1 py-2 bg-[#71806B]/30 hover:bg-[#71806B]/40 border border-[#71806B]/50 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 text-[#EDE5D6] active:scale-95 transition-all"
               >
-                <Sparkles className="w-4 h-4 text-[#C9BFAE]" />
-                Demo Samples
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showDemoPicker ? 'rotate-180' : ''}`} />
+                <Sparkles className="w-3.5 h-3.5 text-[#C9BFAE]" />
+                Calibrated Samples
+                <ChevronDown className={`w-3 h-3 transition-transform ${showDemoPicker ? 'rotate-180' : ''}`} />
               </button>
             </div>
 
-            {/* Collapsible Demo Samples Drawer */}
             {showDemoPicker && (
               <div className="bg-[#1a1a17] border border-white/20 rounded-xl p-3 space-y-2 animate-in fade-in duration-150">
-                <div className="text-[11px] font-mono text-[#C9BFAE] uppercase tracking-wider mb-1">
+                <div className="text-[10px] font-mono text-[#C9BFAE] uppercase tracking-wider">
                   Select Calibrated SIH Sample:
                 </div>
                 <div className="grid grid-cols-2 gap-2">

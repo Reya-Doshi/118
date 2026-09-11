@@ -27,6 +27,11 @@ export interface Worker {
   currentDose: number; // in ppm·h
   lastReadingTime?: string;
   shift: string;
+  workLocation: string; // Specific area/deck (e.g., "Reactor Top Platform Deck B")
+  hazardZone: string; // Specific hazard description
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  wearTimeHours: number;
+  trend7Day: { day: string; dose: number }[];
 }
 
 export interface Wristband {
@@ -38,6 +43,7 @@ export interface Wristband {
   shelfAgeDays: number;
   status: WristbandStatus;
   batchNumber: string;
+  calibrationBatch: string;
 }
 
 export interface Reading {
@@ -55,6 +61,9 @@ export interface Reading {
   imageUri?: string;
   isSimulated: boolean;
   notes?: string;
+  scanType: 'PERSONAL_WORKER_SCAN' | 'OFFICER_FIELD_AUDIT';
+  inspectionLocation?: string;
+  officerNotes?: string;
   
   // Pipeline calibration details
   lab?: { L: number; a: number; b: number };
@@ -89,6 +98,7 @@ export interface DemoSampleBadge {
   bandId: string;
   workerId: string;
   workerName: string;
+  workLocation?: string;
   estimatedDose: number;
   status: ExposureStatus;
   confidence: number;
