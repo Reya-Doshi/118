@@ -101,37 +101,68 @@ def compute_delta_e_cie76(L, a, b):
 # ---------------------------------------------------------
 # IMAGE DETECTION & COLOR EXTRACTION PIPELINE
 # ---------------------------------------------------------
-def detect_and_extract_sensing_strip(img_bgr, manual_roi=None):
+# Preset ROIs for known prototype design diagrams/renders
+PRESET_ROIS = {
+    "band design.png": {
+        "strip_roi": (1174, 786, 50, 97),
+        "ref_roi": (1348, 805, 145, 52),
+        "housing_roi": (1080, 740, 430, 180)
+    },
+    "band_design.png": {
+        "strip_roi": (1174, 786, 50, 97),
+        "ref_roi": (1348, 805, 145, 52),
+        "housing_roi": (1080, 740, 430, 180)
+    }
+}
+
+def detect_and_extract_sensing_strip(img_bgr, filename="", manual_strip_roi=None, manual_ref_roi=None):
     """
-    Locates dosimeter housing, applies white-balance normalization if reference
-    patch is found, and extracts the sensing strip color.
+    Locates dosimeter housing, sensing strip, and reference colour scale.
+    Applies white-balance normalization if reference patch is found.
     
     Returns:
       rgb_tuple: (R, G, B)
       strip_bbox: (x, y, w, h)
+      ref_scale_bbox: (x, y, w, h) or None
       housing_bbox: (x, y, w, h) or None
       normalized_img: bgr image after white balance
     """
     H, W = img_bgr.shape[:2]
+    base_name = os.path.basename(filename).lower()
 
-    # Manual ROI override
-    if manual_roi is not None:
-        mx, my, mw, mh = manual_roi
-        # Ensure within bounds
-        mx = max(0, min(mx, W - 1))
-        my = max(0, min(my, H - 1))
-        mw = max(1, min(mw, W - mx))
-        mh = max(1, min(mh, H - my))
-        strip_roi = img_bgr[my:my+mh, mx:mx+mw]
+    # Check for preset fallback first if no manual ROI given
+    if manual_strip_roi is None and base_name in PRESET_ROIS:
+        preset = PRESET_ROIS[base_name]
+        manual_strip_roi = preset["strip_roi"]
+        if manual_ref_roi is None:
+            manual_ref_roi = preset["ref_roi"]
+
+    # Manual or Preset Strip ROI override
+    if manual_strip_roi is not None:
+        sx, sy, sw, sh = manual_strip_roi
+        sx = max(0, min(sx, W - 1))
+        sy = max(0, min(sy, H - 1))
+        sw = max(1, min(sw, W - sx))
+        sh = max(1, min(sh, H - sy))
+        
+        # Sample inner core (center 70%) to avoid boundary edges
+        cx1 = sx + int(sw * 0.15)
+        cy1 = sy + int(sh * 0.15)
+        cx2 = sx + sw - int(sw * 0.15)
+        cy2 = sy + sh - int(sh * 0.15)
+        strip_roi = img_bgr[cy1:cy2, cx1:cx2]
+        
         median_bgr = np.median(strip_roi.reshape(-1, 3), axis=0)
         rgb = (int(round(median_bgr[2])), int(round(median_bgr[1])), int(round(median_bgr[0])))
-        return rgb, (mx, my, mw, mh), None, img_bgr
+        
+        ref_bbox = manual_ref_roi
+        housing_bbox = PRESET_ROIS.get(base_name, {}).get("housing_roi", None)
+        return rgb, (sx, sy, sw, sh), ref_bbox, housing_bbox, img_bgr
 
     # Auto-detection using contours
     gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
     
-    # Adaptive threshold to isolate housing
     thresh = cv2.adaptiveThreshold(
         blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 25, 4
     )
@@ -146,13 +177,11 @@ def detect_and_extract_sensing_strip(img_bgr, manual_roi=None):
         x, y, w, h = cv2.boundingRect(cnt)
         area = w * h
         aspect_ratio = float(w) / h
-        # Housing has aspect ratio ~ 1.2 to 2.5 and covers a significant area
         if area > min_housing_area and 1.1 <= aspect_ratio <= 3.0:
             if area > best_area:
                 best_area = area
                 housing_bbox = (x, y, w, h)
 
-    # If no distinct housing contour was found, fallback to central 75% of image
     if housing_bbox is None:
         hx, hy = int(W * 0.15), int(H * 0.15)
         hw, hh = int(W * 0.70), int(H * 0.70)
@@ -161,27 +190,26 @@ def detect_and_extract_sensing_strip(img_bgr, manual_roi=None):
     hx, hy, hw, hh = housing_bbox
 
     # Sensing strip is located in central column of the housing
-    # strip: center horizontal (35% to 65% of housing width), mid vertical (25% to 75% of housing height)
     strip_x = int(hx + hw * 0.36)
     strip_y = int(hy + hh * 0.20)
     strip_w = int(hw * 0.28)
     strip_h = int(hh * 0.60)
 
-    # Reference White patch search (look on left side of housing)
+    # Reference colour scale (left side of sensing strip)
     ref_x = int(hx + hw * 0.05)
-    ref_y = int(hy + hh * 0.65)
-    ref_w = int(hw * 0.10)
-    ref_h = int(hh * 0.15)
+    ref_y = int(hy + hh * 0.18)
+    ref_w = int(hw * 0.22)
+    ref_h = int(hh * 0.64)
+    ref_bbox = (ref_x, ref_y, ref_w, ref_h)
 
+    # Reference White patch search inside reference area
     ref_roi = img_bgr[ref_y:ref_y+ref_h, ref_x:ref_x+ref_w]
     normalized_img = img_bgr.copy()
 
     if ref_roi.size > 0:
         mean_ref_bgr = np.mean(ref_roi, axis=(0, 1))
-        # If white patch is bright enough (R, G, B > 160), apply white balance scaling
         if np.all(mean_ref_bgr > 160):
             scale = 245.0 / np.maximum(mean_ref_bgr, 1.0)
-            # Clip scaling factor to reasonable range [0.8, 1.3]
             scale = np.clip(scale, 0.8, 1.3)
             normalized_img = np.clip(img_bgr.astype(np.float32) * scale, 0, 255).astype(np.uint8)
 
@@ -194,32 +222,37 @@ def detect_and_extract_sensing_strip(img_bgr, manual_roi=None):
     cy2 = strip_y + strip_h - core_margin_y
 
     strip_core = normalized_img[cy1:cy2, cx1:cx2]
-    
-    # Calculate robust median BGR across core pixels
     median_bgr = np.median(strip_core.reshape(-1, 3), axis=0)
     rgb = (int(round(median_bgr[2])), int(round(median_bgr[1])), int(round(median_bgr[0])))
 
-    return rgb, (strip_x, strip_y, strip_w, strip_h), housing_bbox, normalized_img
+    return rgb, (strip_x, strip_y, strip_w, strip_h), ref_bbox, housing_bbox, normalized_img
 
 
 # ---------------------------------------------------------
 # ANNOTATION OVERLAY (FOR DEBUG / INSPECTION)
 # ---------------------------------------------------------
-def create_annotated_image(img, strip_bbox, housing_bbox, rgb, dose, status, uncertainty):
+def create_annotated_image(img, strip_bbox, ref_bbox, housing_bbox, rgb, dose, status, uncertainty):
     annotated = img.copy()
     sx, sy, sw, sh = strip_bbox
 
     # Draw housing bounding box if available
     if housing_bbox:
         hx, hy, hw, hh = housing_bbox
-        cv2.rectangle(annotated, (hx, hy), (hx + hw, hy + hh), (0, 255, 255), 2)
-        cv2.putText(annotated, "DOSIMETER HOUSING", (hx + 8, hy - 8),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1, cv2.LINE_AA)
+        cv2.rectangle(annotated, (hx, hy), (hx + hw, hy + hh), (255, 200, 0), 2)
+        cv2.putText(annotated, "DOSIMETER HOUSING", (hx + 8, max(20, hy - 8)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 200, 0), 1, cv2.LINE_AA)
+
+    # Draw reference colour scale bounding box if available
+    if ref_bbox:
+        rx, ry, rw, rh = ref_bbox
+        cv2.rectangle(annotated, (rx, ry), (rx + rw, ry + rh), (255, 255, 0), 2)
+        cv2.putText(annotated, "REFERENCE COLOUR SCALE", (rx + 4, max(20, ry - 8)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.48, (255, 255, 0), 1, cv2.LINE_AA)
 
     # Draw sensing strip bounding box
-    cv2.rectangle(annotated, (sx, sy), (sx + sw, sy + sh), (0, 255, 0), 2)
-    cv2.putText(annotated, "SENSING STRIP (Cu-PAN)", (sx, sy - 8),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
+    cv2.rectangle(annotated, (sx, sy), (sx + sw, sy + sh), (0, 255, 0), 3)
+    cv2.putText(annotated, "SENSING STRIP (Cu-PAN)", (sx, max(20, sy - 8)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.52, (0, 255, 0), 2, cv2.LINE_AA)
 
     # Color patch swatch overlay
     bgr_patch = (rgb[2], rgb[1], rgb[0])
@@ -244,6 +277,7 @@ def create_annotated_image(img, strip_bbox, housing_bbox, rgb, dose, status, unc
     return annotated
 
 
+
 # ---------------------------------------------------------
 # MAIN INFERENCE & CLI RUNNER
 # ---------------------------------------------------------
@@ -257,8 +291,10 @@ def main():
     parser.add_argument("--shelf-age", type=float, default=15.0, help="Dosimeter shelf age in days (default: 15.0)")
     parser.add_argument("--model-path", default=os.path.join(PROJECT_ROOT, "models", "cupan_best_model.pkl"),
                         help="Path to serialized Random Forest model")
-    parser.add_argument("--roi", type=str, default=None,
-                        help="Manual sensing-strip ROI as 'x,y,w,h' (optional)")
+    parser.add_argument("--roi", "--strip-roi", dest="strip_roi", type=str, default=None,
+                        help="Manual sensing-strip ROI as 'x,y,w,h' (optional fallback)")
+    parser.add_argument("--ref-roi", type=str, default=None,
+                        help="Manual reference-scale ROI as 'x,y,w,h' (optional fallback)")
     parser.add_argument("--save-annotated", type=str, default=None,
                         help="Path to save annotated debug visualization image")
     parser.add_argument("--json", action="store_true", help="Output results in JSON format")
@@ -275,18 +311,27 @@ def main():
         print(f"Error: Unable to decode image with OpenCV: {args.image_path}", file=sys.stderr)
         sys.exit(1)
 
-    # Parse manual ROI if specified
-    manual_roi = None
-    if args.roi:
+    def parse_roi(roi_str):
+        if not roi_str:
+            return None
         try:
-            parts = [int(p.strip()) for p in args.roi.split(",")]
+            parts = [int(p.strip()) for p in roi_str.split(",")]
             if len(parts) == 4:
-                manual_roi = tuple(parts)
+                return tuple(parts)
         except Exception:
-            print("Warning: Invalid ROI format. Expected 'x,y,w,h'. Proceeding with auto-detection.", file=sys.stderr)
+            pass
+        return None
 
-    # 1. Image Processing & Feature Extraction
-    rgb, strip_bbox, housing_bbox, norm_img = detect_and_extract_sensing_strip(img_bgr, manual_roi)
+    manual_strip_roi = parse_roi(args.strip_roi)
+    manual_ref_roi = parse_roi(args.ref_roi)
+
+    # 1. Image Processing, Localization & Feature Extraction
+    rgb, strip_bbox, ref_bbox, housing_bbox, norm_img = detect_and_extract_sensing_strip(
+        img_bgr,
+        filename=args.image_path,
+        manual_strip_roi=manual_strip_roi,
+        manual_ref_roi=manual_ref_roi
+    )
     r, g, b = rgb
 
     # 2. CIE L*a*b* & Delta E Calculation
@@ -336,7 +381,7 @@ def main():
     # 5. Optional Annotated Image Output
     if args.save_annotated:
         annotated_img = create_annotated_image(
-            norm_img, strip_bbox, housing_bbox, rgb, estimated_dose, status, uncertainty_95ci
+            norm_img, strip_bbox, ref_bbox, housing_bbox, rgb, estimated_dose, status, uncertainty_95ci
         )
         out_dir = os.path.dirname(os.path.abspath(args.save_annotated))
         if out_dir:
@@ -347,6 +392,11 @@ def main():
     results = {
         "analysis_banner": "SIMULATED / PROTOTYPE READING",
         "image_file": os.path.basename(args.image_path),
+        "localizations": {
+            "sensing_strip_bbox": {"x": strip_bbox[0], "y": strip_bbox[1], "w": strip_bbox[2], "h": strip_bbox[3]},
+            "reference_scale_bbox": {"x": ref_bbox[0], "y": ref_bbox[1], "w": ref_bbox[2], "h": ref_bbox[3]} if ref_bbox else None,
+            "housing_bbox": {"x": housing_bbox[0], "y": housing_bbox[1], "w": housing_bbox[2], "h": housing_bbox[3]} if housing_bbox else None
+        },
         "extracted_rgb": {
             "r": r,
             "g": g,
@@ -390,8 +440,13 @@ def main():
     print("      *** SIMULATED / PROTOTYPE READING ***")
     print("  RageB8 Passive Colorimetric H2S Dosimeter Pipeline")
     print("=" * 65)
-    print(f"Target Image:      {os.path.basename(args.image_path)}")
-    print(f"Sensing Chemistry: Cu-PAN Chelation Dye (Porous Matrix)")
+    print(f"Target Image:        {os.path.basename(args.image_path)}")
+    print(f"Sensing Chemistry:   Cu-PAN Chelation Dye (Porous Matrix)")
+    if housing_bbox:
+        print(f"Housing Bounding Box: [x={housing_bbox[0]}, y={housing_bbox[1]}, w={housing_bbox[2]}, h={housing_bbox[3]}]")
+    print(f"Sensing Strip ROI:   [x={strip_bbox[0]}, y={strip_bbox[1]}, w={strip_bbox[2]}, h={strip_bbox[3]}]")
+    if ref_bbox:
+        print(f"Ref Scale ROI:       [x={ref_bbox[0]}, y={ref_bbox[1]}, w={ref_bbox[2]}, h={ref_bbox[3]}]")
     print("-" * 65)
     print("1. EXTRACTED COLOR METRICS")
     print(f"   • Extracted RGB:     ({r}, {g}, {b}) [Hex: #{r:02x}{g:02x}{b:02x}]")
