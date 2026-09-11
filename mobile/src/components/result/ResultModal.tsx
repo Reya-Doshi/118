@@ -257,15 +257,15 @@ export const ResultModal: React.FC<ResultModalProps> = ({
           </div>
         </div>
 
-        {/* Environmental & Confidence Row */}
+        {/* Environmental & Model Variance Row */}
         <div className="grid grid-cols-3 gap-2 text-center text-xs">
           <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-2">
-            <span className="text-[9px] text-[#5D5B53] font-mono block">Confidence</span>
+            <span className="text-[9px] text-[#5D5B53] font-mono block">Optical QA</span>
             <span className="font-mono font-bold text-xs text-[#292925]">
               {Math.round((apiResult.confidence?.score ?? 0.95) * 100)}%
             </span>
             <span className="text-[8px] text-[#878377] font-mono block">
-              ±{apiResult.confidence?.uncertainty_95_ci_ppm_h ?? 0.3} CI
+              ±{apiResult.confidence?.uncertainty_95_ci_ppm_h ?? 0.3} Tree Spread
             </span>
           </div>
 
@@ -288,7 +288,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
             *** SIMULATED / PROTOTYPE READING ***
           </span>
           <p className="text-[10px] text-[#5D5B53] mt-0.5">
-            Calibrated Random Forest Regressor · Colorimetric Chelation Prototype
+            Colorimetry modeled for Cu-PAN test strip. Thresholds (Safe &lt;0.50, Action 0.50–1.00, Review &gt;1.00 ppm·h) are prototype conventions, not official OSHA regulatory limits.
           </p>
         </div>
       </div>

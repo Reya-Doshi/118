@@ -223,7 +223,7 @@ def analyze_wristband_with_gemini(image_path, api_key=None):
 
     import requests
 
-    models_to_try = ["gemini-3.5-flash", "gemini-3.7-flash", "gemini-3.6-flash", "gemini-flash-latest"]
+    models_to_try = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-2.5-flash", "gemini-3.7-flash"]
     last_err = ""
 
     for model_name in models_to_try:

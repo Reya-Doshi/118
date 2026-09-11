@@ -168,15 +168,25 @@ def process_wristband_analysis(
             status = "REVIEW"
             action_note = f"Permissible exposure limit exceeded (>{DOSE_MONITOR_MAX:.2f} ppm·h). Immediate safety evacuation & medical review required."
 
-        # 6. Structured JSON Response (Matching user specifications exactly)
+        # 6. Structured JSON Response (Matching user specifications with scientific metadata)
         response_payload = {
             "estimated_exposure_ppm_h": round(estimated_dose, 2),
             "status": status,
+            "threshold_meta": {
+                "type": "PROTOTYPE_SIMULATED_CONSERVATIVE",
+                "normal_limit_ppm_h": DOSE_NORMAL_MAX,
+                "monitor_limit_ppm_h": DOSE_MONITOR_MAX,
+                "regulatory_notice": "Prototype dosimeter shift thresholds. Not an official OSHA regulatory PEL standard."
+            },
             "confidence": {
+                "optical_quality_score": float(np.round(quality_data.get("quality_score", 0.95), 2)),
                 "score": float(np.round(quality_data.get("quality_score", 0.95), 2)),
+                "ensemble_std_ppm_h": float(np.round(uncertainty_1sigma, 2)),
+                "uncertainty_spread_ppm_h": uncertainty_95ci,
                 "uncertainty_95_ci_ppm_h": uncertainty_95ci,
                 "ci_lower_ppm_h": round(max(0.0, estimated_dose - uncertainty_95ci), 2),
-                "ci_upper_ppm_h": round(estimated_dose + uncertainty_95ci, 2)
+                "ci_upper_ppm_h": round(estimated_dose + uncertainty_95ci, 2),
+                "uncertainty_method": "Prototype ensemble tree standard deviation heuristic (±1.96 * sigma_trees). Model dispersion heuristic, not statistically validated frequentist CI."
             },
             "rgb": {
                 "r": int(r),
