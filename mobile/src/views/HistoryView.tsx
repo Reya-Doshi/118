@@ -148,8 +148,8 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
                 <span className="text-xs text-[#5D5B53] font-serif">ppm·h estimated dose</span>
               </div>
 
-              {/* Ambient Info */}
-              <div className="flex items-center gap-4 text-[11px] font-mono text-[#5D5B53] pt-1">
+              {/* Ambient & Colorimetric Info */}
+              <div className="flex flex-wrap items-center gap-3 text-[11px] font-mono text-[#5D5B53] pt-1">
                 <div className="flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#71806B]" />
                   <span>{reading.confidence}%</span>
@@ -162,7 +162,20 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
                   <Droplets className="w-3.5 h-3.5 text-[#71806B]" />
                   <span>{reading.humidity}% RH</span>
                 </div>
+                {reading.rgb && (
+                  <div className="flex items-center gap-1 bg-[#F6F1E7] px-1.5 py-0.5 rounded border border-[#D8D0C2]">
+                    <span
+                      className="w-2.5 h-2.5 rounded-full border border-black/20 shrink-0"
+                      style={{ backgroundColor: reading.rgb.hex }}
+                    />
+                    <span className="text-[10px] font-mono font-bold text-[#292925]">{reading.rgb.hex}</span>
+                    {reading.deltaE !== undefined && (
+                      <span className="text-[9px] text-[#878377]">ΔE={reading.deltaE.toFixed(1)}</span>
+                    )}
+                  </div>
+                )}
               </div>
+
 
               {reading.officerNotes && (
                 <p className="text-[11px] text-[#795726] bg-[#F5EEDB] p-2 rounded-lg border border-[#DDC69E]/50 italic">

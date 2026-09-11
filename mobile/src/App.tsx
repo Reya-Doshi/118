@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MobileAuthProvider, useMobileAuth } from './context/MobileAuthContext';
 import { repository } from './services/DosimeterRepository';
-import { CalibrationEngine, CalibrationResult } from './services/CalibrationEngine';
-import type { Worker, Reading, Alert, Wristband, DemoSampleBadge } from './types/mobile';
+import type { Worker, Reading, Alert, Wristband, DemoSampleBadge, BackendAnalyzeResponse } from './types/mobile';
 
 import { SplashView } from './components/SplashView';
 import { LoginView } from './components/LoginView';
@@ -44,9 +43,9 @@ const MainAppContent: React.FC = () => {
   const [targetWorker, setTargetWorker] = useState<Worker | null>(null);
   const [inspectionLocation, setInspectionLocation] = useState<string>('');
   const [officerNotes, setOfficerNotes] = useState<string>('');
-  const [currentResult, setCurrentResult] = useState<CalibrationResult | null>(null);
+  const [currentApiResponse, setCurrentApiResponse] = useState<BackendAnalyzeResponse | null>(null);
 
-  // Subscribe to repository changes
+  // Sync state with repository changes
   useEffect(() => {
     const unsubscribe = repository.subscribe(() => {
       setWorkers(repository.getWorkers());
@@ -86,19 +85,63 @@ const MainAppContent: React.FC = () => {
     setInspectionLocation(data.inspectionLocation || '');
     setOfficerNotes(data.officerNotes || '');
 
-    // Compute calibration result
-    let res: CalibrationResult;
     if (data.sample) {
-      res = CalibrationEngine.analyzeSample(data.sample);
+      // Demo reference badge selected
+      const sampleResp: BackendAnalyzeResponse = {
+        estimated_exposure_ppm_h: data.sample.estimatedDose,
+        status: data.sample.status,
+        confidence: {
+          score: data.sample.confidence / 100,
+          uncertainty_95_ci_ppm_h: 0.25,
+          ci_lower_ppm_h: Math.max(0, data.sample.estimatedDose - 0.25),
+          ci_upper_ppm_h: data.sample.estimatedDose + 0.25
+        },
+        rgb: {
+          r: parseInt(data.sample.colorHex.slice(1, 3), 16) || 150,
+          g: parseInt(data.sample.colorHex.slice(3, 5), 16) || 100,
+          b: parseInt(data.sample.colorHex.slice(5, 7), 16) || 120,
+          hex: data.sample.colorHex
+        },
+        lab: { L: 55.0, a: 35.0, b: 10.0 },
+        delta_e: data.sample.status === 'NORMAL' ? 8.5 : data.sample.status === 'MONITOR' ? 32.0 : 65.0,
+        temperature: data.sample.temperature,
+        humidity: data.sample.humidity,
+        shelf_age_days: data.sample.shelfAgeDays,
+        image_quality: {
+          verdict: 'PASS',
+          score: 0.98,
+          is_too_dark: false,
+          is_overexposed: false,
+          is_blurry: false,
+          strip_not_visible: false,
+          reference_scale_missing: false,
+          notes: 'Calibrated SIH physical reference sample.'
+        },
+        band_detected: true,
+        action_guideline: data.sample.description,
+        prototype: true,
+        vision_engine: 'Calibrated Physical Reference Sample'
+      };
+      setCurrentApiResponse(sampleResp);
+      setIsAnalyzing(false);
+      setIsResultOpen(true);
     } else if (data.imageUri) {
-      res = CalibrationEngine.analyzeRawImage(data.imageUri);
-    } else {
-      res = CalibrationEngine.analyzeRawImage('');
+      // Real captured photo -> Start analysis sequence & backend API call
+      setIsAnalyzing(true);
     }
-    setCurrentResult(res);
+  };
 
-    // Trigger analysis animation sequence
-    setIsAnalyzing(true);
+  // Handler: When backend API responds successfully
+  const handleAnalysisSuccess = (response: BackendAnalyzeResponse) => {
+    setCurrentApiResponse(response);
+    setIsAnalyzing(false);
+    setIsResultOpen(true);
+  };
+
+  // Handler: When user cancels during analysis
+  const handleAnalysisCancel = () => {
+    setIsAnalyzing(false);
+    setIsCameraOpen(true);
   };
 
   // Handler: When 5-step analysis animation completes
@@ -112,7 +155,7 @@ const MainAppContent: React.FC = () => {
     setIsResultOpen(false);
     setSelectedImageUri(null);
     setSelectedDemoSample(null);
-    setCurrentResult(null);
+    setCurrentApiResponse(null);
     setTargetWorker(null);
     setInspectionLocation('');
     setOfficerNotes('');
@@ -338,14 +381,16 @@ const MainAppContent: React.FC = () => {
       {/* 5-Step Animated Analysis Sequence Modal */}
       <AnalysisSequenceModal
         isOpen={isAnalyzing}
-        onAnalysisComplete={handleAnalysisComplete}
+        imageUri={selectedImageUri}
+        onAnalysisSuccess={handleAnalysisSuccess}
+        onClose={handleAnalysisCancel}
       />
 
       {/* Result Screen Modal */}
-      {currentResult && (
+      {isResultOpen && currentApiResponse && (
         <ResultModal
           isOpen={isResultOpen}
-          result={currentResult}
+          apiResult={currentApiResponse}
           sample={selectedDemoSample}
           imageUri={selectedImageUri}
           targetWorker={targetWorker}
