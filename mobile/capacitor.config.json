@@ -1,0 +1,13 @@
+{
+  "appId": "com.sih.dosimeter118",
+  "appName": "118 Safety",
+  "webDir": "dist",
+  "plugins": {
+    "Camera": {
+      "presentationStyle": "fullscreen"
+    }
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

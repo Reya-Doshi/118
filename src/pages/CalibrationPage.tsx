@@ -57,7 +57,7 @@ export const CalibrationPage: React.FC = () => {
 
   const handleDownloadCSV = () => {
     const link = document.createElement('a');
-    link.href = '/calibration_dataset.csv';
+    link.href = `${import.meta.env.BASE_URL}calibration_dataset.csv`;
     link.download = 'calibration_dataset.csv';
     link.click();
   };
