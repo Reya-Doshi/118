@@ -2,12 +2,12 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { MetricCard } from '../components/MetricCard';
 import { StatusBadge } from '../components/StatusBadge';
-import { SHIFT_TREND_DATA, INITIAL_ALERTS } from '../data/mockData';
-import { Users, Scan, AlertTriangle, Clock, MapPin, ArrowUpRight, ChevronRight } from 'lucide-react';
+import { SHIFT_TREND_DATA } from '../data/mockData';
+import { Users, Scan, AlertTriangle, Clock, MapPin, ArrowUpRight, ChevronRight, ShieldAlert } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
 export const DashboardPage: React.FC = () => {
-  const { workers, setActivePage, setSelectedWorker } = useApp();
+  const { workers, setActivePage, setSelectedWorker, alerts } = useApp();
 
   const handleWorkerClick = (workerId: string) => {
     const found = workers.find(w => w.workerId === workerId || w.badgeId === workerId);
@@ -185,30 +185,40 @@ export const DashboardPage: React.FC = () => {
           <div className="bg-[#EDE5D6] rounded-xl border border-[#D8D0C2] p-5 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-[#D8D0C2] pb-3">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-[#B08A55]" />
-                <h3 className="text-sm font-bold text-[#292925]">Attention Required</h3>
+                <ShieldAlert className="w-4 h-4 text-[#9A6258]" />
+                <div>
+                  <h3 className="text-sm font-bold text-[#292925]">Safety Officer Alert Feed</h3>
+                  <p className="text-[10px] text-[#5D5B53] font-serif">Lead Auditor: Mira Patel</p>
+                </div>
               </div>
-              <span className="px-2 py-0.5 rounded bg-[#F3EDE2] text-[#826235] text-[10px] font-bold font-mono">
-                3 Active
+              <span className="px-2 py-0.5 rounded bg-[#9A6258]/15 text-[#7A342B] text-[10px] font-bold font-mono">
+                {alerts.length} Active
               </span>
             </div>
 
             {/* Alert List */}
             <div className="space-y-2.5">
-              {INITIAL_ALERTS.map(alert => (
+              {alerts.map(alert => (
                 <div
                   key={alert.id}
                   onClick={() => handleWorkerClick(alert.workerId)}
-                  className="p-3.5 rounded-lg border border-[#D8D0C2] bg-[#F6F1E7] hover:border-[#B8B0A2] cursor-pointer transition-all space-y-1 group"
+                  className={`p-3.5 rounded-lg border transition-all space-y-1 group cursor-pointer ${
+                    alert.type === 'REVIEW'
+                      ? 'border-[#9A6258]/40 bg-[#F6E2DF]/40 hover:bg-[#F6E2DF]/70'
+                      : 'border-[#D8D0C2] bg-[#F6F1E7] hover:border-[#B8B0A2]'
+                  }`}
                 >
-                  <div className="flex items-center justify-between text-xs font-semibold text-[#292925]">
-                    <span>{alert.title}</span>
+                  <div className="flex items-center justify-between text-xs font-bold text-[#292925]">
+                    <span className="flex items-center gap-1.5">
+                      {alert.type === 'REVIEW' && <AlertTriangle className="w-3.5 h-3.5 text-[#9A6258]" />}
+                      <span>{alert.title}</span>
+                    </span>
                     <ArrowUpRight className="w-3.5 h-3.5 text-[#878377] group-hover:text-[#4F5D4B] transition-colors" />
                   </div>
                   <p className="text-[11px] text-[#5D5B53] leading-relaxed">{alert.description}</p>
                   <div className="flex items-center justify-between pt-1 text-[10px] font-mono text-[#878377]">
                     <span>Badge: {alert.badgeId}</span>
-                    <span>{alert.timestamp} AM</span>
+                    <span>{alert.timestamp} · Officer: Mira Patel</span>
                   </div>
                 </div>
               ))}

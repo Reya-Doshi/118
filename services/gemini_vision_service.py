@@ -223,7 +223,7 @@ def analyze_wristband_with_gemini(image_path, api_key=None):
 
     import requests
 
-    models_to_try = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-2.5-flash", "gemini-3.7-flash"]
+    models_to_try = ["gemini-2.5-flash", "gemini-flash-latest"]
     last_err = ""
 
     for model_name in models_to_try:
@@ -250,7 +250,7 @@ def analyze_wristband_with_gemini(image_path, api_key=None):
         }
 
         try:
-            response = requests.post(endpoint, json=payload, timeout=25)
+            response = requests.post(endpoint, json=payload, timeout=7)
             if response.status_code == 200:
                 resp_json = response.json()
                 raw_text = resp_json["candidates"][0]["content"]["parts"][0]["text"].strip()

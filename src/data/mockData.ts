@@ -150,48 +150,78 @@ export const INITIAL_WORKERS: Worker[] = [
 export const DEMO_SAMPLES: DemoSample[] = [
   {
     id: 'sample-a',
-    name: 'Sample A — Baseline Exposure',
+    name: 'Stage 1 — Deep Violet / Purple (Fresh Baseline)',
     badgeId: 'DS-1042',
     workerName: 'Arjun Kumar',
-    dosePpmH: 0.18,
+    dosePpmH: 0.14,
     status: 'NORMAL',
-    confidenceScore: 95,
-    description: 'Minimal chemical shift observed. Safe operational range within standard 8-hour shift limits.',
-    stripColorHex: '#d4c5a9',
-    stripColorBg: 'bg-[#d4c5a9]',
-    tempC: 28,
-    humidityPercent: 62,
-    sampleTag: 'Sample A: 0.18 ppm·h (NORMAL)'
+    confidenceScore: 96,
+    description: 'Pristine unreacted Cu(II)-PAN complex. Minimal chemical displacement; safe operational shift baseline.',
+    stripColorHex: '#5C3A7A',
+    stripColorBg: 'bg-[#5C3A7A]',
+    tempC: 25,
+    humidityPercent: 50,
+    sampleTag: 'Stage 1: 0.14 ppm·h (NORMAL)'
   },
   {
     id: 'sample-b',
-    name: 'Sample B — Moderately Elevated Exposure',
+    name: 'Stage 2 — Violet-Purple (Low Exposure)',
+    badgeId: 'DS-1088',
+    workerName: 'Rahul Shetty',
+    dosePpmH: 0.24,
+    status: 'NORMAL',
+    confidenceScore: 94,
+    description: 'Initial sulfide displacement on Cu-PAN strip. Well within safe 8-hour shift limits.',
+    stripColorHex: '#804476',
+    stripColorBg: 'bg-[#804476]',
+    tempC: 27,
+    humidityPercent: 55,
+    sampleTag: 'Stage 2: 0.24 ppm·h (NORMAL)'
+  },
+  {
+    id: 'sample-c',
+    name: 'Stage 3 — Reddish-Pink / New York Pink (Intermediate)',
     badgeId: 'DS-1088',
     workerName: 'Rahul Shetty',
     dosePpmH: 0.72,
     status: 'MONITOR',
     confidenceScore: 92,
-    description: 'Moderate color change indicating accumulated H₂S exposure over shift. Monitoring recommended.',
-    stripColorHex: '#8c6d48',
-    stripColorBg: 'bg-[#8c6d48]',
+    description: 'Characteristic intermediate Cu-PAN pink transition. Approaching 1.00 ppm·h shift action level.',
+    stripColorHex: '#AF5569',
+    stripColorBg: 'bg-[#AF5569]',
     tempC: 29,
     humidityPercent: 67,
-    sampleTag: 'Sample B: 0.72 ppm·h (MONITOR)'
+    sampleTag: 'Stage 3: 0.72 ppm·h (MONITOR)'
   },
   {
-    id: 'sample-c',
-    name: 'Sample C — High Exposure Flag',
+    id: 'sample-d',
+    name: 'Stage 4 — Orange / Amber-Orange (Elevated Review)',
     badgeId: 'DS-1091',
     workerName: 'Sanjay Rao',
     dosePpmH: 1.24,
     status: 'REVIEW',
     confidenceScore: 89,
-    description: 'Significant dark silver sulfide formation on colorimetric strip. Exceeds internal target threshold.',
-    stripColorHex: '#3a2e2b',
-    stripColorBg: 'bg-[#3a2e2b]',
+    description: 'Significant Cu(II) demetallation. Exceeds 1.00 ppm·h shift threshold. Prototype Review Alert triggered.',
+    stripColorHex: '#CD6E44',
+    stripColorBg: 'bg-[#CD6E44]',
     tempC: 31,
     humidityPercent: 71,
-    sampleTag: 'Sample C: 1.24 ppm·h (REVIEW)'
+    sampleTag: 'Stage 4: 1.24 ppm·h (REVIEW)'
+  },
+  {
+    id: 'sample-e',
+    name: 'Stage 5 — Yellow / Yellow-Orange (Critical Review)',
+    badgeId: 'DS-1091',
+    workerName: 'Sanjay Rao',
+    dosePpmH: 1.99,
+    status: 'REVIEW',
+    confidenceScore: 91,
+    description: 'Full displacement to free neutral H-PAN dye. 1.99 ppm·h detected. Prototype Review Alert to Mira Patel.',
+    stripColorHex: '#EBB92A',
+    stripColorBg: 'bg-[#EBB92A]',
+    tempC: 34,
+    humidityPercent: 75,
+    sampleTag: 'Stage 5: 1.99 ppm·h (REVIEW)'
   }
 ];
 
@@ -203,14 +233,14 @@ export const INITIAL_READINGS: ExposureReading[] = [
     workerId: 'WRK-1042',
     workerName: 'Arjun Kumar',
     badgeId: 'DS-1042',
-    dosePpmH: 0.18,
+    dosePpmH: 0.14,
     status: 'NORMAL',
     shift: 'Morning · 06:00–14:00',
-    confidenceScore: 95,
+    confidenceScore: 96,
     location: 'CDU Unit 1 - Deck B',
-    tempC: 28,
-    humidityPercent: 62,
-    stripColorHex: '#d4c5a9',
+    tempC: 25,
+    humidityPercent: 50,
+    stripColorHex: '#5C3A7A',
     isDemo: true
   },
   {
@@ -227,7 +257,7 @@ export const INITIAL_READINGS: ExposureReading[] = [
     location: 'Hydrocracker Unit 2',
     tempC: 29,
     humidityPercent: 67,
-    stripColorHex: '#8c6d48',
+    stripColorHex: '#AF5569',
     isDemo: true
   },
   {
@@ -237,14 +267,14 @@ export const INITIAL_READINGS: ExposureReading[] = [
     workerId: 'WRK-3012',
     workerName: 'Sanjay Rao',
     badgeId: 'DS-1091',
-    dosePpmH: 1.24,
+    dosePpmH: 1.99,
     status: 'REVIEW',
     shift: 'Morning · 06:00–14:00',
-    confidenceScore: 89,
+    confidenceScore: 91,
     location: 'Sulfur Recovery Unit (SRU)',
     tempC: 31,
     humidityPercent: 71,
-    stripColorHex: '#3a2e2b',
+    stripColorHex: '#EBB92A',
     isDemo: true
   },
   {
@@ -261,7 +291,7 @@ export const INITIAL_READINGS: ExposureReading[] = [
     location: 'QA Central Lab',
     tempC: 25,
     humidityPercent: 55,
-    stripColorHex: '#ded5c1',
+    stripColorHex: '#5C3A7A',
     isDemo: true
   }
 ];
@@ -272,18 +302,23 @@ export const SHIFT_TREND_DATA = [
   { time: '09:00', avgDose: 0.19, maxDose: 0.42, scannedCount: 22 },
   { time: '10:30', avgDose: 0.35, maxDose: 0.88, scannedCount: 33 },
   { time: '12:00', avgDose: 0.44, maxDose: 1.24, scannedCount: 42 },
-  { time: '13:30', avgDose: 0.48, maxDose: 1.24, scannedCount: 46 }
+  { time: '13:30', avgDose: 0.52, maxDose: 1.99, scannedCount: 46 }
 ];
 
 export const INITIAL_ALERTS: AlertItem[] = [
   {
     id: 'alt-1',
     type: 'REVIEW',
-    title: 'DS-1091 requires exposure review',
-    description: 'Sanjay Rao recorded 1.24 ppm·h cumulative exposure at SRU area.',
+    title: 'Prototype Review Alert: DS-1091',
+    description: 'Sanjay Rao (WRK-3012) recorded 1.99 ppm·h at 31°C, 71% RH. Action: Review exposure and verify workplace conditions.',
     badgeId: 'DS-1091',
     workerId: 'WRK-3012',
-    timestamp: '11:29'
+    timestamp: '11:29',
+    safetyOfficer: 'Mira Patel',
+    actionRequired: 'Review exposure and verify workplace conditions.',
+    dosePpmH: 1.99,
+    tempC: 31,
+    humidityPercent: 71
   },
   {
     id: 'alt-2',
@@ -292,15 +327,19 @@ export const INITIAL_ALERTS: AlertItem[] = [
     description: 'DS-1077 (3 days remaining) and DS-1115 (5 days remaining) require re-issuance.',
     badgeId: 'DS-1077',
     workerId: 'WRK-4055',
-    timestamp: '10:55'
+    timestamp: '10:55',
+    safetyOfficer: 'Mira Patel',
+    actionRequired: 'Inspect dosimeter validity and reissue if necessary.'
   },
   {
     id: 'alt-3',
     type: 'INCREASE',
-    title: 'Rahul Shetty exposure increased 18%',
-    description: 'Shift reading escalated from 0.61 to 0.72 ppm·h during post-maintenance check.',
+    title: 'Rahul Shetty exposure increased to 0.72 ppm·h',
+    description: 'Shift reading reached 0.72 ppm·h (Action Level). Wear breathing protection on high-elevation decks.',
     badgeId: 'DS-1088',
     workerId: 'WRK-2048',
-    timestamp: '11:37'
+    timestamp: '11:37',
+    safetyOfficer: 'Mira Patel',
+    actionRequired: 'Verify area ventilation on Cat-Cracking Deck B.'
   }
 ];

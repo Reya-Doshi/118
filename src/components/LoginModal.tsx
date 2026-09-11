@@ -58,11 +58,11 @@ const PRESET_PERSONNEL: PresetPersonnel[] = [
   },
   {
     id: 'usr_officer_01',
-    name: 'Kavita Sharma',
+    name: 'Mira Patel',
     role: 'OFFICER',
     employeeId: 'HSE-4012',
     department: 'Plant HSE & Safety Audit',
-    avatarText: 'KS',
+    avatarText: 'MP',
     designation: 'Lead Safety Auditor',
     workLocation: 'Central HSE Control Center',
     shift: 'General · 08:00–17:00',

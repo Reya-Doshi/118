@@ -160,23 +160,37 @@ def process_wristband_analysis(
             action_note = "Dosimeter exceeds 90-day chemical shelf-life. Strip invalidated; reissue wristband."
         elif estimated_dose < DOSE_NORMAL_MAX:
             status = "NORMAL"
-            action_note = f"Safe working environment (<{DOSE_NORMAL_MAX:.2f} ppm·h). Continue normal shift operations."
+            action_note = f"Safe working baseline (<{DOSE_NORMAL_MAX:.2f} ppm·h). Continue routine shift protocol."
         elif estimated_dose <= DOSE_MONITOR_MAX:
             status = "MONITOR"
             action_note = f"Action level reached ({DOSE_NORMAL_MAX:.2f}–{DOSE_MONITOR_MAX:.2f} ppm·h). Verify ventilation & limit further exposure."
         else:
             status = "REVIEW"
-            action_note = f"Permissible exposure limit exceeded (>{DOSE_MONITOR_MAX:.2f} ppm·h). Immediate safety evacuation & medical review required."
+            action_note = "Review exposure and verify workplace conditions."
+
+        is_review_alert = status == "REVIEW"
 
         # 6. Structured JSON Response (Matching user specifications with scientific metadata)
         response_payload = {
             "estimated_exposure_ppm_h": round(estimated_dose, 2),
             "status": status,
+            "safety_officer_alert": {
+                "alert_generated": is_review_alert,
+                "alert_label": "Prototype Review Alert",
+                "safety_officer": "Mira Patel",
+                "status": status,
+                "estimated_exposure_ppm_h": round(estimated_dose, 2),
+                "temperature": float(temperature),
+                "humidity": float(humidity),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "action": "Review exposure and verify workplace conditions." if is_review_alert else action_note,
+                "regulatory_notice": "Prototype dosimeter internal threshold alert. Not an official regulatory evacuation limit."
+            },
             "threshold_meta": {
                 "type": "PROTOTYPE_SIMULATED_CONSERVATIVE",
                 "normal_limit_ppm_h": DOSE_NORMAL_MAX,
                 "monitor_limit_ppm_h": DOSE_MONITOR_MAX,
-                "regulatory_notice": "Prototype dosimeter shift thresholds. Not an official OSHA regulatory PEL standard."
+                "regulatory_notice": "Prototype Review Alert threshold. Not an official regulatory evacuation limit."
             },
             "confidence": {
                 "optical_quality_score": float(np.round(quality_data.get("quality_score", 0.95), 2)),

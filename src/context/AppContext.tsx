@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Worker, ExposureReading, DemoSample, PageView, UserProfile } from '../types';
-import { INITIAL_WORKERS, INITIAL_READINGS, DEMO_SAMPLES } from '../data/mockData';
+import type { Worker, ExposureReading, DemoSample, PageView, UserProfile, AlertItem } from '../types';
+import { INITIAL_WORKERS, INITIAL_READINGS, DEMO_SAMPLES, INITIAL_ALERTS } from '../data/mockData';
 
 interface AppContextType {
   activePage: PageView;
@@ -15,6 +15,8 @@ interface AppContextType {
   setCurrentUser: (user: UserProfile | null) => void;
   workers: Worker[];
   readings: ExposureReading[];
+  alerts: AlertItem[];
+  setAlerts: React.Dispatch<React.SetStateAction<AlertItem[]>>;
   latestReading: ExposureReading | null;
   setLatestReading: (reading: ExposureReading | null) => void;
   selectedSample: DemoSample;
@@ -31,15 +33,16 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_WORKERS_KEY = '118_workers_v1';
 const STORAGE_READINGS_KEY = '118_readings_v1';
+const STORAGE_ALERTS_KEY = '118_alerts_v1';
 const STORAGE_USER_KEY = '118_user_profile_v1';
 
 const DEFAULT_USER: UserProfile = {
   id: 'usr_officer_01',
-  name: 'K. Sharma',
+  name: 'Mira Patel',
   role: 'OFFICER',
   employeeId: 'HSE-4012',
   department: 'Plant HSE & Safety Audit',
-  avatarText: 'KS'
+  avatarText: 'MP'
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -76,6 +79,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   });
 
+  const [alerts, setAlerts] = useState<AlertItem[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_ALERTS_KEY);
+      return saved ? JSON.parse(saved) : INITIAL_ALERTS;
+    } catch {
+      return INITIAL_ALERTS;
+    }
+  });
+
   const [latestReading, setLatestReading] = useState<ExposureReading | null>(readings[0] || null);
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -96,6 +108,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       console.error('Failed to save readings to localStorage', e);
     }
   }, [readings]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_ALERTS_KEY, JSON.stringify(alerts));
+    } catch (e) {
+      console.error('Failed to save alerts to localStorage', e);
+    }
+  }, [alerts]);
 
   useEffect(() => {
     try {
@@ -145,15 +165,37 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       })
     );
 
-    showToast(`Reading saved for ${newReading.workerName} (${newReading.badgeId}): ${newReading.dosePpmH} ppm·h [${newReading.status}]`);
+    // 3. Auto-generate Safety Officer Prototype Review Alert if dose > 1.00 ppm·h or status is REVIEW
+    if (newReading.status === 'REVIEW' || newReading.dosePpmH > 1.00) {
+      const reviewAlert: AlertItem = {
+        id: `alt-${Date.now()}`,
+        type: 'REVIEW',
+        title: `Prototype Review Alert: ${newReading.badgeId}`,
+        description: `${newReading.workerName} (${newReading.workerId}) recorded ${newReading.dosePpmH.toFixed(2)} ppm·h at ${newReading.tempC}°C, ${newReading.humidityPercent}% RH. Action: Review exposure and verify workplace conditions.`,
+        badgeId: newReading.badgeId,
+        workerId: newReading.workerId,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        safetyOfficer: 'Mira Patel',
+        actionRequired: 'Review exposure and verify workplace conditions.',
+        dosePpmH: newReading.dosePpmH,
+        tempC: newReading.tempC,
+        humidityPercent: newReading.humidityPercent
+      };
+      setAlerts(prev => [reviewAlert, ...prev]);
+      showToast(`PROTOTYPE REVIEW ALERT created for Safety Officer Mira Patel (${newReading.badgeId}: ${newReading.dosePpmH} ppm·h)`);
+    } else {
+      showToast(`Reading saved for ${newReading.workerName} (${newReading.badgeId}): ${newReading.dosePpmH} ppm·h [${newReading.status}]`);
+    }
   };
 
   const resetDemoData = () => {
     setWorkers(INITIAL_WORKERS);
     setReadings(INITIAL_READINGS);
+    setAlerts(INITIAL_ALERTS);
     setLatestReading(INITIAL_READINGS[0]);
     localStorage.removeItem(STORAGE_WORKERS_KEY);
     localStorage.removeItem(STORAGE_READINGS_KEY);
+    localStorage.removeItem(STORAGE_ALERTS_KEY);
     showToast('Demo data reset to initial shift state.');
   };
 
@@ -172,6 +214,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setCurrentUser,
         workers,
         readings,
+        alerts,
+        setAlerts,
         latestReading,
         setLatestReading,
         selectedSample,

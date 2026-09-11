@@ -88,6 +88,11 @@ export interface AlertItem {
   badgeId: string;
   workerId: string;
   timestamp: string;
+  safetyOfficer?: string;
+  actionRequired?: string;
+  dosePpmH?: number;
+  tempC?: number;
+  humidityPercent?: number;
 }
 
 export type PageView = 'landing' | 'dashboard' | 'worker-dashboard' | 'scan' | 'result' | 'workers' | 'history' | 'calibration';

@@ -12,7 +12,7 @@ export const DEMO_USERS: User[] = [
   },
   {
     id: 'usr-safety-1',
-    name: 'Inspector Meera Patel',
+    name: 'Mira Patel',
     email: 'm.patel@refinery-safety.io',
     phone: '+91 98765 88990',
     role: 'SAFETY_OFFICER',
@@ -31,24 +31,41 @@ export const DEMO_USERS: User[] = [
 export const DEMO_SAMPLES: DemoSampleBadge[] = [
   {
     id: 'sample-1',
-    label: 'Normal Exposure (0.18 ppm·h)',
+    label: 'Stage 1: Fresh Baseline (0.14 ppm·h)',
     bandId: 'DS-1042',
     workerId: 'WRK-1042',
     workerName: 'Arjun Kumar',
     workLocation: 'CDU Column Platform Deck 4',
-    estimatedDose: 0.18,
+    estimatedDose: 0.14,
     status: 'NORMAL',
-    confidence: 95,
-    temperature: 28,
-    humidity: 62,
+    confidence: 96,
+    temperature: 25,
+    humidity: 50,
     shelfAgeDays: 14,
-    colorHex: '#d4c5a9',
+    colorHex: '#5C3A7A',
     isExpired: false,
-    description: 'Minimal chemical shift. Safe operational baseline.'
+    description: 'Pristine unreacted Cu(II)-PAN complex. Deep violet baseline.'
   },
   {
     id: 'sample-2',
-    label: 'Monitor Exposure (0.72 ppm·h)',
+    label: 'Stage 2: Low Exposure (0.24 ppm·h)',
+    bandId: 'DS-1088',
+    workerId: 'WRK-2048',
+    workerName: 'Rahul Shetty',
+    workLocation: 'Hydrocracker Unit 2 - Reactor Top Deck',
+    estimatedDose: 0.24,
+    status: 'NORMAL',
+    confidence: 94,
+    temperature: 27,
+    humidity: 55,
+    shelfAgeDays: 20,
+    colorHex: '#804476',
+    isExpired: false,
+    description: 'Initial sulfide displacement. Violet-purple appearance.'
+  },
+  {
+    id: 'sample-3',
+    label: 'Stage 3: Intermediate Action Level (0.72 ppm·h)',
     bandId: 'DS-1088',
     workerId: 'WRK-2048',
     workerName: 'Rahul Shetty',
@@ -56,16 +73,16 @@ export const DEMO_SAMPLES: DemoSampleBadge[] = [
     estimatedDose: 0.72,
     status: 'MONITOR',
     confidence: 92,
-    temperature: 32,
-    humidity: 68,
+    temperature: 29,
+    humidity: 67,
     shelfAgeDays: 24,
-    colorHex: '#8c6d48',
+    colorHex: '#AF5569',
     isExpired: false,
-    description: 'Moderate silver sulfide darkening. Intermediate action level.'
+    description: 'Reddish-pink transition. Action level reached (0.50-1.00 ppm·h).'
   },
   {
-    id: 'sample-3',
-    label: 'High Review Exposure (1.24 ppm·h)',
+    id: 'sample-4',
+    label: 'Stage 4: Elevated Review (1.24 ppm·h)',
     bandId: 'DS-1091',
     workerId: 'WRK-3012',
     workerName: 'Sanjay Rao',
@@ -73,29 +90,29 @@ export const DEMO_SAMPLES: DemoSampleBadge[] = [
     estimatedDose: 1.24,
     status: 'REVIEW',
     confidence: 89,
-    temperature: 34,
+    temperature: 31,
     humidity: 71,
     shelfAgeDays: 32,
-    colorHex: '#3a2e2b',
+    colorHex: '#CD6E44',
     isExpired: false,
-    description: 'Dark silver sulfide layer. Exceeds shift internal target.'
+    description: 'Orange/amber-orange strip. Exceeds 1.00 ppm·h. Prototype Review Alert.'
   },
   {
-    id: 'sample-4',
-    label: 'Expired Badge (>90 Days Shelf Life)',
-    bandId: 'DS-1077',
-    workerId: 'WRK-4055',
-    workerName: 'Vikram Singh',
-    workLocation: 'Amine Treating Absorber Base',
-    estimatedDose: 0.0,
+    id: 'sample-5',
+    label: 'Stage 5: High Critical (1.99 ppm·h)',
+    bandId: 'DS-1091',
+    workerId: 'WRK-3012',
+    workerName: 'Sanjay Rao',
+    workLocation: 'Sulfur Recovery Unit - Tail Gas Treater',
+    estimatedDose: 1.99,
     status: 'REVIEW',
-    confidence: 65,
-    temperature: 31,
-    humidity: 70,
-    shelfAgeDays: 94,
-    colorHex: '#8a7d65',
-    isExpired: true,
-    description: 'Badge shelf age exceeded 90 days. Chemical matrix expired.'
+    confidence: 91,
+    temperature: 34,
+    humidity: 75,
+    shelfAgeDays: 35,
+    colorHex: '#EBB92A',
+    isExpired: false,
+    description: 'Yellow/yellow-orange saturated strip. Prototype Review Alert to Mira Patel.'
   }
 ];
 
@@ -672,8 +689,8 @@ class DosimeterRepository {
       };
     }
 
-    // Auto generate alert if threshold breached
-    if (newReading.status === 'REVIEW') {
+    // Auto generate alert if threshold breached (> 1.00 ppm·h or REVIEW)
+    if (newReading.status === 'REVIEW' || newReading.estimatedDose > 1.00) {
       this.alerts.unshift({
         alertId: `alt-${Date.now().toString().slice(-4)}`,
         workerId: newReading.workerId,
@@ -681,7 +698,7 @@ class DosimeterRepository {
         readingId: newReading.readingId,
         bandId: newReading.bandId,
         severity: 'CRITICAL',
-        message: `${newReading.workerName} recorded high exposure of ${newReading.estimatedDose} ppm·h on band ${newReading.bandId} [${newReading.scanType === 'OFFICER_FIELD_AUDIT' ? 'Officer Audit' : 'Personal Scan'}].`,
+        message: `Prototype Review Alert: ${newReading.workerName} (${newReading.workerId}) recorded ${newReading.estimatedDose.toFixed(2)} ppm·h on band ${newReading.bandId} at ${newReading.temperature || 25}°C, ${newReading.humidity || 50}% RH. Action: Review exposure and verify workplace conditions. Safety Officer: Mira Patel.`,
         timestamp: 'Just now',
         resolved: false
       });
