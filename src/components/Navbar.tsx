@@ -11,7 +11,8 @@ import {
   X,
   ChevronRight,
   LogIn,
-  Users
+  Users,
+  User
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -142,17 +143,45 @@ export const Navbar: React.FC = () => {
                 <span>Read Wristband</span>
               </button>
 
-              <button
-                onClick={() => handleNavClick('dashboard')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
-                  activePage === 'dashboard'
-                    ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
-                    : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
-                }`}
-              >
-                <LayoutDashboard className="w-3.5 h-3.5" />
-                <span>Dashboard</span>
-              </button>
+              {currentUser?.role === 'WORKER' ? (
+                <>
+                  <button
+                    onClick={() => handleNavClick('worker-dashboard')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'worker-dashboard'
+                        ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <User className="w-3.5 h-3.5" />
+                    <span>My Dashboard</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('dashboard')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'dashboard'
+                        ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <LayoutDashboard className="w-3.5 h-3.5" />
+                    <span>Plant Safety</span>
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => handleNavClick('dashboard')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    activePage === 'dashboard'
+                      ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                      : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                  }`}
+                >
+                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  <span>Dashboard</span>
+                </button>
+              )}
 
               <button
                 onClick={() => handleNavClick('workers')}
@@ -310,20 +339,54 @@ export const Navbar: React.FC = () => {
                 <ChevronRight className="w-4 h-4 opacity-70" />
               </button>
 
-              <button
-                onClick={() => handleNavClick('dashboard')}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                  activePage === 'dashboard'
-                    ? 'bg-[#4F5D4B] text-[#F6F1E7]'
-                    : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <LayoutDashboard className="w-4 h-4" />
-                  <span>Safety Dashboard</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-[#878377]" />
-              </button>
+              {currentUser?.role === 'WORKER' ? (
+                <>
+                  <button
+                    onClick={() => handleNavClick('worker-dashboard')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                      activePage === 'worker-dashboard'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#292925] bg-[#EDE5D6]/50 hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4 text-[#71806B]" />
+                      <span>My Operator Dashboard</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 opacity-70" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('dashboard')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                      activePage === 'dashboard'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <LayoutDashboard className="w-4 h-4" />
+                      <span>Plant Safety Overview</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => handleNavClick('dashboard')}
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                    activePage === 'dashboard'
+                      ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                      : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <LayoutDashboard className="w-4 h-4" />
+                    <span>Safety Dashboard</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-[#878377]" />
+                </button>
+              )}
 
               <button
                 onClick={() => handleNavClick('workers')}

@@ -6,6 +6,7 @@ import { ExplanationModal } from './components/ExplanationModal';
 import { LoginModal } from './components/LoginModal';
 import { LandingPage } from './pages/LandingPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { WorkerDashboardPage } from './pages/WorkerDashboardPage';
 import { ScanPage } from './pages/ScanPage';
 import { ResultPage } from './pages/ResultPage';
 import { CalibrationPage } from './pages/CalibrationPage';
@@ -37,6 +38,7 @@ const MainContent: React.FC = () => {
       }`}>
         {activePage === 'landing' && <LandingPage />}
         {activePage === 'dashboard' && <DashboardPage />}
+        {activePage === 'worker-dashboard' && <WorkerDashboardPage />}
         {activePage === 'scan' && <ScanPage />}
         {activePage === 'result' && <ResultPage />}
         {activePage === 'calibration' && <CalibrationPage />}

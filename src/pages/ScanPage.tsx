@@ -19,12 +19,36 @@ import {
 } from 'lucide-react';
 
 export const ScanPage: React.FC = () => {
-  const { selectedSample, setLatestReading, setActivePage, workers } = useApp();
+  const { selectedSample, setLatestReading, setActivePage, workers, currentUser, selectedWorker } = useApp();
   
   const [activeSampleId, setActiveSampleId] = useState<string>(selectedSample.id || 'DS-006');
   const activeCalibration = CALIBRATION_DATASET.find(s => s.sampleId === activeSampleId) || CALIBRATION_DATASET[5];
   
-  const [assignedWorkerId, setAssignedWorkerId] = useState<string>(workers[0]?.workerId || 'WRK-2048');
+  const [assignedWorkerId, setAssignedWorkerId] = useState<string>(() => {
+    if (selectedWorker) return selectedWorker.workerId;
+    if (currentUser?.role === 'WORKER') {
+      const matched = workers.find(
+        w => w.workerId === currentUser.employeeId || 
+             w.badgeId === currentUser.assignedBandId || 
+             w.name.toLowerCase() === currentUser.name.toLowerCase()
+      );
+      if (matched) return matched.workerId;
+    }
+    return workers[0]?.workerId || 'WRK-2048';
+  });
+
+  useEffect(() => {
+    if (selectedWorker) {
+      setAssignedWorkerId(selectedWorker.workerId);
+    } else if (currentUser?.role === 'WORKER') {
+      const matched = workers.find(
+        w => w.workerId === currentUser.employeeId || 
+             w.badgeId === currentUser.assignedBandId || 
+             w.name.toLowerCase() === currentUser.name.toLowerCase()
+      );
+      if (matched) setAssignedWorkerId(matched.workerId);
+    }
+  }, [selectedWorker, currentUser, workers]);
   const [customImage, setCustomImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(0);

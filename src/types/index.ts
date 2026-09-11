@@ -90,7 +90,7 @@ export interface AlertItem {
   timestamp: string;
 }
 
-export type PageView = 'landing' | 'dashboard' | 'scan' | 'result' | 'workers' | 'history' | 'calibration';
+export type PageView = 'landing' | 'dashboard' | 'worker-dashboard' | 'scan' | 'result' | 'workers' | 'history' | 'calibration';
 
 export type UserRole = 'WORKER' | 'OFFICER' | 'ADMIN';
 
@@ -102,4 +102,7 @@ export interface UserProfile {
   department: string;
   assignedBandId?: string;
   avatarText: string;
+  designation?: string;
+  workLocation?: string;
+  shift?: string;
 }
