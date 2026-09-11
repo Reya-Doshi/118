@@ -13,6 +13,7 @@
     "mobile:dev": "npm --prefix mobile run dev",
     "mobile:build": "npm --prefix mobile run build",
     "mobile:test": "python scripts/test_mobile_android_e2e.py",
+    "prototype:test": "python scripts/test_physical_prototypes.py",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
