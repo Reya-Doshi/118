@@ -27,8 +27,33 @@ import base64
 import cv2
 import numpy as np
 
-# Load environment variable if present
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+# Load backend server-side .env file if present
+def _load_server_env():
+    env_paths = [
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".env")),
+        os.path.abspath(os.path.join(os.getcwd(), ".env"))
+    ]
+    for env_path in env_paths:
+        if os.path.exists(env_path):
+            try:
+                with open(env_path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith("#") and "=" in line:
+                            k, v = line.split("=", 1)
+                            k = k.strip()
+                            v = v.strip().strip("'\"")
+                            if k and k not in os.environ:
+                                os.environ[k] = v
+            except Exception:
+                pass
+
+_load_server_env()
+
+def get_gemini_api_key():
+    _load_server_env()
+    return os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+
 
 GEMINI_SYSTEM_PROMPT = """
 You are a precision computer-vision localization and quality-inspection assistant for an industrial passive chemical dosimeter wristband (RageB8 Cu-PAN H2S Dosimeter).
@@ -179,10 +204,8 @@ def analyze_wristband_with_gemini(image_path, api_key=None):
     """
     Sends wristband image to Gemini Vision solely for localization & quality audit.
     Falls back gracefully to OpenCV if API key is missing or call fails.
-
-    Returns structured JSON dict.
     """
-    key = api_key or os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    key = api_key or get_gemini_api_key()
 
     img_bgr = cv2.imread(image_path)
     if img_bgr is None:
@@ -200,64 +223,65 @@ def analyze_wristband_with_gemini(image_path, api_key=None):
 
     import requests
 
-    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={key}"
-    payload = {
-        "contents": [
-            {
-                "parts": [
-                    {"text": GEMINI_SYSTEM_PROMPT},
-                    {
-                        "inline_data": {
-                            "mime_type": "image/jpeg",
-                            "data": b64_image
-                        }
-                    },
-                    {"text": "Analyze this wristband dosimeter image. Output strictly the requested JSON."}
-                ]
+    models_to_try = ["gemini-3.5-flash", "gemini-3.7-flash", "gemini-3.6-flash", "gemini-flash-latest"]
+    last_err = ""
+
+    for model_name in models_to_try:
+        endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={key}"
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {"text": GEMINI_SYSTEM_PROMPT},
+                        {
+                            "inline_data": {
+                                "mime_type": "image/jpeg",
+                                "data": b64_image
+                            }
+                        },
+                        {"text": "Analyze this wristband dosimeter image. Output strictly the requested JSON."}
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "temperature": 0.1,
+                "responseMimeType": "application/json"
             }
-        ],
-        "generationConfig": {
-            "temperature": 0.1,
-            "responseMimeType": "application/json"
         }
-    }
 
-    try:
-        response = requests.post(endpoint, json=payload, timeout=12)
-        if response.status_code == 200:
-            resp_json = response.json()
-            raw_text = resp_json["candidates"][0]["content"]["parts"][0]["text"].strip()
-            # Clean possible markdown wrapping
-            if raw_text.startswith("```json"):
-                raw_text = raw_text[7:]
-            if raw_text.startswith("```"):
-                raw_text = raw_text[3:]
-            if raw_text.endswith("```"):
-                raw_text = raw_text[:-3]
+        try:
+            response = requests.post(endpoint, json=payload, timeout=25)
+            if response.status_code == 200:
+                resp_json = response.json()
+                raw_text = resp_json["candidates"][0]["content"]["parts"][0]["text"].strip()
+                if raw_text.startswith("```json"):
+                    raw_text = raw_text[7:]
+                if raw_text.startswith("```"):
+                    raw_text = raw_text[3:]
+                if raw_text.endswith("```"):
+                    raw_text = raw_text[:-3]
 
-            parsed = json.loads(raw_text.strip())
-            parsed["provider"] = "Gemini Vision API (gemini-1.5-flash)"
+                parsed = json.loads(raw_text.strip())
+                parsed["provider"] = f"Gemini Vision API ({model_name})"
 
-            # Compute pixel boxes from normalized bounding boxes
-            s_norm = parsed.get("bounding_boxes", {}).get("sensing_strip")
-            r_norm = parsed.get("bounding_boxes", {}).get("reference_scale")
+                s_norm = parsed.get("bounding_boxes", {}).get("sensing_strip")
+                r_norm = parsed.get("bounding_boxes", {}).get("reference_scale")
 
-            s_pixel = _normalize_box_to_pixels(s_norm, W, H)
-            r_pixel = _normalize_box_to_pixels(r_norm, W, H)
+                s_pixel = _normalize_box_to_pixels(s_norm, W, H)
+                r_pixel = _normalize_box_to_pixels(r_norm, W, H)
 
-            parsed["pixel_boxes"] = {
-                "sensing_strip": s_pixel,
-                "reference_scale": r_pixel
-            }
-            return parsed
-        else:
-            # Fallback on non-200 response
-            fb = _opencv_fallback_detection(img_bgr, filename=image_path)
-            fb["fallback_reason"] = f"Gemini API HTTP {response.status_code}: {response.text[:120]}"
-            return fb
+                parsed["pixel_boxes"] = {
+                    "sensing_strip": s_pixel,
+                    "reference_scale": r_pixel
+                }
+                return parsed
+            else:
+                last_err = f"Gemini API HTTP {response.status_code}: {response.text[:120]}"
+                continue
+        except Exception as e:
+            last_err = f"Gemini API exception: {str(e)}"
+            continue
 
-    except Exception as e:
-        # Fallback on connection/parsing exception
-        fb = _opencv_fallback_detection(img_bgr, filename=image_path)
-        fb["fallback_reason"] = f"Gemini API exception: {str(e)}"
-        return fb
+    # If all API calls failed, engage OpenCV spatial fallback
+    fb = _opencv_fallback_detection(img_bgr, filename=image_path)
+    return fb
