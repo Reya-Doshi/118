@@ -29,7 +29,7 @@ export const LoginView: React.FC = () => {
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-serif font-bold text-[#292925] leading-none">118 Companion</h2>
+            <h2 className="text-lg font-serif font-bold text-[#292925] leading-none">SARVAS</h2>
             <span className="text-[10px] text-[#71806B] font-mono tracking-wider font-semibold">DOSIMETER PLATFORM</span>
           </div>
         </div>

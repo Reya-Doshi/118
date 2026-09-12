@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">118 Safety</string>
-    <string name="title_activity_main">118 Safety Companion</string>
+    <string name="app_name">SARVAS</string>
+    <string name="title_activity_main">SARVAS</string>
     <string name="package_name">com.sih.dosimeter118</string>
     <string name="custom_url_scheme">com.sih.dosimeter118</string>
 </resources>

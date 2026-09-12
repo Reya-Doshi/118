@@ -33,15 +33,15 @@ export const SplashView: React.FC<SplashViewProps> = ({ onComplete }) => {
         </div>
 
         <h1 className="text-3xl font-serif font-bold text-[#292925] tracking-tight mb-2">
-          118 DOSIMETER
+          SARVAS
         </h1>
-        <p className="text-xs text-[#5D5B53] font-medium uppercase tracking-wider mb-4">
-          Passive Colorimetric H₂S Exposure
+        <p className="text-xs text-[#5D5B53] font-medium uppercase tracking-wider mb-3">
+          Intelligent Cumulative H₂S Dosimetry
         </p>
 
         <div className="w-24 h-0.5 bg-[#D8D0C2] my-2"></div>
-        <p className="text-[12px] text-[#878377] leading-relaxed">
-          AI-Assisted Quantitative Colorimetric Reading Platform
+        <p className="text-[13px] text-[#71806B] font-medium italic leading-relaxed">
+          "Because not all danger announces itself."
         </p>
       </div>
 

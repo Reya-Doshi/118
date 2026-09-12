@@ -129,8 +129,8 @@ export const LandingPage: React.FC = () => {
 
             {/* Editorial Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.14] text-[#F6F1E7]">
-              Know the exposure. <br />
-              <span className="font-normal text-[#C2CBBF]">Not just the alarm.</span>
+              Because not all danger <br />
+              <span className="font-normal text-[#C2CBBF]">announces itself.</span>
             </h1>
 
             {/* Subtext */}

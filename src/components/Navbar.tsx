@@ -95,7 +95,7 @@ export const Navbar: React.FC = () => {
               </div>
               <div>
                 <span className="text-xl font-bold tracking-tight block font-mono leading-none">
-                  118
+                  SARVAS
                 </span>
                 <span className={`text-[9px] font-mono tracking-wider mt-0.5 block ${
                   isTransparentOnHero ? 'text-[#EDE5D6]/80' : 'text-[#878377]'

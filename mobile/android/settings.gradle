@@ -1,2 +1,4 @@
 include ':app'
-rootProject.name = '118 Safety Companion'
+rootProject.name = 'SARVAS'
+
+apply from: 'capacitor.settings.gradle'
