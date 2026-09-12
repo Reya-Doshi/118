@@ -257,7 +257,30 @@ const MainAppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F1E7] text-[#292925] flex flex-col max-w-md mx-auto relative px-4 pt-3 pb-8">
+    <div className="min-h-screen bg-[#F6F1E7] text-[#292925] flex flex-col max-w-md mx-auto relative px-4 pt-2 pb-8">
+      {/* Top Branding Bar with 2nd Image Logo & PS-118 */}
+      <header className="flex items-center justify-between py-2 px-1 mb-2 border-b border-[#D8D0C2]/80">
+        <div className="flex items-center gap-2.5">
+          <img 
+            src="/sarvas_icon.png" 
+            alt="SARVAS Logo" 
+            className="w-8 h-8 rounded-lg object-contain bg-[#EDE5D6] p-0.5 border border-[#D8D0C2] shadow-2xs"
+          />
+          <div>
+            <div className="flex items-center gap-1.5 leading-none">
+              <span className="font-serif font-bold text-base text-[#292925] tracking-tight">SARVAS</span>
+              <span className="text-[9px] font-mono bg-[#71806B]/20 text-[#4F5D4B] px-1.5 py-0.5 rounded font-semibold">PS-118</span>
+            </div>
+            <span className="text-[9px] font-mono text-[#878377] block mt-0.5">SIH 2026 · Dosimeter</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] font-mono font-medium text-[#5D5B53] bg-[#EDE5D6] px-2 py-0.5 rounded border border-[#D8D0C2]">
+            {role ? role.replace('_', ' ') : 'OPERATOR'}
+          </span>
+        </div>
+      </header>
+
       {/* Main Viewport Content */}
       <main className="flex-1">
         {renderCurrentView()}

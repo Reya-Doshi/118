@@ -24,13 +24,15 @@ export const LoginView: React.FC = () => {
     <div className="min-h-screen bg-[#F6F1E7] flex flex-col justify-between p-6 max-w-md mx-auto">
       {/* Top Header */}
       <div className="pt-8 pb-4">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-8 h-8 rounded-lg bg-[#292925] flex items-center justify-center text-[#F6F1E7]">
-            <ShieldCheck className="w-5 h-5" />
-          </div>
+        <div className="flex items-center gap-2.5 mb-3">
+          <img 
+            src="/sarvas_icon.png" 
+            alt="SARVAS Emblem" 
+            className="w-10 h-10 rounded-xl object-contain bg-[#EDE5D6] p-1 border border-[#D8D0C2] shadow-2xs" 
+          />
           <div>
             <h2 className="text-lg font-serif font-bold text-[#292925] leading-none">SARVAS</h2>
-            <span className="text-[10px] text-[#71806B] font-mono tracking-wider font-semibold">DOSIMETER PLATFORM</span>
+            <span className="text-[10px] text-[#71806B] font-mono tracking-wider font-semibold">PS-118 · SIH 2026</span>
           </div>
         </div>
         <h1 className="text-2xl font-serif font-bold text-[#292925] tracking-tight">

@@ -83,16 +83,11 @@ export const Navbar: React.FC = () => {
               onClick={() => handleNavClick('landing')}
               className="flex items-center gap-2.5 group text-left focus:outline-none cursor-pointer"
             >
-              <div
-                className={`w-7 h-7 rounded flex items-center justify-center relative overflow-hidden transition-transform group-hover:scale-105 ${
-                  isTransparentOnHero ? 'bg-white/20 border border-white/30' : 'bg-[#292925]'
-                }`}
-              >
-                <div className="w-4 h-1.5 bg-[#71806B] rounded-xs flex items-center justify-between px-0.5">
-                  <div className="w-0.5 h-0.5 bg-[#EDE5D6] rounded-full" />
-                  <div className="w-0.5 h-0.5 bg-[#B08A55] rounded-full" />
-                </div>
-              </div>
+              <img
+                src="/sarvas_icon.png"
+                alt="SARVAS Emblem"
+                className="w-8 h-8 rounded-lg object-contain bg-[#EDE5D6] p-0.5 border border-[#D8D0C2] shadow-2xs group-hover:scale-105 transition-transform"
+              />
               <div>
                 <span className="text-xl font-bold tracking-tight block font-mono leading-none">
                   SARVAS
