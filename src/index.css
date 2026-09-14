@@ -2,27 +2,162 @@
 
 @layer base {
   :root {
-    --bg-ivory: #F6F1E7;
-    --bg-cream: #EDE5D6;
-    --text-charcoal: #292925;
-    --text-secondary: #5D5B53;
-    --text-muted: #878377;
-    
-    --accent-sage: #71806B;
-    --accent-olive: #4F5D4B;
-    --border-warm: #D8D0C2;
-    
-    --state-amber: #B08A55;
-    --state-brick: #9A6258;
+    /* Light Mode ("Analytical Clean Room & Precision Lab") */
+    --canvas-bg: #F7FAF4;
+    --canvas-grid: rgba(101, 120, 0, 0.05);
+    --card-surface: rgba(255, 255, 255, 0.88);
+    --card-surface-subtle: rgba(245, 248, 242, 0.92);
+    --card-border: rgba(132, 99, 40, 0.18);
+    --card-shadow: 0 10px 30px rgba(255, 149, 0, 0.06);
+    --card-glow-top: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+
+    --accent-primary: #607300; /* Deep Sulfuric Olive */
+    --accent-primary-hover: #4e5e00;
+    --accent-secondary: #D97706; /* Hazard Amber */
+    --accent-secondary-hover: #b45309;
+    --accent-reaction: #85581A; /* Chemical Bronze */
+    --accent-hazard: #DC2626; /* Bright Hazard Red */
+
+    --text-primary: #111612;
+    --text-secondary: #4B554D;
+    --text-muted: #6B766D;
+    --text-inverse: #F7FAF4;
+
+    --reticle-color: #607300;
+    --mouse-glow: rgba(217, 119, 6, 0.08);
+  }
+
+  .dark {
+    /* Dark Mode ("Refinery Flare & Sulfur Void") */
+    --canvas-bg: #080A0C;
+    --canvas-grid: rgba(223, 255, 0, 0.035);
+    --card-surface: rgba(16, 20, 24, 0.65);
+    --card-surface-subtle: rgba(12, 16, 20, 0.75);
+    --card-border: rgba(223, 255, 0, 0.12);
+    --card-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+    --card-glow-top: inset 0 1px 0 0 rgba(223, 255, 0, 0.22);
+
+    --accent-primary: #DFFF00; /* Electric Sulfur Chartreuse */
+    --accent-primary-hover: #CCFF00;
+    --accent-secondary: #FF9500; /* Refinery Flare Amber */
+    --accent-secondary-hover: #F59E0B;
+    --accent-reaction: #B38600; /* Oxidized PbS Gold/Bronze */
+    --accent-hazard: #FF3B30; /* Toxic Crimson */
+
+    --text-primary: #F4F6F0;
+    --text-secondary: #8E958F;
+    --text-muted: #5D635E;
+    --text-inverse: #080A0C;
+
+    --reticle-color: #DFFF00;
+    --mouse-glow: rgba(223, 255, 0, 0.06);
+  }
+
+  * {
+    border-color: var(--card-border);
   }
 
   body {
-    background-color: #F6F1E7;
-    color: #292925;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--canvas-bg);
+    color: var(--text-primary);
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
+
+  h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* 48px Refinery / Lab Grid Background */
+.bg-grid-refinery {
+  background-color: var(--canvas-bg);
+  background-size: 48px 48px;
+  background-image: 
+    linear-gradient(to right, var(--canvas-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--canvas-grid) 1px, transparent 1px);
+}
+
+/* Command Center Card Surface */
+.command-card {
+  background-color: var(--card-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow), var(--card-glow-top);
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+/* Interactive Mouse-Following Card Glow */
+.mouse-glow-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.mouse-glow-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    var(--mouse-glow),
+    transparent 40%
+  );
+  z-index: 1;
+}
+
+.mouse-glow-card:hover::before {
+  opacity: 1;
+}
+
+/* Pulse Reticle */
+@keyframes pingSlow {
+  0% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.18); opacity: 0.3; }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+
+.animate-ping-slow {
+  animation: pingSlow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Flowing SVG Beam */
+@keyframes beamFlow {
+  0% { stroke-dashoffset: 200; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.animate-beam {
+  stroke-dasharray: 12 8;
+  animation: beamFlow 1.6s linear infinite;
+}
+
+/* Staggered Fade-Up */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Custom Scrollbars */
@@ -31,12 +166,13 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #EDE5D6;
+  background: var(--canvas-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #D8D0C2;
+  background: var(--card-border);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #B8B0A2;
+  background: var(--accent-secondary);
 }
+

@@ -27,6 +27,9 @@ interface AppContextType {
   toastMessage: string | null;
   showToast: (msg: string) => void;
   resetDemoData: () => void;
+  theme: 'dark' | 'light';
+  setTheme: (theme: 'dark' | 'light') => void;
+  toggleTheme: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -91,6 +94,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [latestReading, setLatestReading] = useState<ExposureReading | null>(readings[0] || null);
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const STORAGE_THEME_KEY = '118_theme_v2';
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_THEME_KEY);
+      if (saved === 'dark' || saved === 'light') return saved;
+      return 'dark'; // Command Center default
+    } catch {
+      return 'dark';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_THEME_KEY, theme);
+    } catch (e) {
+      console.error(e);
+    }
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   // Sync to local storage
   useEffect(() => {
@@ -225,7 +258,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         saveReading,
         toastMessage,
         showToast,
-        resetDemoData
+        resetDemoData,
+        theme,
+        setTheme,
+        toggleTheme
       }}
     >
       {children}

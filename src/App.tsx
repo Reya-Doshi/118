@@ -18,15 +18,15 @@ const MainContent: React.FC = () => {
   const { activePage, toastMessage } = useApp();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F1E7] text-[#292925] overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-grid-refinery text-[var(--text-primary)] overflow-x-hidden selection:bg-[var(--accent-primary)] selection:text-black">
       {/* Scroll-Aware Fixed Navigation */}
       <Navbar />
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#292925] text-[#F6F1E7] px-4 py-3 rounded-xl shadow-2xl border border-[#D8D0C2] flex items-center gap-3 text-xs font-semibold animate-in slide-in-from-bottom duration-200">
-          <CheckCircle className="w-4 h-4 text-[#71806B]" />
-          <span>{toastMessage}</span>
+        <div className="fixed bottom-6 right-6 z-50 command-card px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-xs font-mono font-semibold animate-in slide-in-from-bottom duration-200">
+          <CheckCircle className="w-4 h-4 text-[var(--accent-primary)]" />
+          <span className="text-[var(--text-primary)]">{toastMessage}</span>
         </div>
       )}
 

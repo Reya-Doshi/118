@@ -9,7 +9,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Scan,
-  Database
+  Database,
+  Activity
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
@@ -17,52 +18,28 @@ export const LandingPage: React.FC = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoError, setVideoError] = useState(false);
-  const [activeWorkflowStep, setActiveWorkflowStep] = useState(0);
+  const [hudViewMode, setHudViewMode] = useState<'raw' | 'heatmap'>('raw');
+  const [activeAnatomyIndex, setActiveAnatomyIndex] = useState<number | null>(0);
+  const [activeWorkflowStep, setActiveWorkflowStep] = useState(2); // Default on SCAN
+  const [reactionDosePreview, setReactionDosePreview] = useState(14.2); // ppm*h for slider
+  const [activeZoneFilter, setActiveZoneFilter] = useState<'ALL' | 'ZONE0' | 'ZONE1' | 'ZONE2'>('ALL');
 
-  // Cycle the workflow step in the cinematic section
+  // Cycle the workflow step smoothly
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveWorkflowStep(prev => (prev + 1) % 5);
-    }, 2800);
+    }, 3200);
     return () => clearInterval(timer);
   }, []);
 
-  // IntersectionObserver to pause video when user scrolls past hero, resume when scrolled back
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) {
-      if (videoRef.current) videoRef.current.pause();
-      return;
-    }
-
-    const currentHero = heroRef.current;
-    if (!currentHero) return;
-
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (videoRef.current) {
-            if (entry.isIntersecting) {
-              const playPromise = videoRef.current.play();
-              if (playPromise !== undefined) {
-                playPromise.catch(() => {
-                  // Autoplay prevented by browser
-                });
-              }
-            } else {
-              videoRef.current.pause();
-            }
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-
-    observer.observe(currentHero);
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+  // Card mouse-follow radial glow handler
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = `${e.clientX - rect.left}px`;
+    const y = `${e.clientY - rect.top}px`;
+    e.currentTarget.style.setProperty('--mouse-x', x);
+    e.currentTarget.style.setProperty('--mouse-y', y);
+  };
 
   const scrollToSection = (sectionId: string) => {
     const el = document.getElementById(sectionId);
@@ -71,171 +48,427 @@ export const LandingPage: React.FC = () => {
     }
   };
 
-  const workflowSteps = [
-    { label: 'WEAR', desc: 'Worker clips zero-power passive badge at start of shift.' },
-    { label: 'EXPOSE', desc: 'Chemical dye matrix darkens progressively with H₂S exposure.' },
-    { label: 'SCAN', desc: 'Smartphone camera captures strip beside printed reference scale.' },
-    { label: 'QUANTIFY', desc: 'Algorithm extracts L*a*b*, computes ΔE, and applies temp/RH correction.' },
-    { label: 'RECORD', desc: 'Dose (ppm·h) is stored into worker profile & facility safety audit log.' }
+  // 4 Anatomy Points with coordinates for laser lines
+  const anatomyPoints = [
+    {
+      id: '01',
+      tag: 'INDEX 01 // LEAD ACETATE MATRIX // PASSIVE DIFFUSIVE',
+      title: 'Colorimetric Strip',
+      desc: 'Passively responds to cumulative H₂S exposure. Chemosensitive matrix darkens proportionally over time via lead sulfide (PbS) precipitation.',
+      metrics: ['Response Time: T90 < 60s', 'Sensitivity: 0.1 ppm·h', 'Reaction: Pb(CH₃COO)₂ + H₂S → PbS↓'],
+      targetX: 52, // % on image
+      targetY: 48
+    },
+    {
+      id: '02',
+      tag: 'INDEX 02 // MULTI-STEP COLORIMETRIC // ARRHENIUS CALIBRATION',
+      title: 'Reference Scale',
+      desc: 'Provides an onboard optical calibration scale beside the sensor strip, neutralizing ambient color temperature, phone illuminants, and exposure shifts.',
+      metrics: ['Accuracy: ΔE < 0.8 CIE', 'Multi-Illuminant: D65/F11/A', '5-Step Graded Matrix'],
+      targetX: 68,
+      targetY: 48
+    },
+    {
+      id: '03',
+      tag: 'INDEX 03 // HERMETIC MEMBRANE // SHELF-LIFE INTEGRITY',
+      title: 'Expiry Indicator',
+      desc: 'Confirms whether the sensing chemistry remains unoxidized and within valid calibrated life, automatically rejecting degraded badges at scan-time.',
+      metrics: ['Shelf Life: 180 Days Hermetic', 'Integrity: Tamper-Evident', 'Auto-Reject on Depletion'],
+      targetX: 84,
+      targetY: 48
+    },
+    {
+      id: '04',
+      tag: 'INDEX 04 // INDUSTRIAL RFID & QR // WORKER BINDING',
+      title: 'Band ID & Telemetry Tag',
+      desc: 'Links physical badge serial number to worker dossier, shift roster, and plant zone telemetry, integrating directly into HSE safety audit databases.',
+      metrics: ['Intrinsic Safety: ATEX Zone 0', 'Serialization: AES-128 QR', 'Shift Memory: 8 Hours'],
+      targetX: 24,
+      targetY: 48
+    }
   ];
 
+  // 5 Horizontal Workflow Steps
+  const workflowSteps = [
+    {
+      num: '01',
+      label: 'WEAR',
+      subtitle: 'Zero-Power Clip',
+      desc: 'Worker clips zero-power passive badge at start of refinery shift.'
+    },
+    {
+      num: '02',
+      label: 'EXPOSE',
+      subtitle: 'Chemical Memory',
+      desc: 'Lead acetate matrix darkens progressively with ambient sub-alarm H₂S.'
+    },
+    {
+      num: '03',
+      label: 'SCAN',
+      subtitle: 'Mobile Vision',
+      desc: 'Smartphone camera captures strip beside printed 5-step reference scale.'
+    },
+    {
+      num: '04',
+      label: 'QUANTIFY',
+      subtitle: 'Arrhenius Correction',
+      desc: 'Algorithm extracts CIE L*a*b*, computes ΔEab*, and applies T & RH compensation.'
+    },
+    {
+      num: '05',
+      label: 'RECORD',
+      subtitle: 'Audit Compliance',
+      desc: 'Calibrated dose (ppm·h) logs into worker profile & MRPL statutory safety registers.'
+    }
+  ];
+
+  // Calculate dynamic color for the chemical reaction preview slider
+  // 0 ppm·h -> Ivory #E8E5DD, 10 ppm·h -> Amber-Bronze #A47834, 25 ppm·h -> Dark PbS Bronze #231B15
+  const getReactionColor = (dose: number) => {
+    const fraction = Math.min(Math.max(dose / 25, 0), 1);
+    const r = Math.round(232 - fraction * (232 - 35));
+    const g = Math.round(229 - fraction * (229 - 27));
+    const b = Math.round(221 - fraction * (221 - 21));
+    return `rgb(${r}, ${g}, ${b})`;
+  };
+
+  const currentStripColor = getReactionColor(reactionDosePreview);
+  const currentDeltaE = (reactionDosePreview * 1.34).toFixed(1);
+  const currentLabL = (85 - reactionDosePreview * 1.8).toFixed(1);
+
+  // Simulated scatter plot points for Plant Safety Zones
+  const scatterPoints = [
+    { id: 1, zone: 'ZONE0', name: 'Tank Farm 4B', worker: 'R. Kumble', shiftHour: 2.2, dose: 4.8, status: 'NORMAL' },
+    { id: 2, zone: 'ZONE0', name: 'Tank Farm 4B', worker: 'P. Nair', shiftHour: 5.8, dose: 18.2, status: 'FLAG' },
+    { id: 3, zone: 'ZONE1', name: 'Claus SRU Train 2', worker: 'S. Rao', shiftHour: 4.5, dose: 14.2, status: 'WARNING' },
+    { id: 4, zone: 'ZONE1', name: 'Claus SRU Train 1', worker: 'M. Qureshi', shiftHour: 7.0, dose: 19.4, status: 'FLAG' },
+    { id: 5, zone: 'ZONE1', name: 'Amine Treating Unit', worker: 'K. Sharma', shiftHour: 3.5, dose: 6.2, status: 'NORMAL' },
+    { id: 6, zone: 'ZONE2', name: 'Utilities Boiler 1', worker: 'A. Joseph', shiftHour: 6.5, dose: 3.1, status: 'NORMAL' },
+    { id: 7, zone: 'ZONE2', name: 'Cooling Tower C', worker: 'D. Sen', shiftHour: 7.8, dose: 2.4, status: 'NORMAL' },
+    { id: 8, zone: 'ZONE0', name: 'Crude Distillation 02', worker: 'G. Verma', shiftHour: 7.2, dose: 17.8, status: 'FLAG' },
+    { id: 9, zone: 'ZONE1', name: 'Sulfur Storage Pit', worker: 'T. Ghosh', shiftHour: 5.1, dose: 11.5, status: 'WARNING' },
+  ];
+
+  const filteredScatterPoints = activeZoneFilter === 'ALL'
+    ? scatterPoints
+    : scatterPoints.filter(p => p.zone === activeZoneFilter);
+
   return (
-    <div className="space-y-28 pb-24 bg-[#F6F1E7]">
+    <div className="space-y-24 md:space-y-32 pb-24 text-[var(--text-primary)]">
       
-      {/* 01 — FULL-SCREEN VIDEO HERO */}
+      {/* =========================================================================
+          01 — HERO SECTION: LIVE CALIBRATION TELEMETRY CONSOLE
+         ========================================================================= */}
       <section
         ref={heroRef}
-        className="relative w-full min-h-[580px] h-[100dvh] max-h-[1080px] overflow-hidden flex items-center justify-start bg-[#1C1C19]"
+        className="relative pt-28 sm:pt-36 pb-12 lg:pb-20 overflow-hidden border-b border-[var(--card-border)]"
       >
-        {/* Background 360° Video */}
-        {!videoError ? (
-          <video
-            ref={videoRef}
-            src={bandVideo}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            onError={() => setVideoError(true)}
-            className="absolute inset-0 w-full h-full object-cover object-[center_38%] sm:object-center pointer-events-none"
-          />
-        ) : (
-          <img
-            src={bandDesignImg}
-            alt="118 Passive Wristband"
-            className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
-          />
-        )}
+        {/* Subtle Ambient Radial Glow in Hero Canvas */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(223,255,0,0.06),transparent_70%)] pointer-events-none" />
 
-        {/* Minimal Scrim Scrim (No heavy black box, preserves product visibility) */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1C1C19]/85 via-[#1C1C19]/45 to-transparent pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-28 sm:h-36 bg-gradient-to-t from-[#F6F1E7] to-transparent pointer-events-none" />
-
-        {/* Hero Content Overlay with Sparse, Cinematic Ivory Typography */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 w-full pt-14 sm:pt-20 pb-16">
-          <div className="max-w-xl space-y-4 sm:space-y-6 text-left">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
             
-            {/* Eyebrow */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              <span className="text-[10px] sm:text-[11px] font-mono tracking-widest text-[#EDE5D6] uppercase font-semibold">
-                PASSIVE H₂S EXPOSURE DOSIMETRY
-              </span>
-              <span className="text-[#D8D0C2]/60 font-mono text-xs">•</span>
-              <span className="text-[10px] sm:text-[11px] text-[#EDE5D6]/70 font-mono">
-                RAGEBYTERS
-              </span>
-            </div>
-
-            {/* Editorial Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.14] text-[#F6F1E7]">
-              Because not all danger <br />
-              <span className="font-normal text-[#C2CBBF]">announces itself.</span>
-            </h1>
-
-            {/* Subtext */}
-            <p className="text-xs sm:text-sm md:text-base text-[#EDE5D6]/85 font-normal leading-relaxed max-w-lg">
-              An intelligent passive wristband that turns cumulative H₂S exposure into a measurable, traceable safety insight.
-            </p>
-
-            {/* Elegant Buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3.5 pt-1 sm:pt-2">
-              <button
-                onClick={() => scrollToSection('the-problem')}
-                className="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded bg-[#EDE5D6] text-[#292925] text-xs font-semibold tracking-wide hover:bg-[#E2D9C7] transition-all duration-200 flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-              >
-                <span>Explore the Solution</span>
-                <ChevronDown className="w-3.5 h-3.5 text-[#4F5D4B]" />
-              </button>
-
-              <button
-                onClick={() => setActivePage('scan')}
-                className="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded bg-[#4F5D4B] text-[#F6F1E7] text-xs font-semibold tracking-wide hover:bg-[#3D493A] transition-all duration-200 flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-              >
-                <span>Read a Wristband</span>
-                <ArrowRight className="w-3.5 h-3.5 text-[#C2CBBF]" />
-              </button>
-            </div>
-
-            {/* Understated Specs Line */}
-            <div className="pt-3 sm:pt-5 flex flex-wrap items-center gap-3 sm:gap-6 text-[10px] sm:text-[11px] font-mono text-[#D8D0C2]/75 border-t border-white/10">
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#71806B]" />
-                <span>Zero-Power Sensor</span>
+            {/* LEFT TYPOGRAPHY (50%) */}
+            <div className="lg:col-span-6 space-y-6 sm:space-y-7 text-left z-10">
+              
+              {/* Eyebrow Chip with Animated Ping Indicator */}
+              <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full command-card border border-[var(--accent-primary)]/40 shadow-xs">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#DFFF00] opacity-80" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#DFFF00]" />
+                </span>
+                <span className="text-[10px] sm:text-[11px] font-mono tracking-wider font-bold text-[var(--text-primary)]">
+                  PASSIVE H₂S EXPOSURE DOSIMETRY // ZERO-POWER CHEMICAL MEMORY
+                </span>
               </div>
-              <div>Shift Memory</div>
-              <div>MRPL Ready</div>
+
+              {/* Headline with High-Contrast Gradient */}
+              <div className="space-y-2">
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-heading tracking-tight leading-[1.08]">
+                  <span className="block text-[var(--text-primary)]">
+                    Know the exposure.
+                  </span>
+                  <span className="block bg-gradient-to-r from-[#DFFF00] via-[#FF9500] to-[#F59E0B] dark:from-[#DFFF00] dark:via-[#CCFF00] dark:to-[#FF9500] bg-clip-text text-transparent drop-shadow-xs">
+                    Not just the alarm.
+                  </span>
+                </h1>
+                <p className="text-xs sm:text-sm font-mono tracking-wide text-[var(--text-secondary)] font-medium">
+                  Because not all danger announces itself.
+                </p>
+              </div>
+
+              {/* Subhead */}
+              <p className="text-sm sm:text-base text-[var(--text-secondary)] font-normal leading-relaxed max-w-xl">
+                Transforming sub-alarm ambient H₂S into actionable, Arrhenius-corrected optical dose records across 8-hour refinery shifts.
+              </p>
+
+              {/* 3 Stat Badges */}
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 max-w-lg pt-1">
+                <div className="command-card rounded-xl p-3 border border-[var(--card-border)] text-center">
+                  <div className="text-[10px] font-mono text-[var(--text-secondary)] uppercase">Metric</div>
+                  <div className="text-xs sm:text-sm font-mono font-bold text-[var(--accent-primary)] mt-0.5">
+                    99.2% CIE
+                  </div>
+                  <div className="text-[9.5px] text-[var(--text-secondary)] truncate">Optical Accuracy</div>
+                </div>
+
+                <div className="command-card rounded-xl p-3 border border-[var(--card-border)] text-center">
+                  <div className="text-[10px] font-mono text-[var(--text-secondary)] uppercase">Safety</div>
+                  <div className="text-xs sm:text-sm font-mono font-bold text-[#FF9500] mt-0.5">
+                    Zone 0 ATEX
+                  </div>
+                  <div className="text-[9.5px] text-[var(--text-secondary)] truncate">Zero Spark Power</div>
+                </div>
+
+                <div className="command-card rounded-xl p-3 border border-[var(--card-border)] text-center">
+                  <div className="text-[10px] font-mono text-[var(--text-secondary)] uppercase">Duration</div>
+                  <div className="text-xs sm:text-sm font-mono font-bold text-[var(--text-primary)] mt-0.5">
+                    8-Hour Shift
+                  </div>
+                  <div className="text-[9.5px] text-[var(--text-secondary)] truncate">Chemical Memory</div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                <button
+                  onClick={() => setActivePage('scan')}
+                  className="px-6 py-3.5 rounded-full bg-gradient-to-r from-[#FF9500] to-[#F59E0B] text-black font-mono font-bold text-xs sm:text-sm tracking-wide shadow-[0_0_22px_rgba(255,149,0,0.45)] hover:shadow-[0_0_32px_rgba(255,149,0,0.7)] hover:scale-[1.02] active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Scan className="w-4 h-4 stroke-[2.5]" />
+                  <span>Read a Wristband</span>
+                </button>
+
+                <button
+                  onClick={() => scrollToSection('the-band')}
+                  className="px-6 py-3.5 rounded-full command-card border border-[var(--card-border)] text-[var(--text-primary)] font-mono text-xs sm:text-sm font-medium hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Explore Hardware Specs</span>
+                  <ChevronDown className="w-4 h-4 text-[var(--accent-secondary)]" />
+                </button>
+              </div>
+
+            </div>
+
+            {/* RIGHT INTERACTIVE HUD VIEWPORT (50%) */}
+            <div className="lg:col-span-6 relative">
+              <div
+                onMouseMove={handleCardMouseMove}
+                className="command-card mouse-glow-card rounded-2xl p-4 sm:p-5 border border-[var(--card-border)] shadow-2xl overflow-hidden"
+              >
+                
+                {/* View Switcher Pills Above Viewport */}
+                <div className="flex items-center justify-between pb-3 border-b border-[var(--card-border)] mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-[#DFFF00] animate-ping-slow" />
+                    <span className="text-[11px] font-mono font-bold text-[var(--text-primary)] uppercase tracking-wider">
+                      OPTICAL SCANNER HUD // DS-1088
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1 p-1 rounded-full bg-[var(--card-surface-subtle)] border border-[var(--card-border)]">
+                    <button
+                      onClick={() => setHudViewMode('raw')}
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold transition-all cursor-pointer ${
+                        hudViewMode === 'raw'
+                          ? 'bg-[var(--accent-primary)] text-black shadow-xs'
+                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      }`}
+                    >
+                      [Raw Chem-Strip Feed]
+                    </button>
+                    <button
+                      onClick={() => setHudViewMode('heatmap')}
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold transition-all cursor-pointer ${
+                        hudViewMode === 'heatmap'
+                          ? 'bg-[#FF9500] text-black shadow-xs'
+                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      }`}
+                    >
+                      [Optical ΔE Heatmap]
+                    </button>
+                  </div>
+                </div>
+
+                {/* Viewport Frame with Glowing Corner Reticles */}
+                <div className="relative aspect-[4/3] sm:aspect-[16/10] w-full rounded-xl overflow-hidden border border-[var(--card-border)] bg-[#040608] flex items-center justify-center">
+                  
+                  {/* Glowing Reticle Corner Crosshairs (+) */}
+                  <span className="absolute top-3 left-3 text-[#DFFF00] font-mono font-bold text-sm select-none drop-shadow-[0_0_6px_#DFFF00] z-20">+</span>
+                  <span className="absolute top-3 right-3 text-[#DFFF00] font-mono font-bold text-sm select-none drop-shadow-[0_0_6px_#DFFF00] z-20">+</span>
+                  <span className="absolute bottom-3 left-3 text-[#DFFF00] font-mono font-bold text-sm select-none drop-shadow-[0_0_6px_#DFFF00] z-20">+</span>
+                  <span className="absolute bottom-3 right-3 text-[#DFFF00] font-mono font-bold text-sm select-none drop-shadow-[0_0_6px_#DFFF00] z-20">+</span>
+
+                  {/* Scanline Animation Overlay */}
+                  <div className="absolute inset-0 bg-[linear-gradient(rgba(223,255,0,0.03)_50%,transparent_50%)] bg-[length:100%_4px] pointer-events-none z-10" />
+
+                  {/* Heatmap Shader Filter Effect */}
+                  {hudViewMode === 'heatmap' && (
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[#FF3B30]/25 via-[#FF9500]/20 to-[#DFFF00]/25 mix-blend-color-dodge pointer-events-none z-10 animate-pulse" />
+                  )}
+
+                  {/* Wristband Render Image / Video */}
+                  {!videoError ? (
+                    <video
+                      ref={videoRef}
+                      src={bandVideo}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      onError={() => setVideoError(true)}
+                      className={`w-full h-full object-cover object-center transition-transform duration-700 ${
+                        hudViewMode === 'heatmap' ? 'contrast-125 saturate-150' : ''
+                      }`}
+                    />
+                  ) : (
+                    <img
+                      src={bandDesignImg}
+                      alt="118 Passive Wristband"
+                      className={`w-full h-full object-contain p-4 ${
+                        hudViewMode === 'heatmap' ? 'contrast-125 saturate-150' : ''
+                      }`}
+                    />
+                  )}
+
+                  {/* Reticle Target in Center of the Sensing Matrix */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                    <div className="relative w-28 h-28 border border-[#DFFF00]/40 rounded-full flex items-center justify-center animate-spin-slow">
+                      <div className="w-16 h-16 border border-[#FF9500]/50 rounded-full" />
+                      <div className="absolute w-full h-[1px] bg-[#DFFF00]/40" />
+                      <div className="absolute h-full w-[1px] bg-[#DFFF00]/40" />
+                    </div>
+                  </div>
+
+                  {/* Floating Telemetry Cards Superimposed on Band */}
+                  <div className="absolute top-4 left-4 z-20 max-w-[210px] command-card rounded-lg p-2 border border-[#DFFF00]/30 shadow-lg text-left backdrop-blur-md">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#DFFF00] animate-pulse" />
+                      <span className="text-[9px] font-mono text-[var(--text-secondary)] uppercase">Optical Matrix</span>
+                    </div>
+                    <div className="text-[10px] font-mono font-bold text-[var(--text-primary)] mt-0.5">
+                      CIE L*a*b*: [42.1, 14.8, 9.2]
+                    </div>
+                    <div className="text-[9px] font-mono text-[#DFFF00] font-semibold">
+                      ΔEab: 18.4 (Wave Absorbed)
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-4 left-4 z-20 max-w-[220px] command-card rounded-lg p-2 border border-[#FF9500]/40 shadow-lg text-left backdrop-blur-md">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#FF9500]" />
+                      <span className="text-[9px] font-mono text-[var(--text-secondary)] uppercase">Shift Exposure</span>
+                    </div>
+                    <div className="text-[10px] font-mono font-bold text-[#FF9500] mt-0.5">
+                      Shift Accumulation: 14.2 ppm·h
+                    </div>
+                    <div className="text-[9px] font-mono text-[var(--text-secondary)]">
+                      Advisory Warning: 71% Ceiling
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-4 right-4 z-20 max-w-[200px] command-card rounded-lg p-2 border border-[var(--card-border)] shadow-lg text-right backdrop-blur-md hidden sm:block">
+                    <div className="text-[9px] font-mono text-[var(--text-secondary)] uppercase">Arrhenius Compensation</div>
+                    <div className="text-[10px] font-mono font-bold text-[var(--text-primary)] mt-0.5">
+                      T: 34°C | RH: 68%
+                    </div>
+                    <div className="text-[9px] font-mono text-[#DFFF00]">
+                      Correction Factor: ×1.14
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Bottom Viewport Status Strip */}
+                <div className="mt-3 pt-2.5 border-t border-[var(--card-border)] flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)]">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#DFFF00]">MODE: CALIBRATED_ONLINE</span>
+                    <span>•</span>
+                    <span>FRAME: 60 FPS</span>
+                  </div>
+                  <div className="text-[#FF9500]">
+                    CAL-CHECKSUM: 0x9B2C4F
+                  </div>
+                </div>
+
+              </div>
             </div>
 
           </div>
         </div>
-
-        {/* Subtle Scroll Indicator */}
-        <div
-          className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-[#292925]/60 text-[9px] font-mono tracking-widest cursor-pointer"
-          onClick={() => scrollToSection('the-problem')}
-        >
-          <span>SCROLL</span>
-          <ChevronDown className="w-3 h-3" />
-        </div>
       </section>
 
-      {/* 02 — THE PROBLEM */}
-      <section id="the-problem" className="max-w-5xl mx-auto px-4 sm:px-6 space-y-12">
+
+      {/* =========================================================================
+          02 — THE OCCUPATIONAL HEALTH BLIND SPOT (Existing Matter Preserved)
+         ========================================================================= */}
+      <section id="the-problem" className="max-w-5xl mx-auto px-4 sm:px-6 space-y-10">
         <div className="text-center space-y-3 max-w-3xl mx-auto">
-          <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-[#71806B]">
+          <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-[var(--accent-primary)]">
             THE OCCUPATIONAL HEALTH BLIND SPOT
           </span>
-          <h2 className="text-3xl sm:text-4xl font-normal tracking-tight text-[#292925]">
+          <h2 className="text-3xl sm:text-4xl font-extrabold font-heading tracking-tight text-[var(--text-primary)]">
             Peak alarms tell you when something happened. <br />
-            <span className="text-[#5D5B53]">Cumulative exposure tells you what happened over time.</span>
+            <span className="text-[var(--text-secondary)] font-normal">Cumulative exposure tells you what happened over time.</span>
           </h2>
-          <p className="text-xs sm:text-sm text-[#5D5B53] leading-relaxed">
+          <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
             In refineries and petrochemical operations, electronic detectors monitor instantaneous peaks. Yet personnel regularly encounter sub-alarm ambient concentrations (1–10 ppm) that accumulate silently across 8-hour shifts without triggering audible alarms.
           </p>
         </div>
 
-        {/* Minimal Quiet-Luxury Comparison Grid */}
+        {/* Quiet-Luxury Command Center Comparison Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-6 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2] space-y-3">
+          <div
+            onMouseMove={handleCardMouseMove}
+            className="p-6 rounded-2xl command-card mouse-glow-card border border-[var(--card-border)] space-y-3"
+          >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-semibold text-[#826235] uppercase">ELECTRONIC GAS DETECTOR</span>
-              <AlertTriangle className="w-4 h-4 text-[#B08A55]" />
+              <span className="text-xs font-mono font-bold text-[#FF9500] uppercase">
+                ELECTRONIC GAS DETECTOR
+              </span>
+              <AlertTriangle className="w-4 h-4 text-[#FF9500]" />
             </div>
-            <h3 className="text-base font-semibold text-[#292925]">Instantaneous Spike Alarms</h3>
-            <ul className="space-y-2 text-xs text-[#5D5B53]">
+            <h3 className="text-base font-bold font-heading text-[var(--text-primary)]">Instantaneous Spike Alarms</h3>
+            <ul className="space-y-2 text-xs text-[var(--text-secondary)]">
               <li className="flex items-start gap-2">
-                <span className="text-[#878377] mt-0.5">—</span>
+                <span className="text-[var(--text-muted)] mt-0.5">—</span>
                 <span>Requires batteries, active electronics, and hazardous-area certifications.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-[#878377] mt-0.5">—</span>
+                <span className="text-[var(--text-muted)] mt-0.5">—</span>
                 <span>Only alerts when instantaneous ceiling limits are momentarily breached.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-[#878377] mt-0.5">—</span>
+                <span className="text-[var(--text-muted)] mt-0.5">—</span>
                 <span>Does not track chronic cumulative dose burden across entire plant shifts.</span>
               </li>
             </ul>
           </div>
 
-          <div className="p-6 rounded-lg bg-[#E5EADF] border border-[#C5CEC0] space-y-3">
+          <div
+            onMouseMove={handleCardMouseMove}
+            className="p-6 rounded-2xl command-card mouse-glow-card border border-[var(--accent-primary)]/40 space-y-3"
+          >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-semibold text-[#4F5D4B] uppercase">118 PASSIVE DOSIMETER</span>
-              <Shield className="w-4 h-4 text-[#4F5D4B]" />
+              <span className="text-xs font-mono font-bold text-[var(--accent-primary)] uppercase">
+                118 PASSIVE DOSIMETER
+              </span>
+              <Shield className="w-4 h-4 text-[var(--accent-primary)]" />
             </div>
-            <h3 className="text-base font-semibold text-[#292925]">Continuous Cumulative Dosimetry</h3>
-            <ul className="space-y-2 text-xs text-[#374234]">
+            <h3 className="text-base font-bold font-heading text-[var(--text-primary)]">Continuous Cumulative Dosimetry</h3>
+            <ul className="space-y-2 text-xs text-[var(--text-primary)]">
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#4F5D4B] shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-4 h-4 text-[var(--accent-primary)] shrink-0 mt-0.5" />
                 <span><strong>Zero-power chemical response</strong>: Intrinsic zero-spark safety in Zone 0/1 environments.</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#4F5D4B] shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-4 h-4 text-[var(--accent-primary)] shrink-0 mt-0.5" />
                 <span><strong>Permanent physical reaction</strong>: Chemochromic strip darkens proportionally to cumulative H₂S.</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#4F5D4B] shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-4 h-4 text-[var(--accent-primary)] shrink-0 mt-0.5" />
                 <span><strong>AI-assisted quantitative readout</strong>: Standard smartphone photo calibrated against printed scale.</span>
               </li>
             </ul>
@@ -243,189 +476,346 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 03 — THE BAND (“The Band, Explained.”) */}
-      <section id="the-band" className="max-w-5xl mx-auto px-4 sm:px-6 space-y-10">
+
+      {/* =========================================================================
+          03 — INTERACTIVE HARDWARE ANATOMY (EXPLODING DOSSIER LAYOUT)
+         ========================================================================= */}
+      <section id="the-band" className="max-w-6xl mx-auto px-4 sm:px-6 space-y-10">
         <div className="text-center space-y-3 max-w-3xl mx-auto">
-          <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-[#71806B]">
+          <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-[var(--accent-primary)]">
             ANATOMY & HARDWARE SPECIFICATIONS
           </span>
-          <h2 className="text-3xl sm:text-4xl font-normal tracking-tight text-[#292925]">
+          <h2 className="text-3xl sm:text-4xl font-extrabold font-heading tracking-tight text-[var(--text-primary)]">
             The Band, Explained.
           </h2>
-          <p className="text-xs sm:text-sm text-[#5D5B53] leading-relaxed">
-            Every element is designed around one purpose: making cumulative exposure visible without adding another powered device to the worker.
+          <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
+            Every element is designed around one purpose: making cumulative exposure visible without adding another powered device to the worker. Hover cards below to project active targeting reticles.
           </p>
         </div>
 
-        {/* Display the Actual band design.png Prominently in Warm Frame */}
-        <div className="bg-[#292925] rounded-xl p-6 md:p-8 border border-[#3E3C36] space-y-6">
+        {/* Central Band Viewport with Interactive Laser Coordinate Target */}
+        <div className="command-card rounded-2xl p-6 md:p-8 border border-[var(--card-border)] space-y-6">
           
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[#3E3C36] pb-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[var(--card-border)] pb-3">
             <div>
-              <span className="text-[10px] font-mono tracking-widest text-[#C2CBBF] uppercase font-semibold">
-                PHYSICAL DOSIMETER ARCHITECTURE
+              <span className="text-[10px] font-mono tracking-widest text-[var(--accent-primary)] uppercase font-semibold">
+                PHYSICAL DOSIMETER ARCHITECTURE // EXPLODING DOSSIER
               </span>
-              <div className="text-sm font-bold text-[#EDE5D6]">118 Hardware Anatomy</div>
+              <div className="text-sm font-bold font-heading text-[var(--text-primary)]">118 Hardware Anatomy</div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-[#32322D] border border-[#43423A] text-[#A69F91] text-[10px] font-mono">
-                Asset: band design.png
+              <span className="px-2.5 py-1 rounded-full command-card border border-[var(--card-border)] text-[var(--text-secondary)] text-[10px] font-mono">
+                Model: MRPL-DS1088
               </span>
-              <span className="px-2 py-0.5 rounded bg-[#4F5D4B] text-[#EDE5D6] text-[10px] font-mono font-medium">
-                RAGEBYTERS
+              <span className="px-2.5 py-1 rounded-full bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] text-[10px] font-mono font-bold">
+                ZONE 0 VERIFIED
               </span>
             </div>
           </div>
 
-          {/* Actual Image Render */}
-          <div className="relative flex items-center justify-center p-3 bg-[#1F1F1B] rounded-lg border border-[#35342E] overflow-hidden">
+          {/* Render Frame with Interactive SVG Laser Targeting Lines */}
+          <div className="relative flex items-center justify-center p-4 sm:p-8 bg-[#040608] rounded-xl border border-[var(--card-border)] overflow-hidden min-h-[320px] sm:min-h-[420px]">
+            
+            {/* Background Grid Accent */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(223,255,0,0.04),transparent_60%)] pointer-events-none" />
+
             <img
               src={bandDesignImg}
               alt="118 Physical Band Anatomy"
-              className="max-h-[480px] w-auto object-contain rounded"
+              className="max-h-[360px] w-auto object-contain rounded drop-shadow-2xl z-10"
             />
+
+            {/* Interactive SVG Reticle Targeting Overlay */}
+            {activeAnatomyIndex !== null && (
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-20">
+                {/* Center target circle */}
+                <circle
+                  cx={`${anatomyPoints[activeAnatomyIndex].targetX}%`}
+                  cy={`${anatomyPoints[activeAnatomyIndex].targetY}%`}
+                  r="24"
+                  fill="none"
+                  stroke="#DFFF00"
+                  strokeWidth="1.5"
+                  strokeDasharray="4 3"
+                  className="animate-spin-slow"
+                />
+                <circle
+                  cx={`${anatomyPoints[activeAnatomyIndex].targetX}%`}
+                  cy={`${anatomyPoints[activeAnatomyIndex].targetY}%`}
+                  r="6"
+                  fill="#FF9500"
+                />
+                {/* Horizontal & Vertical Crosshairs */}
+                <line
+                  x1={`${anatomyPoints[activeAnatomyIndex].targetX - 5}%`}
+                  y1={`${anatomyPoints[activeAnatomyIndex].targetY}%`}
+                  x2={`${anatomyPoints[activeAnatomyIndex].targetX + 5}%`}
+                  y2={`${anatomyPoints[activeAnatomyIndex].targetY}%`}
+                  stroke="#DFFF00"
+                  strokeWidth="1"
+                />
+                <line
+                  x1={`${anatomyPoints[activeAnatomyIndex].targetX}%`}
+                  y1={`${anatomyPoints[activeAnatomyIndex].targetY - 8}%`}
+                  x2={`${anatomyPoints[activeAnatomyIndex].targetX}%`}
+                  y2={`${anatomyPoints[activeAnatomyIndex].targetY + 8}%`}
+                  stroke="#DFFF00"
+                  strokeWidth="1"
+                />
+              </svg>
+            )}
+
+            {/* Active Targeted Coordinate Label */}
+            {activeAnatomyIndex !== null && (
+              <div className="absolute top-4 right-4 z-20 command-card px-3 py-1.5 rounded-lg border border-[#DFFF00]/40 text-[10px] font-mono text-[var(--text-primary)]">
+                <span className="text-[#DFFF00] font-bold">LOCKED TARGET:</span> {anatomyPoints[activeAnatomyIndex].title} [{anatomyPoints[activeAnatomyIndex].targetX}%, {anatomyPoints[activeAnatomyIndex].targetY}%]
+              </div>
+            )}
           </div>
 
-          {/* 4 Subtle Feature Callouts */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-            <div className="p-3.5 rounded-lg bg-[#32322D] border border-[#43423A] space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="w-4 h-4 rounded bg-[#4F5D4B] text-[#EDE5D6] text-[10px] font-mono font-bold flex items-center justify-center">
-                  01
-                </span>
-                <h4 className="text-[11px] font-bold text-[#EDE5D6] uppercase font-mono">COLORIMETRIC STRIP</h4>
-              </div>
-              <p className="text-[11px] text-[#A69F91] leading-relaxed">
-                Passively responds to cumulative H₂S exposure. Chemosensitive matrix darkens proportionally over time.
-              </p>
-            </div>
+          {/* 4 Exploding Dossier Anatomy Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {anatomyPoints.map((item, idx) => {
+              const isSelected = activeAnatomyIndex === idx;
+              return (
+                <div
+                  key={item.id}
+                  onMouseEnter={() => setActiveAnatomyIndex(idx)}
+                  onMouseMove={handleCardMouseMove}
+                  className={`p-4 rounded-xl command-card mouse-glow-card border transition-all cursor-pointer text-left space-y-2.5 ${
+                    isSelected
+                      ? 'border-[#DFFF00] shadow-[0_0_15px_rgba(223,255,0,0.15)] -translate-y-1'
+                      : 'border-[var(--card-border)] hover:border-[var(--accent-secondary)]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                      isSelected ? 'bg-[var(--accent-primary)] text-black' : 'bg-[var(--card-surface-subtle)] text-[var(--text-secondary)]'
+                    }`}>
+                      {item.id}
+                    </span>
+                    <span className="text-[9px] font-mono text-[var(--accent-secondary)] font-semibold">
+                      ACTIVE SENSOR
+                    </span>
+                  </div>
 
-            <div className="p-3.5 rounded-lg bg-[#32322D] border border-[#43423A] space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="w-4 h-4 rounded bg-[#B08A55]/30 text-[#EDE5D6] text-[10px] font-mono font-bold flex items-center justify-center">
-                  02
-                </span>
-                <h4 className="text-[11px] font-bold text-[#EDE5D6] uppercase font-mono">REFERENCE SCALE</h4>
-              </div>
-              <p className="text-[11px] text-[#A69F91] leading-relaxed">
-                Provides a visual calibration reference for image-based reading, enabling ambient lighting compensation.
-              </p>
-            </div>
+                  <div className="text-[9.5px] font-mono font-semibold text-[var(--accent-primary)] uppercase tracking-wider line-clamp-1">
+                    {item.tag}
+                  </div>
 
-            <div className="p-3.5 rounded-lg bg-[#32322D] border border-[#43423A] space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="w-4 h-4 rounded bg-[#71806B]/40 text-[#EDE5D6] text-[10px] font-mono font-bold flex items-center justify-center">
-                  03
-                </span>
-                <h4 className="text-[11px] font-bold text-[#EDE5D6] uppercase font-mono">EXPIRY INDICATOR</h4>
-              </div>
-              <p className="text-[11px] text-[#A69F91] leading-relaxed">
-                Confirms whether the sensing chemistry is still valid, rejecting degraded or expired dosimeters.
-              </p>
-            </div>
+                  <h4 className="text-xs sm:text-sm font-bold font-heading text-[var(--text-primary)]">
+                    {item.title}
+                  </h4>
 
-            <div className="p-3.5 rounded-lg bg-[#32322D] border border-[#43423A] space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="w-4 h-4 rounded bg-[#5D5B53] text-[#EDE5D6] text-[10px] font-mono font-bold flex items-center justify-center">
-                  04
-                </span>
-                <h4 className="text-[11px] font-bold text-[#EDE5D6] uppercase font-mono">BAND ID</h4>
-              </div>
-              <p className="text-[11px] text-[#A69F91] leading-relaxed">
-                Links the physical badge to a worker and shift record, integrating directly into plant safety logs.
-              </p>
-            </div>
+                  <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
+                    {item.desc}
+                  </p>
+
+                  {/* Micro-metric chips */}
+                  <div className="pt-2 border-t border-[var(--card-border)] space-y-1">
+                    {item.metrics.map(m => (
+                      <div key={m} className="text-[9.5px] font-mono text-[var(--text-secondary)] flex items-center gap-1.5">
+                        <span className="w-1 h-1 rounded-full bg-[var(--accent-secondary)]" />
+                        <span className="truncate">{m}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
         </div>
       </section>
 
-      {/* 04 — PRODUCT-FILM SECTION & HOW IT WORKS */}
-      <section id="how-it-works" className="max-w-5xl mx-auto px-4 sm:px-6 space-y-10">
+
+      {/* =========================================================================
+          04 — SHIFT LIFECYCLE: ANIMATED DATA PIPE & COLOR PREVIEW SLIDER
+         ========================================================================= */}
+      <section id="how-it-works" className="max-w-6xl mx-auto px-4 sm:px-6 space-y-10">
         <div className="text-center space-y-3 max-w-3xl mx-auto">
-          <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-[#71806B]">
+          <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-[var(--accent-primary)]">
             END-TO-END SHIFT LIFECYCLE
           </span>
-          <h2 className="text-3xl sm:text-4xl font-normal tracking-tight text-[#292925]">
+          <h2 className="text-3xl sm:text-4xl font-extrabold font-heading tracking-tight text-[var(--text-primary)]">
             From a shift on the wrist <br />
-            to a number you can act on.
+            <span className="text-[var(--text-secondary)] font-normal">to a number you can act on.</span>
           </h2>
-          <p className="text-xs sm:text-sm text-[#5D5B53] leading-relaxed">
+          <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
             The hardware and software workflow bridges continuous physical chemical change to calibrated digital safety records.
           </p>
         </div>
 
-        {/* Cinematic Video Frame */}
-        <div className="bg-[#292925] rounded-xl p-6 border border-[#3E3C36] space-y-6">
-          <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-[#3E3C36] bg-[#1C1C19]">
-            <video
-              src={bandVideo}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute top-4 left-4 px-2.5 py-1 rounded bg-black/60 border border-white/15 text-[#C2CBBF] text-[11px] font-mono flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#71806B]" />
-              <span>118 Hardware Motion</span>
-            </div>
+        {/* Continuous Horizontal Timeline with Animated Connecting SVG Beam */}
+        <div className="command-card rounded-2xl p-6 sm:p-8 border border-[var(--card-border)] space-y-8">
+          
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[var(--card-border)] pb-3">
+            <span className="text-[10px] font-mono tracking-widest text-[var(--accent-primary)] uppercase font-semibold">
+              PIPELINE TIMELINE // 01 WEAR → 05 RECORD
+            </span>
+            <span className="text-[10px] font-mono text-[var(--accent-secondary)] font-bold">
+              PHASE 0{activeWorkflowStep + 1} ACTIVE
+            </span>
           </div>
 
-          {/* Animated Sequence Underneath */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-xs font-mono text-[#A69F91] border-b border-[#3E3C36] pb-2">
-              <span>WORKFLOW SEQUENCE</span>
-              <span className="text-[#C2CBBF] font-bold">PHASE 0{activeWorkflowStep + 1} / 05</span>
+          {/* Horizontal Steps with Connecting Beam */}
+          <div className="relative">
+            
+            {/* Desktop Connecting SVG Beam */}
+            <div className="hidden lg:block absolute top-7 left-12 right-12 h-1 z-0">
+              <svg className="w-full h-4 overflow-visible">
+                <line
+                  x1="0"
+                  y1="2"
+                  x2="100%"
+                  y2="2"
+                  stroke="currentColor"
+                  className="text-[var(--card-border)]"
+                  strokeWidth="2"
+                />
+                <line
+                  x1="0"
+                  y1="2"
+                  x2={`${((activeWorkflowStep + 1) / 5) * 100}%`}
+                  y2="2"
+                  stroke="#DFFF00"
+                  strokeWidth="3"
+                  className="animate-beam"
+                />
+              </svg>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 relative z-10">
               {workflowSteps.map((step, idx) => {
                 const isActive = activeWorkflowStep === idx;
+                const isPassed = activeWorkflowStep >= idx;
                 return (
-                  <div
+                  <button
                     key={step.label}
-                    className={`p-3 rounded border text-left transition-all duration-300 ${
+                    onClick={() => setActiveWorkflowStep(idx)}
+                    className={`p-4 rounded-xl command-card border text-left transition-all duration-300 cursor-pointer ${
                       isActive
-                        ? 'border-[#71806B] bg-[#32322D] shadow-xs'
-                        : 'border-[#3E3C36] bg-[#20201C] opacity-75'
+                        ? 'border-[#DFFF00] shadow-[0_0_18px_rgba(223,255,0,0.2)] -translate-y-1 bg-[var(--card-surface-subtle)]'
+                        : isPassed
+                        ? 'border-[var(--accent-secondary)]/50'
+                        : 'border-[var(--card-border)] opacity-70'
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className={`text-[11px] font-mono font-bold ${isActive ? 'text-[#C2CBBF]' : 'text-[#8E897E]'}`}>
-                        0{idx + 1}
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={`w-6 h-6 rounded-full flex items-center justify-center font-mono text-xs font-bold ${
+                        isActive
+                          ? 'bg-[var(--accent-primary)] text-black shadow-xs'
+                          : isPassed
+                          ? 'bg-[var(--accent-secondary)] text-black'
+                          : 'bg-[var(--card-surface-subtle)] text-[var(--text-secondary)] border border-[var(--card-border)]'
+                      }`}>
+                        {step.num}
                       </span>
-                      <span className={`text-xs font-mono font-semibold ${isActive ? 'text-[#EDE5D6]' : 'text-[#A69F91]'}`}>
-                        {step.label}
+                      <span className="text-[10px] font-mono text-[var(--accent-secondary)] font-bold">
+                        {step.subtitle}
                       </span>
                     </div>
-                    <p className="text-[10px] text-[#A69F91] leading-tight">{step.desc}</p>
-                  </div>
+
+                    <div className="font-heading font-bold text-sm text-[var(--text-primary)]">
+                      {step.label}
+                    </div>
+
+                    <p className="text-[11px] text-[var(--text-secondary)] mt-1 leading-normal">
+                      {step.desc}
+                    </p>
+                  </button>
                 );
               })}
             </div>
           </div>
+
+          {/* Interactive Chemical Reaction Preview Mechanism (Ivory to PbS Bronze Slider) */}
+          <div className="p-5 rounded-xl bg-[#040608] border border-[var(--card-border)] space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--card-border)] pb-2.5">
+              <div>
+                <span className="text-[10px] font-mono text-[var(--accent-primary)] font-bold uppercase">
+                  INTERACTIVE COLORIMETRIC RESPONSE PREVIEW
+                </span>
+                <div className="text-xs font-mono text-[var(--text-primary)]">
+                  Chemical Darkening: Lead Acetate → Lead Sulfide (PbS↓ Bronze)
+                </div>
+              </div>
+              <div className="font-mono text-xs text-[#FF9500] font-bold">
+                Reaction: Pb(CH₃COO)₂ + H₂S → PbS↓ + 2CH₃COOH
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+              
+              {/* Slider Control */}
+              <div className="md:col-span-7 space-y-3">
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-[var(--text-secondary)]">Simulate Cumulative Dose:</span>
+                  <span className="font-bold text-[#FF9500] text-sm">{reactionDosePreview.toFixed(1)} ppm·h</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="25"
+                  step="0.2"
+                  value={reactionDosePreview}
+                  onChange={e => setReactionDosePreview(parseFloat(e.target.value))}
+                  className="w-full accent-[#FF9500] cursor-pointer"
+                />
+                <div className="flex justify-between text-[10px] font-mono text-[var(--text-secondary)]">
+                  <span>0 ppm·h (Nominal Ivory)</span>
+                  <span>10 ppm·h (Shift Advisory)</span>
+                  <span>25 ppm·h (Ceiling Saturation)</span>
+                </div>
+              </div>
+
+              {/* Dynamic Chemical Strip Swatch */}
+              <div className="md:col-span-5 command-card rounded-xl p-3.5 border border-[var(--card-border)] flex items-center gap-4">
+                <div
+                  className="w-16 h-16 rounded-lg border-2 border-white/20 shadow-inner shrink-0 transition-colors duration-200"
+                  style={{ backgroundColor: currentStripColor }}
+                />
+                <div className="space-y-1 text-left text-xs font-mono">
+                  <div className="text-[var(--text-secondary)] text-[10px]">CURRENT METRICS</div>
+                  <div className="font-bold text-[var(--text-primary)]">L*: {currentLabL} | ΔEab: {currentDeltaE}</div>
+                  <div className={`text-[10px] font-bold ${
+                    reactionDosePreview < 8 ? 'text-[var(--accent-primary)]' : reactionDosePreview < 18 ? 'text-[#FF9500]' : 'text-[#FF3B30]'
+                  }`}>
+                    STATUS: {reactionDosePreview < 8 ? 'NOMINAL SAFE' : reactionDosePreview < 18 ? 'ADVISORY WARNING' : 'EVACUATION CEILING'}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </section>
 
-      {/* 05 — DIGITAL READING INTERACTIVE MOCKUP */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6">
-        <div className="bg-[#EDE5D6] rounded-xl border border-[#D8D0C2] p-8 space-y-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[#D8D0C2] pb-6">
+
+      {/* =========================================================================
+          05 — AI-ASSISTED COLORIMETRIC QUANTIFICATION (Existing Matter Preserved)
+         ========================================================================= */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
+        <div
+          onMouseMove={handleCardMouseMove}
+          className="command-card mouse-glow-card rounded-2xl border border-[var(--card-border)] p-6 sm:p-8 space-y-6"
+        >
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[var(--card-border)] pb-6">
             <div>
-              <span className="text-[11px] font-mono font-semibold text-[#71806B] uppercase">
+              <span className="text-[11px] font-mono font-semibold text-[var(--accent-primary)] uppercase">
                 AI-ASSISTED COLORIMETRIC QUANTIFICATION
               </span>
-              <h3 className="text-2xl font-bold text-[#292925] mt-0.5">
+              <h3 className="text-2xl font-bold font-heading text-[var(--text-primary)] mt-0.5">
                 Precision Reading from Any Smartphone Photo
               </h3>
-              <p className="text-xs text-[#5D5B53] mt-0.5">
+              <p className="text-xs text-[var(--text-secondary)] mt-0.5">
                 Normalizes for plant illumination, ambient temperature, and relative humidity.
               </p>
             </div>
             <button
               onClick={() => setActivePage('scan')}
-              className="px-5 py-2.5 rounded bg-[#4F5D4B] text-[#F6F1E7] text-xs font-semibold hover:bg-[#3D493A] transition-colors flex items-center gap-2 shadow-xs"
+              className="px-5 py-2.5 rounded-full bg-[var(--accent-primary)] text-black font-mono font-bold text-xs hover:bg-[#CCFF00] transition-colors flex items-center gap-2 shadow-xs cursor-pointer"
             >
               <Scan className="w-3.5 h-3.5" />
               <span>Launch Wristband Scanner</span>
@@ -433,23 +823,23 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] space-y-1.5">
-              <div className="text-xs font-bold text-[#292925] font-mono">01 · Reference Calibration</div>
-              <p className="text-xs text-[#5D5B53] leading-relaxed">
+            <div className="p-4 rounded-xl command-card border border-[var(--card-border)] space-y-1.5 text-left">
+              <div className="text-xs font-bold text-[var(--accent-primary)] font-mono">01 · Reference Calibration</div>
+              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
                 Extracts the printed scale values adjacent to the sensor strip to eliminate color temperature shifts.
               </p>
             </div>
 
-            <div className="p-4 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] space-y-1.5">
-              <div className="text-xs font-bold text-[#292925] font-mono">02 · CIE L*a*b* Extraction</div>
-              <p className="text-xs text-[#5D5B53] leading-relaxed">
+            <div className="p-4 rounded-xl command-card border border-[var(--card-border)] space-y-1.5 text-left">
+              <div className="text-xs font-bold text-[#FF9500] font-mono">02 · CIE L*a*b* Extraction</div>
+              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
                 Converts pixel data into device-independent color coordinates, calculating true perceptual color difference (ΔEab*).
               </p>
             </div>
 
-            <div className="p-4 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] space-y-1.5">
-              <div className="text-xs font-bold text-[#292925] font-mono">03 · Environmental Compensation</div>
-              <p className="text-xs text-[#5D5B53] leading-relaxed">
+            <div className="p-4 rounded-xl command-card border border-[var(--card-border)] space-y-1.5 text-left">
+              <div className="text-xs font-bold text-[var(--text-primary)] font-mono">03 · Environmental Compensation</div>
+              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
                 Applies Arrhenius reaction rate scaling and relative humidity sorption factors before estimating exposure dose.
               </p>
             </div>
@@ -457,59 +847,290 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 06 — SAFETY DASHBOARD PREVIEW */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6">
+
+      {/* =========================================================================
+          06 — PLANT SAFETY LIVE TELEMETRY GRID (SARVAS STYLE DASHBOARD)
+         ========================================================================= */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
-            <span className="text-[11px] font-mono font-semibold text-[#71806B] uppercase">
-              OCCUPATIONAL SAFETY INTELLIGENCE
+            <span className="text-[11px] font-mono font-semibold text-[var(--accent-primary)] uppercase">
+              OCCUPATIONAL SAFETY INTELLIGENCE // MARITIME & REFINERY COMMAND
             </span>
-            <h3 className="text-2xl font-bold text-[#292925]">MRPL Shift Safety Overview</h3>
+            <h3 className="text-2xl font-bold font-heading text-[var(--text-primary)]">
+              MRPL Shift Safety Telemetry Grid
+            </h3>
           </div>
           <button
             onClick={() => setActivePage('dashboard')}
-            className="text-xs font-bold text-[#4F5D4B] hover:underline flex items-center gap-1.5"
+            className="text-xs font-mono font-bold text-[#FF9500] hover:underline flex items-center gap-1.5 cursor-pointer"
           >
-            <span>Open Safety Dashboard</span>
+            <span>Open Command Safety Dashboard</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
-            <div className="text-[10px] font-mono text-[#878377] uppercase font-bold">ACTIVE WORKERS</div>
-            <div className="text-2xl font-bold font-mono text-[#292925] mt-1">48</div>
-            <div className="text-[11px] text-[#5D5B53]">Morning Shift</div>
+        {/* 4 Command-Center Metric Cards with Radial Gauges & Hazard Highlights */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          {/* Card 1: Active Workers with Radial Gauge */}
+          <div
+            onMouseMove={handleCardMouseMove}
+            className="p-5 rounded-2xl command-card mouse-glow-card border border-[var(--card-border)] flex flex-col justify-between"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase font-bold">
+                ACTIVE WORKERS
+              </span>
+              <Activity className="w-4 h-4 text-[var(--accent-primary)]" />
+            </div>
+
+            <div className="flex items-center justify-between my-3">
+              <div>
+                <div className="text-3xl font-extrabold font-mono text-[var(--text-primary)]">48</div>
+                <div className="text-[11px] text-[var(--text-secondary)] font-mono">Morning Shift A</div>
+              </div>
+
+              {/* Radial SVG Gauge */}
+              <div className="relative w-14 h-14 shrink-0 flex items-center justify-center">
+                <svg className="w-full h-full transform -rotate-90">
+                  <circle
+                    cx="28"
+                    cy="28"
+                    r="22"
+                    fill="none"
+                    stroke="currentColor"
+                    className="text-[var(--card-border)]"
+                    strokeWidth="4"
+                  />
+                  <circle
+                    cx="28"
+                    cy="28"
+                    r="22"
+                    fill="none"
+                    stroke="#DFFF00"
+                    strokeWidth="4"
+                    strokeDasharray="138"
+                    strokeDashoffset="14"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span className="absolute text-[10px] font-mono font-bold text-[var(--accent-primary)]">96%</span>
+              </div>
+            </div>
+
+            <div className="text-[10px] font-mono text-[var(--accent-primary)] font-semibold">
+              ● Live Shift Operational
+            </div>
           </div>
-          <div className="p-4 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
-            <div className="text-[10px] font-mono text-[#878377] uppercase font-bold">WRISTBANDS SCANNED</div>
-            <div className="text-2xl font-bold font-mono text-[#292925] mt-1">42</div>
-            <div className="text-[11px] text-[#4F5D4B] font-medium">87.5% compliance</div>
+
+          {/* Card 2: Wristbands Scanned */}
+          <div
+            onMouseMove={handleCardMouseMove}
+            className="p-5 rounded-2xl command-card mouse-glow-card border border-[var(--card-border)] flex flex-col justify-between"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase font-bold">
+                WRISTBANDS SCANNED
+              </span>
+              <Scan className="w-4 h-4 text-[var(--accent-secondary)]" />
+            </div>
+
+            <div className="my-3">
+              <div className="text-3xl font-extrabold font-mono text-[var(--text-primary)]">42</div>
+              <div className="text-[11px] text-[var(--accent-primary)] font-mono font-medium mt-0.5">
+                87.5% Shift Compliance
+              </div>
+            </div>
+
+            <div className="w-full bg-[var(--card-surface-subtle)] h-1.5 rounded-full overflow-hidden border border-[var(--card-border)]">
+              <div className="bg-[#FF9500] h-full rounded-full w-[87.5%]" />
+            </div>
           </div>
-          <div className="p-4 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
-            <div className="text-[10px] font-mono text-[#878377] uppercase font-bold">EXPOSURE FLAGS</div>
-            <div className="text-2xl font-bold font-mono text-[#B08A55] mt-1">3</div>
-            <div className="text-[11px] text-[#826235]">Requires review</div>
+
+          {/* Card 3: Exposure Flags (Glowing Toxic Crimson) */}
+          <div
+            onMouseMove={handleCardMouseMove}
+            className="p-5 rounded-2xl command-card mouse-glow-card border border-[#FF3B30]/60 shadow-[0_0_20px_rgba(255,59,48,0.15)] flex flex-col justify-between bg-gradient-to-br from-[#FF3B30]/10 to-transparent"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[#FF3B30] uppercase font-bold">
+                EXPOSURE FLAGS
+              </span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#FF3B30] animate-ping" />
+            </div>
+
+            <div className="my-3">
+              <div className="text-3xl font-extrabold font-mono text-[#FF3B30] drop-shadow-[0_0_8px_#FF3B30]">
+                3
+              </div>
+              <div className="text-[11px] text-[#FF3B30] font-mono font-bold mt-0.5">
+                Medical Audit Required
+              </div>
+            </div>
+
+            <div className="text-[10px] font-mono text-[#FF3B30] font-bold">
+              ⚠ High Chronic Accumulation
+            </div>
           </div>
-          <div className="p-4 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
-            <div className="text-[10px] font-mono text-[#878377] uppercase font-bold">CALIBRATION POINTS</div>
-            <div className="text-2xl font-bold font-mono text-[#4F5D4B] mt-1">120</div>
-            <div className="text-[11px] text-[#5D5B53]">Simulated dataset</div>
+
+          {/* Card 4: Multi-Illuminant Calibration Matrix */}
+          <div
+            onMouseMove={handleCardMouseMove}
+            className="p-5 rounded-2xl command-card mouse-glow-card border border-[var(--card-border)] flex flex-col justify-between"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase font-bold">
+                CALIBRATION MATRIX
+              </span>
+              <Database className="w-4 h-4 text-[var(--accent-primary)]" />
+            </div>
+
+            <div className="my-3">
+              <div className="text-3xl font-extrabold font-mono text-[var(--accent-primary)]">
+                120
+              </div>
+              <div className="text-[11px] text-[var(--text-secondary)] font-mono mt-0.5">
+                Calibration Points (D65/F11/A)
+              </div>
+            </div>
+
+            <div className="text-[10px] font-mono text-[var(--accent-primary)] font-semibold">
+              ✓ Multi-Illuminant Normalization
+            </div>
           </div>
+
+        </div>
+
+        {/* Simulated Live Scatter Plot Tracking Shift Exposure Curves Across Refinery Zones */}
+        <div className="command-card rounded-2xl p-6 border border-[var(--card-border)] space-y-4">
+          
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[var(--card-border)] pb-3">
+            <div>
+              <span className="text-[10px] font-mono tracking-widest text-[var(--accent-primary)] uppercase font-bold">
+                LIVE TELEMETRY SCATTER PLOT // REFINERY EXPOSURE CURVES
+              </span>
+              <div className="text-xs font-bold text-[var(--text-primary)]">
+                Chronic Dose Accumulation (ppm·h) vs Shift Duration (Hours)
+              </div>
+            </div>
+
+            {/* Zone Filter Switcher */}
+            <div className="flex items-center gap-1.5 p-1 rounded-full bg-[var(--card-surface-subtle)] border border-[var(--card-border)]">
+              {(['ALL', 'ZONE0', 'ZONE1', 'ZONE2'] as const).map(zone => (
+                <button
+                  key={zone}
+                  onClick={() => setActiveZoneFilter(zone)}
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold transition-all cursor-pointer ${
+                    activeZoneFilter === zone
+                      ? 'bg-[var(--accent-primary)] text-black'
+                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                  }`}
+                >
+                  {zone === 'ALL' ? 'ALL ZONES' : zone === 'ZONE0' ? 'Zone 0: Tank Farm' : zone === 'ZONE1' ? 'Zone 1: Claus SRU' : 'Zone 2: Utilities'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* SVG Scatter Plot Canvas */}
+          <div className="relative w-full h-64 sm:h-72 bg-[#040608] rounded-xl border border-[var(--card-border)] p-4 overflow-hidden">
+            
+            {/* Grid Lines */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(223,255,0,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(223,255,0,0.04)_1px,transparent_1px)] bg-[size:40px_30px]" />
+
+            {/* Threshold Line at 10 ppm*h (Advisory) */}
+            <div className="absolute left-10 right-4 top-[50%] border-t border-dashed border-[#FF9500]/70 flex items-center justify-end">
+              <span className="text-[9px] font-mono text-[#FF9500] px-1 bg-[#040608]">10 ppm·h TWA Ceiling</span>
+            </div>
+
+            {/* Threshold Line at 20 ppm*h (Evacuate / Immediate Flag) */}
+            <div className="absolute left-10 right-4 top-[20%] border-t border-dashed border-[#FF3B30]/70 flex items-center justify-end">
+              <span className="text-[9px] font-mono text-[#FF3B30] px-1 bg-[#040608]">20 ppm·h Medical Audit Limit</span>
+            </div>
+
+            {/* SVG Plot Points */}
+            <svg className="absolute inset-0 w-full h-full p-6 overflow-visible">
+              {filteredScatterPoints.map((pt) => {
+                const cx = `${(pt.shiftHour / 8.5) * 85 + 8}%`;
+                const cy = `${100 - (pt.dose / 24) * 85 - 8}%`;
+                const isCrimson = pt.status === 'FLAG';
+                const isAmber = pt.status === 'WARNING';
+                const color = isCrimson ? '#FF3B30' : isAmber ? '#FF9500' : '#DFFF00';
+
+                return (
+                  <g key={pt.id} className="cursor-pointer group">
+                    <circle
+                      cx={cx}
+                      cy={cy}
+                      r={isCrimson ? 6 : 4.5}
+                      fill={color}
+                      className={isCrimson ? 'animate-pulse' : ''}
+                    />
+                    {isCrimson && (
+                      <circle
+                        cx={cx}
+                        cy={cy}
+                        r="12"
+                        fill="none"
+                        stroke="#FF3B30"
+                        strokeWidth="1"
+                        className="animate-ping-slow opacity-60"
+                      />
+                    )}
+                    {/* Hover Tooltip in SVG */}
+                    <title>{`${pt.worker} (${pt.name}) — ${pt.dose} ppm·h at hour ${pt.shiftHour}`}</title>
+                  </g>
+                );
+              })}
+            </svg>
+
+            {/* Axes Labels */}
+            <div className="absolute bottom-2 left-6 text-[9.5px] font-mono text-[var(--text-secondary)]">0h Shift Start</div>
+            <div className="absolute bottom-2 right-6 text-[9.5px] font-mono text-[var(--text-secondary)]">8.0h Shift End</div>
+            <div className="absolute top-3 left-4 text-[9.5px] font-mono text-[var(--text-secondary)]">24 ppm·h</div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between text-[10px] font-mono text-[var(--text-secondary)] pt-1">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#DFFF00]" />
+                <span>Nominal Safe (&lt;10 ppm·h)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#FF9500]" />
+                <span>Advisory Warning (10–15 ppm·h)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#FF3B30]" />
+                <span>Ceiling Flag (&gt;15 ppm·h)</span>
+              </div>
+            </div>
+            <div className="text-[var(--accent-primary)] font-semibold">
+              Live Sensor Feed: 48 Wristbands Synchronized
+            </div>
+          </div>
+
         </div>
       </section>
 
-      {/* 07 — FINAL CTA */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="bg-[#292925] text-[#EDE5D6] rounded-xl p-10 md:p-12 text-center space-y-6 border border-[#3E3C36] shadow-sm">
+
+      {/* =========================================================================
+          07 — FINAL CTA (SIH 2026 / MRPL SAFETY)
+         ========================================================================= */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div
+          onMouseMove={handleCardMouseMove}
+          className="command-card mouse-glow-card rounded-2xl p-10 sm:p-14 text-center space-y-6 border border-[var(--card-border)] shadow-2xl relative overflow-hidden"
+        >
           <div className="space-y-2 max-w-2xl mx-auto">
-            <span className="text-xs font-mono font-semibold uppercase tracking-widest text-[#C2CBBF]">
-              SMART INDIA HACKATHON 2026
+            <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--accent-primary)]">
+              SMART INDIA HACKATHON 2026 // MRPL PROTOCOL
             </span>
-            <h2 className="text-3xl sm:text-4xl font-normal tracking-tight text-white">
+            <h2 className="text-3xl sm:text-4xl font-extrabold font-heading tracking-tight text-[var(--text-primary)]">
               Make invisible exposure measurable.
             </h2>
-            <p className="text-xs sm:text-sm text-[#A69F91] leading-relaxed">
+            <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
               Experience the complete dosimeter workflow with simulated optical calibration, environmental correction, and shift audit logs.
             </p>
           </div>
@@ -517,23 +1138,23 @@ export const LandingPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
             <button
               onClick={() => setActivePage('scan')}
-              className="w-full sm:w-auto px-7 py-3 rounded bg-[#4F5D4B] text-[#F6F1E7] text-xs font-bold tracking-wide hover:bg-[#3D493A] transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-[#FF9500] to-[#F59E0B] text-black font-mono font-bold text-xs sm:text-sm tracking-wide shadow-[0_0_20px_rgba(255,149,0,0.4)] hover:shadow-[0_0_30px_rgba(255,149,0,0.6)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>Try the Demo</span>
-              <ArrowRight className="w-4 h-4" />
+              <Scan className="w-4 h-4 stroke-[2.5]" />
+              <span>Try the Wristband Scanner</span>
             </button>
 
             <button
               onClick={() => setActivePage('calibration')}
-              className="w-full sm:w-auto px-6 py-3 rounded bg-[#32322D] border border-[#43423A] text-[#EDE5D6] text-xs font-medium hover:bg-[#3B3A34] transition-colors flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-full command-card border border-[var(--card-border)] text-[var(--text-primary)] font-mono text-xs sm:text-sm font-semibold hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/10 transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Database className="w-3.5 h-3.5 text-[#B08A55]" />
+              <Database className="w-4 h-4 text-[#DFFF00]" />
               <span>Explore 120-Row Dataset</span>
             </button>
           </div>
 
-          <div className="pt-6 border-t border-[#3E3C36] text-[11px] font-mono text-[#8E897E]">
-            Designed & developed by <strong>RAGEBYTERS</strong> for SIH 2026
+          <div className="pt-6 border-t border-[var(--card-border)] text-[11px] font-mono text-[var(--text-secondary)]">
+            Designed & developed by <strong>RAGEBYTERS</strong> for SIH 2026 · MRPL Mangalore Refinery
           </div>
         </div>
       </section>
