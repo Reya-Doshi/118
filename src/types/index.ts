@@ -1,4 +1,4 @@
-export type ExposureStatus = 'NORMAL' | 'MONITOR' | 'REVIEW';
+export type ExposureStatus = 'NORMAL' | 'MONITOR' | 'REVIEW' | 'OUT_OF_CALIBRATION';
 
 export interface Worker {
   id: string;

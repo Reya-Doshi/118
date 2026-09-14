@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { StatusBadge } from '../components/StatusBadge';
 import bandVideo from '../assets/band.mp4';
 import bandDesignImg from '../assets/band design.png';
 import {
@@ -10,7 +11,8 @@ import {
   AlertTriangle,
   Scan,
   Database,
-  Activity
+  Activity,
+  Cpu
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
@@ -152,17 +154,96 @@ export const LandingPage: React.FC = () => {
     ? scatterPoints
     : scatterPoints.filter(p => p.zone === activeZoneFilter);
 
+  const [heroActiveStage, setHeroActiveStage] = useState<number>(1);
+
+  const heroStages = [
+    {
+      stage: 1,
+      num: '01',
+      name: 'Stage 1',
+      colorName: 'Deep violet / purple',
+      expectedDose: '~0–0.49 ppm·h',
+      status: 'NORMAL' as const,
+      hex: '#795185',
+      deltaE: '0.79',
+      lab: 'L* 40.6 · a* 26.6 · b* -22.5',
+      desc: 'Pristine unreacted Cu(II)-PAN chemosensor matrix. Safe shift baseline.'
+    },
+    {
+      stage: 2,
+      num: '02',
+      name: 'Stage 2',
+      colorName: 'Violet-purple / reddish-purple',
+      expectedDose: '~0.50–0.99 ppm·h',
+      status: 'MONITOR' as const,
+      hex: '#935881',
+      deltaE: '11.4',
+      lab: 'L* 45.4 · a* 30.3 · b* -12.3',
+      desc: 'Trace sub-alarm onset. Increased shift monitoring.'
+    },
+    {
+      stage: 3,
+      num: '03',
+      name: 'Stage 3',
+      colorName: 'Reddish / pink',
+      expectedDose: '~1.00–2.00 ppm·h',
+      status: 'REVIEW' as const,
+      hex: '#c96b70',
+      deltaE: '40.2',
+      lab: 'L* 56.2 · a* 37.6 · b* 13.9',
+      desc: 'Intermediate action level reached. Shift rotation required.'
+    },
+    {
+      stage: 4,
+      num: '04',
+      name: 'Stage 4',
+      colorName: 'Orange / amber-orange',
+      expectedDose: '~2–10 ppm·h',
+      status: 'REVIEW' as const,
+      hex: '#d8796a',
+      deltaE: '51.8',
+      lab: 'L* 61.0 · a* 35.5 · b* 24.5',
+      desc: 'Elevated shift overexposure. Safety Officer review alert.'
+    },
+    {
+      stage: 5,
+      num: '05',
+      name: 'Stage 5',
+      colorName: 'Yellow / yellow-orange',
+      expectedDose: '~10–30+ ppm·h',
+      status: 'REVIEW' as const,
+      hex: '#fdb937',
+      deltaE: '101.1',
+      lab: 'L* 79.5 · a* 13.7 · b* 70.5',
+      desc: 'Saturated displacement. Evacuate zone & medical review.'
+    },
+    {
+      stage: 0,
+      num: '—',
+      name: 'Out of Cal',
+      colorName: 'Beige / brown / black',
+      expectedDose: 'DO NOT ESTIMATE',
+      status: 'OUT_OF_CALIBRATION' as const,
+      hex: '#5c4838',
+      deltaE: 'N/A',
+      lab: 'Degraded Matrix',
+      desc: 'Degraded, expired, or non-Cu-PAN strip. Out of calibration range.'
+    }
+  ];
+
+  const currentHeroStage = heroStages.find(s => s.stage === heroActiveStage) || heroStages[0];
+
   return (
     <div className="space-y-24 md:space-y-32 pb-24 text-[var(--text-primary)]">
       
       {/* =========================================================================
-          01 — HERO SECTION: LIVE CALIBRATION TELEMETRY CONSOLE
+          01 — HERO SECTION: LEFT-ALIGNED COMMAND HERO WITH REFINERY HUD
          ========================================================================= */}
       <section
         ref={heroRef}
-        className="relative min-h-[92vh] flex items-center pt-28 sm:pt-36 pb-16 lg:pb-24 overflow-hidden border-b border-[var(--card-border)]"
+        className="relative min-h-[92vh] flex items-center pt-28 sm:pt-36 pb-14 lg:pb-20 overflow-hidden border-b border-[var(--card-border)]"
       >
-        {/* 1. RESTORE FULL-BLEED HERO BACKGROUND VIDEO */}
+        {/* 1. HERO BACKGROUND VIDEO (Optimized for High Visibility in BOTH Light & Dark Modes) */}
         {!videoError && (
           <video
             ref={videoRef}
@@ -173,99 +254,231 @@ export const LandingPage: React.FC = () => {
             playsInline
             preload="metadata"
             onError={() => setVideoError(true)}
-            className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none opacity-40 mix-blend-screen scale-105 filter brightness-90 contrast-110"
+            className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none opacity-55 dark:opacity-30 scale-105 filter brightness-95 contrast-110 transition-opacity duration-300"
           />
         )}
 
-        {/* 2. DARK GRADIENT SCRIM OVER VIDEO FOR RAZOR-SHARP TEXT READABILITY */}
+        {/* 2. THEME-AWARE GRADIENT SCRIM (Ensures text sharpness in both Light and Dark modes) */}
         <div
-          className="absolute inset-0 z-[1] pointer-events-none"
-          style={{
-            background: 'linear-gradient(180deg, rgba(8, 10, 14, 0.78) 0%, rgba(8, 10, 14, 0.92) 80%, #080A0E 100%)'
-          }}
+          className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-white/70 via-slate-50/85 to-[#F8FAFC] dark:from-[#080A0E]/75 dark:via-[#080A0E]/90 dark:to-[#080A0E] transition-colors duration-300"
         />
 
         {/* Ambient Radial Accent Lighting */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(245,158,11,0.08),transparent_70%)] pointer-events-none z-[2]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(245,158,11,0.09),transparent_70%)] pointer-events-none z-[2]" />
 
-        {/* 3. HERO CONTENT CONTAINER (CENTERED, HIGH-IMPACT COMMAND HERO) */}
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center py-6 sm:py-12">
-          
-          {/* Eyebrow Chip */}
-          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full command-card border border-[var(--card-border)] shadow-lg mx-auto mb-6">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F59E0B] opacity-80" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F59E0B]" />
-            </span>
-            <span className="text-[11px] sm:text-xs font-mono tracking-wider font-bold text-[var(--text-primary)]">
-              SARVAS // ZERO-POWER CUMULATIVE H₂S DOSIMETRY
-            </span>
-          </div>
-
-          {/* Headline with High-Contrast Gradient */}
-          <div className="space-y-4 max-w-4xl mx-auto">
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold font-heading tracking-tight leading-[1.06]">
-              <span className="block text-[var(--text-primary)]">
-                Know the exposure.
-              </span>
-              <span className="block bg-gradient-to-r from-[#F59E0B] via-[#FBBF24] to-[#38BDF8] bg-clip-text text-transparent drop-shadow-sm">
-                Not just the alarm.
-              </span>
-            </h1>
-            <p className="text-base sm:text-xl font-mono tracking-wide text-[var(--accent-primary)] font-semibold">
-              Because not all danger announces itself.
-            </p>
-          </div>
-
-          {/* Subhead */}
-          <p className="text-base sm:text-lg text-[var(--text-secondary)] font-normal leading-relaxed max-w-2xl mx-auto mt-6">
-            Transforming sub-alarm ambient H₂S into actionable, Arrhenius-corrected optical dose records across 8-hour refinery shifts with zero battery drain.
-          </p>
-
-          {/* 3 Stat Badges in Center Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 max-w-2xl mx-auto mt-8">
-            <div className="command-card rounded-xl p-4 border border-[var(--card-border)] text-center shadow-md">
-              <div className="text-[10px] font-mono text-[var(--text-secondary)] uppercase font-semibold">Optical Precision</div>
-              <div className="text-base sm:text-lg font-mono font-bold text-[#38BDF8] mt-1">
-                99.2% CIE
+        {/* 3. HERO CONTENT CONTAINER (SPLIT COMMAND LAYOUT: LEFT COPY, RIGHT TELEMETRY HUD) */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-4 lg:py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            
+            {/* LEFT COLUMN: Strictly Left-Aligned Typography & CTAs */}
+            <div className="lg:col-span-7 space-y-6 text-left">
+              
+              {/* Eyebrow Chip */}
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full command-card border border-[var(--card-border)] shadow-md">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F59E0B] opacity-80" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F59E0B]" />
+                </span>
+                <span className="text-[10.5px] sm:text-[11px] font-mono tracking-wider font-bold text-[var(--text-primary)]">
+                  SARVAS // ZERO-POWER CUMULATIVE H₂S DOSIMETRY
+                </span>
               </div>
-              <div className="text-[10px] text-[var(--text-secondary)]">ΔE Calibration Accuracy</div>
+
+              {/* Headline with High-Contrast Gradient */}
+              <div className="space-y-3">
+                <h1 className="text-4xl sm:text-6xl lg:text-[66px] font-extrabold font-heading tracking-tight leading-[1.05]">
+                  <span className="block text-[var(--text-primary)]">
+                    Know the exposure.
+                  </span>
+                  <span className="block bg-gradient-to-r from-[#F59E0B] via-[#FBBF24] to-[#38BDF8] bg-clip-text text-transparent drop-shadow-xs">
+                    Not just the alarm.
+                  </span>
+                </h1>
+                <p className="text-base sm:text-xl font-mono tracking-wide text-[var(--accent-primary)] font-semibold">
+                  Because not all danger announces itself.
+                </p>
+              </div>
+
+              {/* Subhead */}
+              <p className="text-base sm:text-lg text-[var(--text-secondary)] font-normal leading-relaxed max-w-xl">
+                Transforming sub-alarm ambient H₂S into actionable, Arrhenius-corrected optical dose records across 8-hour refinery shifts with zero battery drain.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3.5 pt-2">
+                <button
+                  onClick={() => setActivePage('scan')}
+                  className="px-6 sm:px-8 py-3.5 rounded-full bg-gradient-to-r from-[#F59E0B] to-[#D97706] text-black font-mono font-bold text-xs sm:text-sm tracking-wide shadow-[0_0_25px_rgba(245,158,11,0.5)] hover:shadow-[0_0_35px_rgba(245,158,11,0.75)] hover:scale-[1.02] active:scale-98 transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <Scan className="w-4 h-4 stroke-[2.5]" />
+                  <span>Read a Wristband</span>
+                </button>
+
+                <button
+                  onClick={() => scrollToSection('the-band')}
+                  className="px-5 sm:px-6 py-3.5 rounded-full command-card border border-[var(--card-border)] text-[var(--text-primary)] font-mono text-xs sm:text-sm font-semibold hover:border-[#38BDF8] hover:bg-black/5 dark:hover:bg-white/[0.04] transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+                >
+                  <span>Explore Hardware Specs</span>
+                  <ChevronDown className="w-4 h-4 text-[#38BDF8]" />
+                </button>
+              </div>
+
+              {/* 3 Stat Badges */}
+              <div className="grid grid-cols-3 gap-3 max-w-xl pt-4 border-t border-[var(--card-border)]">
+                <div className="command-card rounded-xl p-3 border border-[var(--card-border)] text-left shadow-xs">
+                  <div className="text-[9.5px] font-mono text-[var(--text-secondary)] uppercase font-semibold">Optical Precision</div>
+                  <div className="text-base sm:text-lg font-mono font-bold text-[#38BDF8] mt-0.5">
+                    99.2% CIE
+                  </div>
+                  <div className="text-[9px] text-[var(--text-secondary)]">ΔE Calibration</div>
+                </div>
+
+                <div className="command-card rounded-xl p-3 border border-[var(--card-border)] text-left shadow-xs">
+                  <div className="text-[9.5px] font-mono text-[var(--text-secondary)] uppercase font-semibold">Refinery Safety</div>
+                  <div className="text-base sm:text-lg font-mono font-bold text-[#F59E0B] mt-0.5">
+                    Zone 0 ATEX
+                  </div>
+                  <div className="text-[9px] text-[var(--text-secondary)]">Zero Spark Battery-Free</div>
+                </div>
+
+                <div className="command-card rounded-xl p-3 border border-[var(--card-border)] text-left shadow-xs">
+                  <div className="text-[9.5px] font-mono text-[var(--text-secondary)] uppercase font-semibold">Shift Dossier</div>
+                  <div className="text-base sm:text-lg font-mono font-bold text-[var(--text-primary)] mt-0.5">
+                    8-Hour Memory
+                  </div>
+                  <div className="text-[9px] text-[var(--text-secondary)]">Chemical Integration</div>
+                </div>
+              </div>
+
             </div>
 
-            <div className="command-card rounded-xl p-4 border border-[var(--card-border)] text-center shadow-md">
-              <div className="text-[10px] font-mono text-[var(--text-secondary)] uppercase font-semibold">Refinery Safety</div>
-              <div className="text-base sm:text-lg font-mono font-bold text-[#F59E0B] mt-1">
-                Zone 0 ATEX
+            {/* RIGHT COLUMN: Interactive Refinery Chemosensing HUD & Calibration Radar */}
+            <div className="lg:col-span-5">
+              <div className="command-card rounded-2xl p-5 sm:p-6 border border-[var(--card-border)] shadow-2xl relative overflow-hidden backdrop-blur-xl space-y-4">
+                
+                {/* HUD Header */}
+                <div className="flex items-center justify-between border-b border-[var(--card-border)] pb-3">
+                  <div className="flex items-center gap-2">
+                    <Cpu className="w-4 h-4 text-[var(--accent-primary)]" />
+                    <span className="text-xs font-mono font-bold tracking-wider text-[var(--text-primary)]">
+                      CU-PAN CALIBRATION MATRIX
+                    </span>
+                  </div>
+                  <span className="text-[9.5px] font-mono px-2 py-0.5 rounded-full bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold border border-[var(--accent-primary)]/30">
+                    260 RECORDS
+                  </span>
+                </div>
+
+                {/* Interactive Stage Picker */}
+                <div>
+                  <div className="text-[10px] font-mono text-[var(--text-secondary)] uppercase font-semibold mb-2 flex items-center justify-between">
+                    <span>Inspect Stages 1–5 & Out of Cal:</span>
+                    <span className="text-[9px] text-[var(--accent-primary)] font-bold">CLICK TO TEST</span>
+                  </div>
+                  <div className="grid grid-cols-6 gap-1.5">
+                    {heroStages.map(s => (
+                      <button
+                        key={s.stage}
+                        onClick={() => setHeroActiveStage(s.stage)}
+                        className={`p-2 rounded-lg border text-center transition-all cursor-pointer flex flex-col items-center gap-1.5 ${
+                          heroActiveStage === s.stage
+                            ? 'border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 shadow-sm ring-1 ring-[var(--accent-primary)]'
+                            : 'border-[var(--card-border)] bg-black/5 dark:bg-white/[0.04] hover:border-[var(--accent-primary)]/50'
+                        }`}
+                        title={`${s.name} (${s.expectedDose})`}
+                      >
+                        <div
+                          className="w-4 h-4 rounded-full shadow-xs border border-black/20"
+                          style={{ backgroundColor: s.hex }}
+                        />
+                        <span className="text-[9px] font-mono font-bold text-[var(--text-primary)]">
+                          {s.num}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Live Stage Display Card */}
+                <div className="p-4 rounded-xl bg-black/5 dark:bg-black/30 border border-[var(--card-border)] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-7 h-7 rounded-lg shadow-md border border-white/20 transition-all duration-300"
+                        style={{ backgroundColor: currentHeroStage.hex }}
+                      />
+                      <div>
+                        <div className="text-xs font-mono font-bold text-[var(--text-primary)]">
+                          {currentHeroStage.name}: {currentHeroStage.colorName}
+                        </div>
+                        <div className="text-[10px] font-mono text-[var(--text-secondary)]">
+                          {currentHeroStage.lab}
+                        </div>
+                      </div>
+                    </div>
+                    <StatusBadge status={currentHeroStage.status} size="sm" />
+                  </div>
+
+                  {/* Expected Dose Callout */}
+                  <div className="grid grid-cols-2 gap-3 pt-2.5 border-t border-[var(--card-border)]">
+                    <div>
+                      <span className="text-[9px] font-mono text-[var(--text-secondary)] uppercase block">
+                        Prototype Dose
+                      </span>
+                      <span className="text-sm sm:text-base font-mono font-extrabold text-[var(--accent-primary)]">
+                        {currentHeroStage.expectedDose}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-mono text-[var(--text-secondary)] uppercase block">
+                        Color Shift (ΔEab*)
+                      </span>
+                      <span className="text-sm sm:text-base font-mono font-bold text-[var(--text-primary)]">
+                        {currentHeroStage.deltaE}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-[10.5px] text-[var(--text-secondary)] leading-relaxed italic border-t border-[var(--card-border)] pt-2">
+                    "{currentHeroStage.desc}"
+                  </p>
+                </div>
+
+                {/* Displacement Reaction Formula */}
+                <div className="p-2.5 rounded-lg bg-[var(--card-surface-subtle)] border border-[var(--card-border)] flex items-center justify-between text-[10px] font-mono">
+                  <span className="text-[var(--text-secondary)] font-semibold">REACTION:</span>
+                  <span className="text-[var(--text-primary)] font-bold truncate max-w-[270px]">
+                    Cu(PAN)₂ (Violet) + H₂S → CuS↓ + 2 H-PAN (Yellow)
+                  </span>
+                </div>
+
+                {/* Ambient Sensor Bus Footer */}
+                <div className="flex items-center justify-between text-[9.5px] font-mono text-[var(--text-secondary)] px-1 pt-1">
+                  <span>SENSOR: Cu-PAN</span>
+                  <span>D65 ILLUMINANT</span>
+                  <span className="text-[#10B981] font-bold">CALIBRATED</span>
+                </div>
+
               </div>
-              <div className="text-[10px] text-[var(--text-secondary)]">Zero Spark Battery-Free</div>
             </div>
 
-            <div className="command-card rounded-xl p-4 border border-[var(--card-border)] text-center shadow-md">
-              <div className="text-[10px] font-mono text-[var(--text-secondary)] uppercase font-semibold">Continuous Dossier</div>
-              <div className="text-base sm:text-lg font-mono font-bold text-[var(--text-primary)] mt-1">
-                8-Hour Shift
-              </div>
-              <div className="text-[10px] text-[var(--text-secondary)]">Permanent Chemical Memory</div>
-            </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
-            <button
-              onClick={() => setActivePage('scan')}
-              className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-[#F59E0B] to-[#D97706] text-black font-mono font-bold text-sm tracking-wide shadow-[0_0_25px_rgba(245,158,11,0.5)] hover:shadow-[0_0_35px_rgba(245,158,11,0.75)] hover:scale-[1.02] active:scale-98 transition-all flex items-center justify-center gap-2.5 cursor-pointer"
-            >
-              <Scan className="w-5 h-5 stroke-[2.5]" />
-              <span>Read a Wristband</span>
-            </button>
-
-            <button
-              onClick={() => scrollToSection('the-band')}
-              className="w-full sm:w-auto px-7 py-4 rounded-full command-card border border-[var(--card-border)] text-[var(--text-primary)] font-mono text-sm font-semibold hover:border-[#38BDF8] hover:bg-white/[0.04] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
-            >
-              <span>Explore Hardware Specs</span>
-              <ChevronDown className="w-4 h-4 text-[#38BDF8]" />
-            </button>
+          {/* Bottom Live Refinery Telemetry Ticker */}
+          <div className="mt-10 pt-4 border-t border-[var(--card-border)] flex flex-wrap items-center justify-between gap-3 text-[10px] font-mono text-[var(--text-secondary)]">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
+              <span className="font-bold text-[var(--text-primary)]">LIVE SENSING BUS:</span>
+            </div>
+            <div className="truncate flex items-center gap-3 sm:gap-4 text-[10px]">
+              <span>CLAUS SRU TRAIN 01: <strong className="text-[var(--accent-primary)]">0.14 ppm·h</strong> [NORMAL]</span>
+              <span className="text-[var(--text-muted)]">|</span>
+              <span>HYDROCRACKER 02: <strong className="text-[#FF9500]">0.68 ppm·h</strong> [MONITOR]</span>
+              <span className="text-[var(--text-muted)]">|</span>
+              <span>SULFUR PIT: <strong className="text-[#EF4444]">1.45 ppm·h</strong> [REVIEW]</span>
+              <span className="text-[var(--text-muted)]">|</span>
+              <span>TANK FARM 4B: <strong className="text-[var(--accent-primary)]">0.05 ppm·h</strong> [NORMAL]</span>
+            </div>
           </div>
 
         </div>

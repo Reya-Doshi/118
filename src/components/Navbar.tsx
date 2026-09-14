@@ -12,7 +12,8 @@ import {
   Moon,
   Layers,
   Cpu,
-  Users
+  Users,
+  Database
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -104,39 +105,49 @@ export const Navbar: React.FC = () => {
             </div>
           </button>
 
-          {/* Center: 4 Clean Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 px-3 py-1 rounded-full bg-black/10 dark:bg-black/30 border border-[var(--card-border)]">
+          {/* Center: 5 Clean Navigation Links in Ordered Command Hierarchy */}
+          <nav className="hidden lg:flex items-center gap-0.5 px-2.5 py-1 rounded-full bg-black/5 dark:bg-black/30 border border-[var(--card-border)] backdrop-blur-md">
             <button
               onClick={() => handleNavClick('landing', 'the-band')}
-              className="px-3 py-1.5 rounded-full text-xs font-mono font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/[0.06] transition-all cursor-pointer"
+              className="px-2.5 py-1 rounded-full text-xs font-mono font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/[0.06] transition-all cursor-pointer"
             >
               [Dosimeter Anatomy]
             </button>
             <button
               onClick={() => handleNavClick('landing', 'how-it-works')}
-              className="px-3 py-1.5 rounded-full text-xs font-mono font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/[0.06] transition-all cursor-pointer"
+              className="px-2.5 py-1 rounded-full text-xs font-mono font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/[0.06] transition-all cursor-pointer"
             >
               [Optical Pipeline]
             </button>
             <button
               onClick={() => handleNavClick('dashboard')}
-              className={`px-3 py-1.5 rounded-full text-xs font-mono font-medium transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-full text-xs font-mono font-medium transition-all cursor-pointer ${
                 activePage === 'dashboard'
                   ? 'bg-[var(--accent-primary)] text-black font-bold shadow-xs'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/[0.06]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/[0.06]'
               }`}
             >
               [Plant Safety]
             </button>
             <button
               onClick={() => handleNavClick(currentUser?.role === 'WORKER' ? 'worker-dashboard' : 'workers')}
-              className={`px-3 py-1.5 rounded-full text-xs font-mono font-medium transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-full text-xs font-mono font-medium transition-all cursor-pointer ${
                 activePage === 'worker-dashboard' || activePage === 'workers'
                   ? 'bg-[var(--accent-primary)] text-black font-bold shadow-xs'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/[0.06]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/[0.06]'
               }`}
             >
               [Worker Dossier]
+            </button>
+            <button
+              onClick={() => handleNavClick('calibration')}
+              className={`px-2.5 py-1 rounded-full text-xs font-mono font-medium transition-all cursor-pointer ${
+                activePage === 'calibration'
+                  ? 'bg-[var(--accent-primary)] text-black font-bold shadow-xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/[0.06]'
+              }`}
+            >
+              [Calibration Dataset]
             </button>
           </nav>
 
@@ -263,6 +274,17 @@ export const Navbar: React.FC = () => {
               >
                 <Users className="w-3.5 h-3.5" />
                 <span>Worker Dossier</span>
+              </button>
+              <button
+                onClick={() => handleNavClick('calibration')}
+                className={`col-span-2 flex items-center justify-center gap-2 p-2.5 rounded-xl border border-[var(--card-border)] text-xs font-mono font-medium text-left ${
+                  activePage === 'calibration'
+                    ? 'bg-[var(--accent-primary)] text-black font-bold'
+                    : 'bg-[var(--card-surface-subtle)] text-[var(--text-primary)]'
+                }`}
+              >
+                <Database className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
+                <span>Calibration Dataset (260 Records)</span>
               </button>
             </div>
 

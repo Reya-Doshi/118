@@ -12,29 +12,25 @@ export const ExplanationModal: React.FC = () => {
       num: '01',
       title: 'WEAR',
       desc: 'Worker wears the passive wristband during the shift.',
-      icon: ShieldCheck,
-      color: 'text-[#4F5D4B] bg-[#E5EADF]'
+      icon: ShieldCheck
     },
     {
       num: '02',
       title: 'RESPOND',
       desc: 'The chemical strip changes color progressively with cumulative H₂S exposure.',
-      icon: Activity,
-      color: 'text-[#826235] bg-[#F3EDE2]'
+      icon: Activity
     },
     {
       num: '03',
       title: 'SCAN',
       desc: 'Safety officer photographs the strip beside its reference scale.',
-      icon: Camera,
-      color: 'text-[#292925] bg-[#EDE5D6]'
+      icon: Camera
     },
     {
       num: '04',
       title: 'QUANTIFY',
-      desc: '118 extracts CIE L*a*b*, calculates ΔE, applies environmental compensation, and records dosage.',
-      icon: BarChart3,
-      color: 'text-[#4F5D4B] bg-[#E5EADF]'
+      desc: 'SARVAS extracts CIE L*a*b*, calculates ΔE, applies environmental compensation, and records dosage.',
+      icon: BarChart3
     }
   ];
 
@@ -101,15 +97,15 @@ export const ExplanationModal: React.FC = () => {
           </p>
         </div>
 
-        {/* 120-Row Simulated Calibration Dataset Note */}
+        {/* 260-Row Cu-PAN Prototype Calibration Dataset Note */}
         <div className="command-card p-4 rounded-xl border border-[var(--accent-primary)]/40 mb-4 text-[var(--text-primary)] flex items-start justify-between gap-4 bg-[var(--accent-primary)]/5">
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5 font-mono text-[var(--accent-primary)]">
               <Database className="w-3.5 h-3.5" />
-              Simulated Calibration Dataset (120 Samples)
+              Cu-PAN Prototype Calibration Dataset (260 Records)
             </h4>
             <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
-              118 is wired to a 120-row synthetic dataset mapping target doses (0–160 ppm·h), gas concentrations, CIE L*a*b* coordinates, and reference target ΔEab* values with temperature and humidity compensation factors.
+              SARVAS is calibrated against a 260-record Cu-PAN displacement dataset mapping target doses (0–44 ppm·h), gas concentrations, CIE L*a*b* coordinates, and reference ΔEab* values across Stages 1–5 with temperature and humidity compensation factors.
             </p>
           </div>
           <button
@@ -117,7 +113,7 @@ export const ExplanationModal: React.FC = () => {
               closeExplanation();
               setActivePage('calibration');
             }}
-            className="px-3 py-1.5 rounded-full bg-[var(--accent-primary)] text-black text-[10px] font-mono font-bold shrink-0 hover:bg-[#CCFF00] cursor-pointer shadow-xs"
+            className="px-3 py-1.5 rounded-full bg-[var(--accent-primary)] text-black text-[10px] font-mono font-bold shrink-0 hover:bg-[#D97706] cursor-pointer shadow-xs"
           >
             View Dataset
           </button>

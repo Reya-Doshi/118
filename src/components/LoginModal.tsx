@@ -184,28 +184,28 @@ export const LoginModal: React.FC = () => {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200"
       onClick={closeLoginModal}
     >
       <div 
-        className="bg-[#F6F1E7] border border-[#D8D0C2] rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden text-[#292925] flex flex-col max-h-[90vh]"
+        className="command-card rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden text-[var(--text-primary)] border border-[var(--card-border)] flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
         
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-[#D8D0C2] bg-[#EDE5D6]/70">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--card-border)] bg-[var(--card-surface-subtle)]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#292925] text-[#F6F1E7] flex items-center justify-center font-mono font-bold text-xs shadow-xs">
-              118
+            <div className="w-9 h-9 rounded-xl bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/40 text-[var(--accent-primary)] flex items-center justify-center font-mono font-bold text-xs shadow-xs">
+              S118
             </div>
             <div>
-              <h3 className="text-base font-serif font-bold text-[#292925] tracking-tight flex items-center gap-2">
+              <h3 className="text-base font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
                 <span>Personnel Authentication</span>
-                <span className="text-[10px] font-mono bg-[#71806B]/20 text-[#4F5D4B] px-2 py-0.5 rounded font-semibold uppercase">
+                <span className="text-[10px] font-mono bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 px-2 py-0.5 rounded font-semibold uppercase">
                   MRPL Refinery
                 </span>
               </h3>
-              <p className="text-[11px] text-[#5D5B53] font-serif">
+              <p className="text-[11px] text-[var(--text-secondary)] font-mono">
                 Select your plant credentials to access your personal dashboard
               </p>
             </div>
@@ -213,7 +213,7 @@ export const LoginModal: React.FC = () => {
 
           <button
             onClick={closeLoginModal}
-            className="p-2 rounded-xl text-[#5D5B53] hover:text-[#292925] hover:bg-[#D8D0C2]/50 transition-colors cursor-pointer"
+            className="p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-surface)] transition-colors cursor-pointer border border-transparent hover:border-[var(--card-border)]"
             aria-label="Close modal"
           >
             <X className="w-4 h-4" />
@@ -221,13 +221,13 @@ export const LoginModal: React.FC = () => {
         </div>
 
         {/* Tab Toggle Navigation */}
-        <div className="px-6 pt-4 pb-2 border-b border-[#D8D0C2]/70 flex gap-2">
+        <div className="px-6 pt-4 pb-2 border-b border-[var(--card-border)] flex gap-2">
           <button
             onClick={() => setActiveTab('presets')}
             className={`flex-1 py-2 px-3 rounded-xl text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeTab === 'presets'
-                ? 'bg-[#292925] text-[#F6F1E7] shadow-xs'
-                : 'bg-[#EDE5D6]/60 text-[#5D5B53] hover:bg-[#EDE5D6] hover:text-[#292925]'
+                ? 'bg-[var(--accent-primary)] text-black shadow-xs font-black'
+                : 'bg-[var(--card-surface-subtle)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
             <KeyRound className="w-3.5 h-3.5" />
@@ -238,8 +238,8 @@ export const LoginModal: React.FC = () => {
             onClick={() => setActiveTab('custom')}
             className={`flex-1 py-2 px-3 rounded-xl text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeTab === 'custom'
-                ? 'bg-[#292925] text-[#F6F1E7] shadow-xs'
-                : 'bg-[#EDE5D6]/60 text-[#5D5B53] hover:bg-[#EDE5D6] hover:text-[#292925]'
+                ? 'bg-[var(--accent-primary)] text-black shadow-xs font-black'
+                : 'bg-[var(--card-surface-subtle)] border border-[var(--card-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
             <IdCard className="w-3.5 h-3.5" />
@@ -252,9 +252,9 @@ export const LoginModal: React.FC = () => {
           
           {activeTab === 'presets' ? (
             <div className="space-y-3">
-              <div className="flex items-center justify-between text-[11px] text-[#878377] font-mono">
+              <div className="flex items-center justify-between text-[11px] text-[var(--text-secondary)] font-mono">
                 <span>SELECT PERSONNEL PASS TO SIGN IN</span>
-                <span className="text-[#4F5D4B] font-semibold">Immediate Dashboard Routing</span>
+                <span className="text-[var(--accent-primary)] font-semibold">Immediate Dashboard Routing</span>
               </div>
 
               {PRESET_PERSONNEL.map((personnel) => {
@@ -268,63 +268,63 @@ export const LoginModal: React.FC = () => {
                     onClick={() => handleSelectPreset(personnel)}
                     className={`w-full p-4 rounded-2xl border text-left transition-all cursor-pointer relative group flex items-start justify-between gap-3 ${
                       isCurrent
-                        ? 'border-[#71806B] bg-[#71806B]/12 shadow-sm ring-1 ring-[#71806B]'
-                        : 'border-[#D8D0C2] bg-[#EDE5D6]/60 hover:bg-[#EDE5D6] hover:border-[#B08A55]/60 hover:shadow-xs'
+                        ? 'border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 shadow-sm ring-1 ring-[var(--accent-primary)]'
+                        : 'border-[var(--card-border)] bg-[var(--card-surface-subtle)] hover:bg-[var(--card-surface)] hover:border-[var(--accent-primary)]/50 hover:shadow-xs'
                     }`}
                   >
                     <div className="flex items-start gap-3.5">
                       {/* Avatar initial badge */}
                       <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-mono font-bold text-sm shadow-xs shrink-0 ${
                         isWorker 
-                          ? 'bg-[#B08A55] text-white' 
+                          ? 'bg-[#F59E0B]/20 text-[#F59E0B] border border-[#F59E0B]/40' 
                           : isOfficer 
-                          ? 'bg-[#4F5D4B] text-white' 
-                          : 'bg-[#292925] text-white'
+                          ? 'bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/40' 
+                          : 'bg-[#06B6D4]/20 text-[#06B6D4] border border-[#06B6D4]/40'
                       }`}>
                         {isWorker ? <HardHat className="w-5 h-5" /> : isOfficer ? <ShieldCheck className="w-5 h-5" /> : <Sliders className="w-5 h-5" />}
                       </div>
 
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-serif font-bold text-[#292925] group-hover:text-[#4F5D4B] transition-colors">
+                          <span className="text-sm font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
                             {personnel.name}
                           </span>
                           <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded border uppercase ${
                             isWorker
-                              ? 'bg-[#B08A55]/15 border-[#B08A55]/30 text-[#795726]'
+                              ? 'bg-[#F59E0B]/15 border-[#F59E0B]/30 text-[#F59E0B]'
                               : isOfficer
-                              ? 'bg-[#4F5D4B]/15 border-[#4F5D4B]/30 text-[#385034]'
-                              : 'bg-[#292925]/10 border-[#292925]/20 text-[#292925]'
+                              ? 'bg-[var(--accent-primary)]/15 border-[var(--accent-primary)]/30 text-[var(--accent-primary)]'
+                              : 'bg-[#06B6D4]/15 border-[#06B6D4]/30 text-[#06B6D4]'
                           }`}>
                             {personnel.role}
                           </span>
                         </div>
 
-                        <p className="text-xs text-[#5D5B53] font-serif leading-tight">
+                        <p className="text-xs text-[var(--text-secondary)] leading-tight">
                           {personnel.employeeId} · {personnel.department}
                         </p>
 
                         {/* Additional status pill for workers */}
                         {isWorker && (
-                          <div className="flex items-center gap-2 pt-1 text-[10px] font-mono text-[#71806B]">
-                            <span className="bg-[#EDE5D6] px-2 py-0.5 rounded border border-[#D8D0C2]">
+                          <div className="flex items-center gap-2 pt-1 text-[10px] font-mono">
+                            <span className="bg-[var(--card-surface)] px-2 py-0.5 rounded border border-[var(--card-border)] text-[var(--text-secondary)]">
                               Band: {personnel.assignedBandId}
                             </span>
                             <span className={`font-bold ${
                               personnel.badgeStatus === 'REVIEW' 
-                                ? 'text-[#9A6258]' 
+                                ? 'text-[#EF4444]' 
                                 : personnel.badgeStatus === 'MONITOR' 
-                                ? 'text-[#B08A55]' 
-                                : 'text-[#4F5D4B]'
+                                ? 'text-[#F59E0B]' 
+                                : 'text-[#10B981]'
                             }`}>
                               Dose: {personnel.currentDoseStr} [{personnel.badgeStatus}]
                             </span>
                           </div>
                         )}
 
-                        <div className="text-[10px] font-mono text-[#878377] flex items-center gap-1 pt-0.5">
+                        <div className="text-[10px] font-mono text-[var(--text-secondary)] flex items-center gap-1 pt-0.5">
                           <span>Routes to:</span>
-                          <span className="font-semibold text-[#292925]">{personnel.targetDestination}</span>
+                          <span className="font-semibold text-[var(--text-primary)]">{personnel.targetDestination}</span>
                         </div>
                       </div>
                     </div>
@@ -332,11 +332,11 @@ export const LoginModal: React.FC = () => {
                     {/* Right status / action indicator */}
                     <div className="shrink-0 self-center">
                       {isCurrent ? (
-                        <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#71806B]/20 text-[#385034] text-[10px] font-mono font-bold">
+                        <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] border border-[var(--accent-primary)]/40 text-[10px] font-mono font-bold">
                           <Check className="w-3.5 h-3.5" /> Active
                         </span>
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-[#EDE5D6] border border-[#D8D0C2] flex items-center justify-center text-[#5D5B53] group-hover:bg-[#292925] group-hover:text-white group-hover:border-[#292925] transition-all">
+                        <div className="w-8 h-8 rounded-full bg-[var(--card-surface)] border border-[var(--card-border)] flex items-center justify-center text-[var(--text-secondary)] group-hover:bg-[var(--accent-primary)] group-hover:text-black group-hover:border-[var(--accent-primary)] transition-all">
                           <ChevronRight className="w-4 h-4" />
                         </div>
                       )}
@@ -347,10 +347,9 @@ export const LoginModal: React.FC = () => {
             </div>
           ) : (
             <form onSubmit={handleCustomLogin} className="space-y-4">
-              
               {/* Role Picker */}
               <div>
-                <label className="text-[10px] font-mono font-bold text-[#5D5B53] block uppercase tracking-wider mb-2">
+                <label className="text-[10px] font-mono font-bold text-[var(--text-secondary)] block uppercase tracking-wider mb-2">
                   Select Authorization Role
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -361,8 +360,8 @@ export const LoginModal: React.FC = () => {
                       onClick={() => setSelectedRole(r)}
                       className={`py-2.5 px-2 rounded-xl text-xs font-mono font-bold border transition-all cursor-pointer flex flex-col items-center gap-1 ${
                         selectedRole === r
-                          ? 'border-[#292925] bg-[#292925] text-[#F6F1E7] shadow-xs'
-                          : 'border-[#D8D0C2] bg-[#EDE5D6]/70 text-[#5D5B53] hover:bg-[#EDE5D6]'
+                          ? 'border-[var(--accent-primary)] bg-[var(--accent-primary)] text-black shadow-xs font-black'
+                          : 'border-[var(--card-border)] bg-[var(--card-surface-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                       }`}
                     >
                       {r === 'WORKER' ? (
@@ -388,17 +387,17 @@ export const LoginModal: React.FC = () => {
 
               {/* Full Name */}
               <div>
-                <label className="text-[10px] font-mono font-bold text-[#5D5B53] block uppercase tracking-wider mb-1">
+                <label className="text-[10px] font-mono font-bold text-[var(--text-secondary)] block uppercase tracking-wider mb-1">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-[#878377] absolute left-3 top-1/2 -translate-y-1/2" />
+                  <User className="w-4 h-4 text-[var(--text-secondary)] absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={customName}
                     onChange={e => setCustomName(e.target.value)}
                     placeholder="e.g. Ramesh Patel"
-                    className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#D8D0C2] bg-white text-xs text-[#292925] focus:outline-none focus:border-[#71806B] shadow-2xs"
+                    className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-surface-subtle)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] shadow-2xs"
                   />
                 </div>
               </div>
@@ -406,7 +405,7 @@ export const LoginModal: React.FC = () => {
               {/* Grid: Employee ID & Department */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-mono font-bold text-[#5D5B53] block uppercase tracking-wider mb-1">
+                  <label className="text-[10px] font-mono font-bold text-[var(--text-secondary)] block uppercase tracking-wider mb-1">
                     Employee ID
                   </label>
                   <input
@@ -414,12 +413,12 @@ export const LoginModal: React.FC = () => {
                     value={customEmpId}
                     onChange={e => setCustomEmpId(e.target.value)}
                     placeholder={selectedRole === 'WORKER' ? 'WRK-XXXX' : 'EMP-XXXX'}
-                    className="w-full px-3 py-2 rounded-xl border border-[#D8D0C2] bg-white text-xs text-[#292925] focus:outline-none focus:border-[#71806B] shadow-2xs"
+                    className="w-full px-3 py-2 rounded-xl border border-[var(--card-border)] bg-[var(--card-surface-subtle)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] shadow-2xs"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-mono font-bold text-[#5D5B53] block uppercase tracking-wider mb-1">
+                  <label className="text-[10px] font-mono font-bold text-[var(--text-secondary)] block uppercase tracking-wider mb-1">
                     Department / Unit
                   </label>
                   <input
@@ -427,7 +426,7 @@ export const LoginModal: React.FC = () => {
                     value={customDept}
                     onChange={e => setCustomDept(e.target.value)}
                     placeholder="e.g. Hydrocracker Unit 2"
-                    className="w-full px-3 py-2 rounded-xl border border-[#D8D0C2] bg-white text-xs text-[#292925] focus:outline-none focus:border-[#71806B] shadow-2xs"
+                    className="w-full px-3 py-2 rounded-xl border border-[var(--card-border)] bg-[var(--card-surface-subtle)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] shadow-2xs"
                   />
                 </div>
               </div>
@@ -435,20 +434,20 @@ export const LoginModal: React.FC = () => {
               {/* If Worker: Wristband ID */}
               {selectedRole === 'WORKER' && (
                 <div>
-                  <label className="text-[10px] font-mono font-bold text-[#5D5B53] block uppercase tracking-wider mb-1">
+                  <label className="text-[10px] font-mono font-bold text-[var(--text-secondary)] block uppercase tracking-wider mb-1">
                     Assigned Wristband ID
                   </label>
                   <div className="relative">
-                    <Tag className="w-4 h-4 text-[#878377] absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Tag className="w-4 h-4 text-[var(--text-secondary)] absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
                       value={customBandId}
                       onChange={e => setCustomBandId(e.target.value)}
-                      placeholder="e.g. DS-1088"
-                      className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#D8D0C2] bg-white text-xs text-[#292925] focus:outline-none focus:border-[#71806B] shadow-2xs"
+                      placeholder="e.g. CP-088"
+                      className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-surface-subtle)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)] shadow-2xs"
                     />
                   </div>
-                  <span className="text-[10px] text-[#878377] font-serif block mt-1">
+                  <span className="text-[10px] text-[var(--text-secondary)] font-mono block mt-1">
                     Links to optical calibration curve & personal shift dose history.
                   </span>
                 </div>
@@ -457,9 +456,9 @@ export const LoginModal: React.FC = () => {
               {/* Submit CTA */}
               <button
                 type="submit"
-                className="w-full py-3 mt-3 rounded-xl bg-[#292925] hover:bg-[#1f1f1c] text-[#F6F1E7] font-mono font-bold text-xs tracking-wider flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer"
+                className="w-full py-3 mt-3 rounded-xl bg-gradient-to-r from-[#FF9500] to-[#F59E0B] hover:shadow-[0_0_15px_rgba(255,149,0,0.4)] text-black font-mono font-black text-xs tracking-wider flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer"
               >
-                <LogIn className="w-4 h-4 text-[#71806B]" />
+                <LogIn className="w-4 h-4" />
                 <span>
                   {selectedRole === 'WORKER' 
                     ? 'AUTHORIZE & OPEN WORKER DASHBOARD' 
@@ -475,8 +474,8 @@ export const LoginModal: React.FC = () => {
         </div>
 
         {/* Footer info strip */}
-        <div className="px-6 py-3 border-t border-[#D8D0C2] bg-[#EDE5D6]/40 flex items-center justify-between text-[10px] font-mono text-[#878377]">
-          <span>MRPL Dosimetry Network · v2.4</span>
+        <div className="px-6 py-3 border-t border-[var(--card-border)] bg-[var(--card-surface-subtle)] flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)]">
+          <span>MRPL Dosimetry Network · SARVAS v2.4</span>
           <span>Role-Based Access Control</span>
         </div>
 
