@@ -1,56 +1,30 @@
 @import "tailwindcss";
 
 @layer base {
-  :root {
-    /* Light Mode ("Analytical Clean Room & Precision Lab") */
-    --canvas-bg: #F7FAF4;
-    --canvas-grid: rgba(101, 120, 0, 0.05);
-    --card-surface: rgba(255, 255, 255, 0.88);
-    --card-surface-subtle: rgba(245, 248, 242, 0.92);
-    --card-border: rgba(132, 99, 40, 0.18);
-    --card-shadow: 0 10px 30px rgba(255, 149, 0, 0.06);
-    --card-glow-top: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+  :root, .dark {
+    /* Modern Refinery Obsidian & Ice-Cyan / Safety Amber Color System */
+    --canvas-bg: #080A0E;
+    --canvas-grid: rgba(255, 255, 255, 0.025);
+    --card-surface: rgba(18, 22, 28, 0.65);
+    --card-surface-subtle: rgba(14, 18, 24, 0.75);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --card-border-active: rgba(245, 158, 11, 0.35);
+    --card-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+    --card-glow-top: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
 
-    --accent-primary: #607300; /* Deep Sulfuric Olive */
-    --accent-primary-hover: #4e5e00;
-    --accent-secondary: #D97706; /* Hazard Amber */
-    --accent-secondary-hover: #b45309;
-    --accent-reaction: #85581A; /* Chemical Bronze */
-    --accent-hazard: #DC2626; /* Bright Hazard Red */
+    --accent-primary: #F59E0B; /* High-Visibility Safety Amber / Gold */
+    --accent-primary-hover: #D97706;
+    --accent-telemetry: #38BDF8; /* Clean Ice-Cyan */
+    --accent-nominal: #10B981; /* Pure Safe Emerald */
+    --accent-hazard: #EF4444; /* Clean Hazard Red */
 
-    --text-primary: #111612;
-    --text-secondary: #4B554D;
-    --text-muted: #6B766D;
-    --text-inverse: #F7FAF4;
+    --text-primary: #F3F4F6; /* Crisp White / Light Gray */
+    --text-secondary: #9CA3AF; /* Refined Slate */
+    --text-muted: #6B7280;
+    --text-inverse: #080A0E;
 
-    --reticle-color: #607300;
-    --mouse-glow: rgba(217, 119, 6, 0.08);
-  }
-
-  .dark {
-    /* Dark Mode ("Refinery Flare & Sulfur Void") */
-    --canvas-bg: #080A0C;
-    --canvas-grid: rgba(223, 255, 0, 0.035);
-    --card-surface: rgba(16, 20, 24, 0.65);
-    --card-surface-subtle: rgba(12, 16, 20, 0.75);
-    --card-border: rgba(223, 255, 0, 0.12);
-    --card-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
-    --card-glow-top: inset 0 1px 0 0 rgba(223, 255, 0, 0.22);
-
-    --accent-primary: #DFFF00; /* Electric Sulfur Chartreuse */
-    --accent-primary-hover: #CCFF00;
-    --accent-secondary: #FF9500; /* Refinery Flare Amber */
-    --accent-secondary-hover: #F59E0B;
-    --accent-reaction: #B38600; /* Oxidized PbS Gold/Bronze */
-    --accent-hazard: #FF3B30; /* Toxic Crimson */
-
-    --text-primary: #F4F6F0;
-    --text-secondary: #8E958F;
-    --text-muted: #5D635E;
-    --text-inverse: #080A0C;
-
-    --reticle-color: #DFFF00;
-    --mouse-glow: rgba(223, 255, 0, 0.06);
+    --reticle-color: #38BDF8;
+    --mouse-glow: rgba(245, 158, 11, 0.06);
   }
 
   * {

@@ -161,61 +161,85 @@ export const LandingPage: React.FC = () => {
          ========================================================================= */}
       <section
         ref={heroRef}
-        className="relative pt-28 sm:pt-36 pb-12 lg:pb-20 overflow-hidden border-b border-[var(--card-border)]"
+        className="relative min-h-[92vh] flex items-center pt-28 sm:pt-36 pb-16 lg:pb-24 overflow-hidden border-b border-[var(--card-border)]"
       >
-        {/* Subtle Ambient Radial Glow in Hero Canvas */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(223,255,0,0.06),transparent_70%)] pointer-events-none" />
+        {/* 1. RESTORE FULL-BLEED HERO BACKGROUND VIDEO */}
+        {!videoError && (
+          <video
+            ref={videoRef}
+            src={bandVideo}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            onError={() => setVideoError(true)}
+            className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none opacity-40 mix-blend-screen scale-105 filter brightness-90 contrast-110"
+          />
+        )}
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* 2. DARK GRADIENT SCRIM OVER VIDEO FOR RAZOR-SHARP TEXT READABILITY */}
+        <div
+          className="absolute inset-0 z-[1] pointer-events-none"
+          style={{
+            background: 'linear-gradient(180deg, rgba(8, 10, 14, 0.78) 0%, rgba(8, 10, 14, 0.92) 80%, #080A0E 100%)'
+          }}
+        />
+
+        {/* Ambient Radial Accent Lighting */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(245,158,11,0.08),transparent_70%)] pointer-events-none z-[2]" />
+
+        {/* 3. HERO CONTENT CONTAINER (Z-10 FOR RAZOR-SHARP INTERACTION) */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
             
-            {/* LEFT TYPOGRAPHY (50%) */}
-            <div className="lg:col-span-6 space-y-6 sm:space-y-7 text-left z-10">
+            {/* LEFT TYPOGRAPHY & CTAs */}
+            <div className="lg:col-span-6 space-y-6 sm:space-y-7 text-left">
               
               {/* Eyebrow Chip with Animated Ping Indicator */}
-              <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full command-card border border-[var(--accent-primary)]/40 shadow-xs">
+              <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full command-card border border-[var(--card-border)] shadow-xs">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#DFFF00] opacity-80" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#DFFF00]" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F59E0B] opacity-80" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F59E0B]" />
                 </span>
                 <span className="text-[10px] sm:text-[11px] font-mono tracking-wider font-bold text-[var(--text-primary)]">
-                  PASSIVE H₂S EXPOSURE DOSIMETRY // ZERO-POWER CHEMICAL MEMORY
+                  SARVAS // ZERO-POWER CUMULATIVE H₂S DOSIMETRY
                 </span>
               </div>
 
               {/* Headline with High-Contrast Gradient */}
               <div className="space-y-2">
                 <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-heading tracking-tight leading-[1.08]">
-                  <span className="block text-[var(--text-primary)]">
+                  <span className="block text-white">
                     Know the exposure.
                   </span>
-                  <span className="block bg-gradient-to-r from-[#DFFF00] via-[#FF9500] to-[#F59E0B] dark:from-[#DFFF00] dark:via-[#CCFF00] dark:to-[#FF9500] bg-clip-text text-transparent drop-shadow-xs">
+                  <span className="block bg-gradient-to-r from-[#F59E0B] via-[#FBBF24] to-[#38BDF8] bg-clip-text text-transparent drop-shadow-xs">
                     Not just the alarm.
                   </span>
                 </h1>
-                <p className="text-xs sm:text-sm font-mono tracking-wide text-[var(--text-secondary)] font-medium">
+                <p className="text-xs sm:text-sm font-mono tracking-wide text-[var(--accent-primary)] font-semibold">
                   Because not all danger announces itself.
                 </p>
               </div>
 
               {/* Subhead */}
               <p className="text-sm sm:text-base text-[var(--text-secondary)] font-normal leading-relaxed max-w-xl">
-                Transforming sub-alarm ambient H₂S into actionable, Arrhenius-corrected optical dose records across 8-hour refinery shifts.
+                Transforming sub-alarm ambient H₂S into actionable, Arrhenius-corrected optical dose records across 8-hour refinery shifts with zero battery drain.
               </p>
 
               {/* 3 Stat Badges */}
               <div className="grid grid-cols-3 gap-2 sm:gap-3 max-w-lg pt-1">
                 <div className="command-card rounded-xl p-3 border border-[var(--card-border)] text-center">
-                  <div className="text-[10px] font-mono text-[var(--text-secondary)] uppercase">Metric</div>
-                  <div className="text-xs sm:text-sm font-mono font-bold text-[var(--accent-primary)] mt-0.5">
+                  <div className="text-[10px] font-mono text-[var(--text-secondary)] uppercase">Accuracy</div>
+                  <div className="text-xs sm:text-sm font-mono font-bold text-[#38BDF8] mt-0.5">
                     99.2% CIE
                   </div>
-                  <div className="text-[9.5px] text-[var(--text-secondary)] truncate">Optical Accuracy</div>
+                  <div className="text-[9.5px] text-[var(--text-secondary)] truncate">Optical Quantification</div>
                 </div>
 
                 <div className="command-card rounded-xl p-3 border border-[var(--card-border)] text-center">
                   <div className="text-[10px] font-mono text-[var(--text-secondary)] uppercase">Safety</div>
-                  <div className="text-xs sm:text-sm font-mono font-bold text-[#FF9500] mt-0.5">
+                  <div className="text-xs sm:text-sm font-mono font-bold text-[#F59E0B] mt-0.5">
                     Zone 0 ATEX
                   </div>
                   <div className="text-[9.5px] text-[var(--text-secondary)] truncate">Zero Spark Power</div>
@@ -223,7 +247,7 @@ export const LandingPage: React.FC = () => {
 
                 <div className="command-card rounded-xl p-3 border border-[var(--card-border)] text-center">
                   <div className="text-[10px] font-mono text-[var(--text-secondary)] uppercase">Duration</div>
-                  <div className="text-xs sm:text-sm font-mono font-bold text-[var(--text-primary)] mt-0.5">
+                  <div className="text-xs sm:text-sm font-mono font-bold text-white mt-0.5">
                     8-Hour Shift
                   </div>
                   <div className="text-[9.5px] text-[var(--text-secondary)] truncate">Chemical Memory</div>
@@ -234,7 +258,7 @@ export const LandingPage: React.FC = () => {
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
                 <button
                   onClick={() => setActivePage('scan')}
-                  className="px-6 py-3.5 rounded-full bg-gradient-to-r from-[#FF9500] to-[#F59E0B] text-black font-mono font-bold text-xs sm:text-sm tracking-wide shadow-[0_0_22px_rgba(255,149,0,0.45)] hover:shadow-[0_0_32px_rgba(255,149,0,0.7)] hover:scale-[1.02] active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="px-6 py-3.5 rounded-full bg-gradient-to-r from-[#F59E0B] to-[#D97706] text-black font-mono font-bold text-xs sm:text-sm tracking-wide shadow-[0_0_22px_rgba(245,158,11,0.45)] hover:shadow-[0_0_32px_rgba(245,158,11,0.7)] hover:scale-[1.02] active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Scan className="w-4 h-4 stroke-[2.5]" />
                   <span>Read a Wristband</span>
@@ -242,48 +266,48 @@ export const LandingPage: React.FC = () => {
 
                 <button
                   onClick={() => scrollToSection('the-band')}
-                  className="px-6 py-3.5 rounded-full command-card border border-[var(--card-border)] text-[var(--text-primary)] font-mono text-xs sm:text-sm font-medium hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="px-6 py-3.5 rounded-full command-card border border-[var(--card-border)] text-[var(--text-primary)] font-mono text-xs sm:text-sm font-medium hover:border-[#38BDF8] hover:bg-white/[0.04] transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Explore Hardware Specs</span>
-                  <ChevronDown className="w-4 h-4 text-[var(--accent-secondary)]" />
+                  <ChevronDown className="w-4 h-4 text-[#38BDF8]" />
                 </button>
               </div>
 
             </div>
 
-            {/* RIGHT INTERACTIVE HUD VIEWPORT (50%) */}
+            {/* RIGHT INTERACTIVE HUD VIEWPORT (50%) WITH WRISTBAND RENDER */}
             <div className="lg:col-span-6 relative">
               <div
                 onMouseMove={handleCardMouseMove}
-                className="command-card mouse-glow-card rounded-2xl p-4 sm:p-5 border border-[var(--card-border)] shadow-2xl overflow-hidden"
+                className="command-card mouse-glow-card rounded-2xl p-4 sm:p-5 border border-white/[0.1] shadow-2xl overflow-hidden backdrop-blur-xl bg-[rgba(18,22,28,0.65)]"
               >
                 
                 {/* View Switcher Pills Above Viewport */}
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--card-border)] mb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[#DFFF00] animate-ping-slow" />
+                    <div className="w-2 h-2 rounded-full bg-[#F59E0B] animate-ping-slow" />
                     <span className="text-[11px] font-mono font-bold text-[var(--text-primary)] uppercase tracking-wider">
-                      OPTICAL SCANNER HUD // DS-1088
+                      SARVAS HUD // DS-1088 OPTICAL
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1 p-1 rounded-full bg-[var(--card-surface-subtle)] border border-[var(--card-border)]">
+                  <div className="flex items-center gap-1 p-1 rounded-full bg-black/40 border border-white/[0.08]">
                     <button
                       onClick={() => setHudViewMode('raw')}
                       className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold transition-all cursor-pointer ${
                         hudViewMode === 'raw'
-                          ? 'bg-[var(--accent-primary)] text-black shadow-xs'
-                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                          ? 'bg-[#F59E0B] text-black font-bold shadow-xs'
+                          : 'text-[#9CA3AF] hover:text-white'
                       }`}
                     >
-                      [Raw Chem-Strip Feed]
+                      [Dosimeter Band]
                     </button>
                     <button
                       onClick={() => setHudViewMode('heatmap')}
                       className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold transition-all cursor-pointer ${
                         hudViewMode === 'heatmap'
-                          ? 'bg-[#FF9500] text-black shadow-xs'
-                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                          ? 'bg-[#38BDF8] text-black font-bold shadow-xs'
+                          : 'text-[#9CA3AF] hover:text-white'
                       }`}
                     >
                       [Optical ΔE Heatmap]
@@ -292,89 +316,73 @@ export const LandingPage: React.FC = () => {
                 </div>
 
                 {/* Viewport Frame with Glowing Corner Reticles */}
-                <div className="relative aspect-[4/3] sm:aspect-[16/10] w-full rounded-xl overflow-hidden border border-[var(--card-border)] bg-[#040608] flex items-center justify-center">
+                <div className="relative aspect-[4/3] sm:aspect-[16/10] w-full rounded-xl overflow-hidden border border-white/[0.08] bg-[#05070A] flex items-center justify-center">
                   
                   {/* Glowing Reticle Corner Crosshairs (+) */}
-                  <span className="absolute top-3 left-3 text-[#DFFF00] font-mono font-bold text-sm select-none drop-shadow-[0_0_6px_#DFFF00] z-20">+</span>
-                  <span className="absolute top-3 right-3 text-[#DFFF00] font-mono font-bold text-sm select-none drop-shadow-[0_0_6px_#DFFF00] z-20">+</span>
-                  <span className="absolute bottom-3 left-3 text-[#DFFF00] font-mono font-bold text-sm select-none drop-shadow-[0_0_6px_#DFFF00] z-20">+</span>
-                  <span className="absolute bottom-3 right-3 text-[#DFFF00] font-mono font-bold text-sm select-none drop-shadow-[0_0_6px_#DFFF00] z-20">+</span>
+                  <span className="absolute top-3 left-3 text-[#38BDF8] font-mono font-bold text-sm select-none drop-shadow-[0_0_6px_#38BDF8] z-20">+</span>
+                  <span className="absolute top-3 right-3 text-[#38BDF8] font-mono font-bold text-sm select-none drop-shadow-[0_0_6px_#38BDF8] z-20">+</span>
+                  <span className="absolute bottom-3 left-3 text-[#38BDF8] font-mono font-bold text-sm select-none drop-shadow-[0_0_6px_#38BDF8] z-20">+</span>
+                  <span className="absolute bottom-3 right-3 text-[#38BDF8] font-mono font-bold text-sm select-none drop-shadow-[0_0_6px_#38BDF8] z-20">+</span>
 
                   {/* Scanline Animation Overlay */}
-                  <div className="absolute inset-0 bg-[linear-gradient(rgba(223,255,0,0.03)_50%,transparent_50%)] bg-[length:100%_4px] pointer-events-none z-10" />
+                  <div className="absolute inset-0 bg-[linear-gradient(rgba(56,189,248,0.03)_50%,transparent_50%)] bg-[length:100%_4px] pointer-events-none z-10" />
 
                   {/* Heatmap Shader Filter Effect */}
                   {hudViewMode === 'heatmap' && (
-                    <div className="absolute inset-0 bg-gradient-to-tr from-[#FF3B30]/25 via-[#FF9500]/20 to-[#DFFF00]/25 mix-blend-color-dodge pointer-events-none z-10 animate-pulse" />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[#EF4444]/25 via-[#F59E0B]/20 to-[#38BDF8]/25 mix-blend-color-dodge pointer-events-none z-10 animate-pulse" />
                   )}
 
-                  {/* Wristband Render Image / Video */}
-                  {!videoError ? (
-                    <video
-                      ref={videoRef}
-                      src={bandVideo}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      onError={() => setVideoError(true)}
-                      className={`w-full h-full object-cover object-center transition-transform duration-700 ${
-                        hudViewMode === 'heatmap' ? 'contrast-125 saturate-150' : ''
-                      }`}
-                    />
-                  ) : (
-                    <img
-                      src={bandDesignImg}
-                      alt="118 Passive Wristband"
-                      className={`w-full h-full object-contain p-4 ${
-                        hudViewMode === 'heatmap' ? 'contrast-125 saturate-150' : ''
-                      }`}
-                    />
-                  )}
+                  {/* Wristband Render Image */}
+                  <img
+                    src={bandDesignImg}
+                    alt="SARVAS Zero-Power Wristband"
+                    className={`w-full h-full object-contain p-4 drop-shadow-2xl transition-transform duration-700 ${
+                      hudViewMode === 'heatmap' ? 'contrast-125 saturate-150' : 'hover:scale-105'
+                    }`}
+                  />
 
                   {/* Reticle Target in Center of the Sensing Matrix */}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                    <div className="relative w-28 h-28 border border-[#DFFF00]/40 rounded-full flex items-center justify-center animate-spin-slow">
-                      <div className="w-16 h-16 border border-[#FF9500]/50 rounded-full" />
-                      <div className="absolute w-full h-[1px] bg-[#DFFF00]/40" />
-                      <div className="absolute h-full w-[1px] bg-[#DFFF00]/40" />
+                    <div className="relative w-28 h-28 border border-[#38BDF8]/40 rounded-full flex items-center justify-center animate-spin-slow">
+                      <div className="w-16 h-16 border border-[#F59E0B]/50 rounded-full" />
+                      <div className="absolute w-full h-[1px] bg-[#38BDF8]/30" />
+                      <div className="absolute h-full w-[1px] bg-[#38BDF8]/30" />
                     </div>
                   </div>
 
                   {/* Floating Telemetry Cards Superimposed on Band */}
-                  <div className="absolute top-4 left-4 z-20 max-w-[210px] command-card rounded-lg p-2 border border-[#DFFF00]/30 shadow-lg text-left backdrop-blur-md">
+                  <div className="absolute top-4 left-4 z-20 max-w-[210px] command-card rounded-lg p-2.5 border border-[#38BDF8]/40 shadow-lg text-left backdrop-blur-md bg-[#0A0E14]/80">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#DFFF00] animate-pulse" />
-                      <span className="text-[9px] font-mono text-[var(--text-secondary)] uppercase">Optical Matrix</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] animate-pulse" />
+                      <span className="text-[9px] font-mono text-[#9CA3AF] uppercase">Optical Matrix</span>
                     </div>
-                    <div className="text-[10px] font-mono font-bold text-[var(--text-primary)] mt-0.5">
+                    <div className="text-[10px] font-mono font-bold text-white mt-0.5">
                       CIE L*a*b*: [42.1, 14.8, 9.2]
                     </div>
-                    <div className="text-[9px] font-mono text-[#DFFF00] font-semibold">
-                      ΔEab: 18.4 (Wave Absorbed)
+                    <div className="text-[9px] font-mono text-[#38BDF8] font-semibold">
+                      ΔEab: 18.4 (PbS Absorbed)
                     </div>
                   </div>
 
-                  <div className="absolute bottom-4 left-4 z-20 max-w-[220px] command-card rounded-lg p-2 border border-[#FF9500]/40 shadow-lg text-left backdrop-blur-md">
+                  <div className="absolute bottom-4 left-4 z-20 max-w-[220px] command-card rounded-lg p-2.5 border border-[#F59E0B]/40 shadow-lg text-left backdrop-blur-md bg-[#0A0E14]/80">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#FF9500]" />
-                      <span className="text-[9px] font-mono text-[var(--text-secondary)] uppercase">Shift Exposure</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]" />
+                      <span className="text-[9px] font-mono text-[#9CA3AF] uppercase">Shift Exposure</span>
                     </div>
-                    <div className="text-[10px] font-mono font-bold text-[#FF9500] mt-0.5">
+                    <div className="text-[10px] font-mono font-bold text-[#F59E0B] mt-0.5">
                       Shift Accumulation: 14.2 ppm·h
                     </div>
-                    <div className="text-[9px] font-mono text-[var(--text-secondary)]">
+                    <div className="text-[9px] font-mono text-[#9CA3AF]">
                       Advisory Warning: 71% Ceiling
                     </div>
                   </div>
 
-                  <div className="absolute bottom-4 right-4 z-20 max-w-[200px] command-card rounded-lg p-2 border border-[var(--card-border)] shadow-lg text-right backdrop-blur-md hidden sm:block">
-                    <div className="text-[9px] font-mono text-[var(--text-secondary)] uppercase">Arrhenius Compensation</div>
-                    <div className="text-[10px] font-mono font-bold text-[var(--text-primary)] mt-0.5">
+                  <div className="absolute bottom-4 right-4 z-20 max-w-[200px] command-card rounded-lg p-2.5 border border-white/[0.08] shadow-lg text-right backdrop-blur-md hidden sm:block bg-[#0A0E14]/80">
+                    <div className="text-[9px] font-mono text-[#9CA3AF] uppercase">Arrhenius Scaling</div>
+                    <div className="text-[10px] font-mono font-bold text-white mt-0.5">
                       T: 34°C | RH: 68%
                     </div>
-                    <div className="text-[9px] font-mono text-[#DFFF00]">
+                    <div className="text-[9px] font-mono text-[#38BDF8]">
                       Correction Factor: ×1.14
                     </div>
                   </div>
@@ -384,12 +392,12 @@ export const LandingPage: React.FC = () => {
                 {/* Bottom Viewport Status Strip */}
                 <div className="mt-3 pt-2.5 border-t border-[var(--card-border)] flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)]">
                   <div className="flex items-center gap-2">
-                    <span className="text-[#DFFF00]">MODE: CALIBRATED_ONLINE</span>
+                    <span className="text-[#38BDF8]">MODE: CALIBRATED_ONLINE</span>
                     <span>•</span>
-                    <span>FRAME: 60 FPS</span>
+                    <span>RESOLUTION: 1080p</span>
                   </div>
-                  <div className="text-[#FF9500]">
-                    CAL-CHECKSUM: 0x9B2C4F
+                  <div className="text-[#F59E0B]">
+                    SARVAS-ID: 0x9B2C4F
                   </div>
                 </div>
 
@@ -453,7 +461,7 @@ export const LandingPage: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-[var(--accent-primary)] uppercase">
-                118 PASSIVE DOSIMETER
+                SARVAS PASSIVE DOSIMETER
               </span>
               <Shield className="w-4 h-4 text-[var(--accent-primary)]" />
             </div>
@@ -501,7 +509,7 @@ export const LandingPage: React.FC = () => {
               <span className="text-[10px] font-mono tracking-widest text-[var(--accent-primary)] uppercase font-semibold">
                 PHYSICAL DOSIMETER ARCHITECTURE // EXPLODING DOSSIER
               </span>
-              <div className="text-sm font-bold font-heading text-[var(--text-primary)]">118 Hardware Anatomy</div>
+              <div className="text-sm font-bold font-heading text-[var(--text-primary)]">SARVAS Hardware Anatomy</div>
             </div>
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-1 rounded-full command-card border border-[var(--card-border)] text-[var(--text-secondary)] text-[10px] font-mono">
@@ -517,11 +525,11 @@ export const LandingPage: React.FC = () => {
           <div className="relative flex items-center justify-center p-4 sm:p-8 bg-[#040608] rounded-xl border border-[var(--card-border)] overflow-hidden min-h-[320px] sm:min-h-[420px]">
             
             {/* Background Grid Accent */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(223,255,0,0.04),transparent_60%)] pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.05),transparent_60%)] pointer-events-none" />
 
             <img
               src={bandDesignImg}
-              alt="118 Physical Band Anatomy"
+              alt="SARVAS Physical Band Anatomy"
               className="max-h-[360px] w-auto object-contain rounded drop-shadow-2xl z-10"
             />
 
@@ -534,7 +542,7 @@ export const LandingPage: React.FC = () => {
                   cy={`${anatomyPoints[activeAnatomyIndex].targetY}%`}
                   r="24"
                   fill="none"
-                  stroke="#DFFF00"
+                  stroke="#38BDF8"
                   strokeWidth="1.5"
                   strokeDasharray="4 3"
                   className="animate-spin-slow"
@@ -543,7 +551,7 @@ export const LandingPage: React.FC = () => {
                   cx={`${anatomyPoints[activeAnatomyIndex].targetX}%`}
                   cy={`${anatomyPoints[activeAnatomyIndex].targetY}%`}
                   r="6"
-                  fill="#FF9500"
+                  fill="#F59E0B"
                 />
                 {/* Horizontal & Vertical Crosshairs */}
                 <line
@@ -551,7 +559,7 @@ export const LandingPage: React.FC = () => {
                   y1={`${anatomyPoints[activeAnatomyIndex].targetY}%`}
                   x2={`${anatomyPoints[activeAnatomyIndex].targetX + 5}%`}
                   y2={`${anatomyPoints[activeAnatomyIndex].targetY}%`}
-                  stroke="#DFFF00"
+                  stroke="#38BDF8"
                   strokeWidth="1"
                 />
                 <line
@@ -559,7 +567,7 @@ export const LandingPage: React.FC = () => {
                   y1={`${anatomyPoints[activeAnatomyIndex].targetY - 8}%`}
                   x2={`${anatomyPoints[activeAnatomyIndex].targetX}%`}
                   y2={`${anatomyPoints[activeAnatomyIndex].targetY + 8}%`}
-                  stroke="#DFFF00"
+                  stroke="#38BDF8"
                   strokeWidth="1"
                 />
               </svg>
@@ -567,8 +575,8 @@ export const LandingPage: React.FC = () => {
 
             {/* Active Targeted Coordinate Label */}
             {activeAnatomyIndex !== null && (
-              <div className="absolute top-4 right-4 z-20 command-card px-3 py-1.5 rounded-lg border border-[#DFFF00]/40 text-[10px] font-mono text-[var(--text-primary)]">
-                <span className="text-[#DFFF00] font-bold">LOCKED TARGET:</span> {anatomyPoints[activeAnatomyIndex].title} [{anatomyPoints[activeAnatomyIndex].targetX}%, {anatomyPoints[activeAnatomyIndex].targetY}%]
+              <div className="absolute top-4 right-4 z-20 command-card px-3 py-1.5 rounded-lg border border-[#38BDF8]/40 text-[10px] font-mono text-white bg-[#0A0E14]/80">
+                <span className="text-[#38BDF8] font-bold">LOCKED TARGET:</span> {anatomyPoints[activeAnatomyIndex].title} [{anatomyPoints[activeAnatomyIndex].targetX}%, {anatomyPoints[activeAnatomyIndex].targetY}%]
               </div>
             )}
           </div>
@@ -584,17 +592,17 @@ export const LandingPage: React.FC = () => {
                   onMouseMove={handleCardMouseMove}
                   className={`p-4 rounded-xl command-card mouse-glow-card border transition-all cursor-pointer text-left space-y-2.5 ${
                     isSelected
-                      ? 'border-[#DFFF00] shadow-[0_0_15px_rgba(223,255,0,0.15)] -translate-y-1'
-                      : 'border-[var(--card-border)] hover:border-[var(--accent-secondary)]'
+                      ? 'border-[#38BDF8] shadow-[0_0_15px_rgba(56,189,248,0.15)] -translate-y-1'
+                      : 'border-[var(--card-border)] hover:border-[#F59E0B]/50'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                      isSelected ? 'bg-[var(--accent-primary)] text-black' : 'bg-[var(--card-surface-subtle)] text-[var(--text-secondary)]'
+                      isSelected ? 'bg-[#38BDF8] text-black' : 'bg-[var(--card-surface-subtle)] text-[var(--text-secondary)]'
                     }`}>
                       {item.id}
                     </span>
-                    <span className="text-[9px] font-mono text-[var(--accent-secondary)] font-semibold">
+                    <span className="text-[9px] font-mono text-[#F59E0B] font-semibold">
                       ACTIVE SENSOR
                     </span>
                   </div>
@@ -678,7 +686,7 @@ export const LandingPage: React.FC = () => {
                   y1="2"
                   x2={`${((activeWorkflowStep + 1) / 5) * 100}%`}
                   y2="2"
-                  stroke="#DFFF00"
+                  stroke="#F59E0B"
                   strokeWidth="3"
                   className="animate-beam"
                 />
@@ -695,9 +703,9 @@ export const LandingPage: React.FC = () => {
                     onClick={() => setActiveWorkflowStep(idx)}
                     className={`p-4 rounded-xl command-card border text-left transition-all duration-300 cursor-pointer ${
                       isActive
-                        ? 'border-[#DFFF00] shadow-[0_0_18px_rgba(223,255,0,0.2)] -translate-y-1 bg-[var(--card-surface-subtle)]'
+                        ? 'border-[#F59E0B] shadow-[0_0_18px_rgba(245,158,11,0.25)] -translate-y-1 bg-[var(--card-surface-subtle)]'
                         : isPassed
-                        ? 'border-[var(--accent-secondary)]/50'
+                        ? 'border-[#38BDF8]/40'
                         : 'border-[var(--card-border)] opacity-70'
                     }`}
                   >
@@ -908,14 +916,14 @@ export const LandingPage: React.FC = () => {
                     cy="28"
                     r="22"
                     fill="none"
-                    stroke="#DFFF00"
+                    stroke="#10B981"
                     strokeWidth="4"
                     strokeDasharray="138"
                     strokeDashoffset="14"
                     strokeLinecap="round"
                   />
                 </svg>
-                <span className="absolute text-[10px] font-mono font-bold text-[var(--accent-primary)]">96%</span>
+                <span className="absolute text-[10px] font-mono font-bold text-[#10B981]">96%</span>
               </div>
             </div>
 
@@ -1056,7 +1064,7 @@ export const LandingPage: React.FC = () => {
                 const cy = `${100 - (pt.dose / 24) * 85 - 8}%`;
                 const isCrimson = pt.status === 'FLAG';
                 const isAmber = pt.status === 'WARNING';
-                const color = isCrimson ? '#FF3B30' : isAmber ? '#FF9500' : '#DFFF00';
+                const color = isCrimson ? '#EF4444' : isAmber ? '#F59E0B' : '#10B981';
 
                 return (
                   <g key={pt.id} className="cursor-pointer group">
@@ -1073,7 +1081,7 @@ export const LandingPage: React.FC = () => {
                         cy={cy}
                         r="12"
                         fill="none"
-                        stroke="#FF3B30"
+                        stroke="#EF4444"
                         strokeWidth="1"
                         className="animate-ping-slow opacity-60"
                       />
@@ -1094,15 +1102,15 @@ export const LandingPage: React.FC = () => {
           <div className="flex flex-wrap items-center justify-between text-[10px] font-mono text-[var(--text-secondary)] pt-1">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#DFFF00]" />
+                <span className="w-2 h-2 rounded-full bg-[#10B981]" />
                 <span>Nominal Safe (&lt;10 ppm·h)</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#FF9500]" />
+                <span className="w-2 h-2 rounded-full bg-[#F59E0B]" />
                 <span>Advisory Warning (10–15 ppm·h)</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#FF3B30]" />
+                <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
                 <span>Ceiling Flag (&gt;15 ppm·h)</span>
               </div>
             </div>
@@ -1138,7 +1146,7 @@ export const LandingPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
             <button
               onClick={() => setActivePage('scan')}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-[#FF9500] to-[#F59E0B] text-black font-mono font-bold text-xs sm:text-sm tracking-wide shadow-[0_0_20px_rgba(255,149,0,0.4)] hover:shadow-[0_0_30px_rgba(255,149,0,0.6)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-[#F59E0B] to-[#D97706] text-black font-mono font-bold text-xs sm:text-sm tracking-wide shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:shadow-[0_0_30px_rgba(245,158,11,0.6)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <Scan className="w-4 h-4 stroke-[2.5]" />
               <span>Try the Wristband Scanner</span>
@@ -1146,9 +1154,9 @@ export const LandingPage: React.FC = () => {
 
             <button
               onClick={() => setActivePage('calibration')}
-              className="w-full sm:w-auto px-7 py-3.5 rounded-full command-card border border-[var(--card-border)] text-[var(--text-primary)] font-mono text-xs sm:text-sm font-semibold hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/10 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-full command-card border border-[var(--card-border)] text-[var(--text-primary)] font-mono text-xs sm:text-sm font-semibold hover:border-[#38BDF8] hover:bg-white/[0.04] transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Database className="w-4 h-4 text-[#DFFF00]" />
+              <Database className="w-4 h-4 text-[#38BDF8]" />
               <span>Explore 120-Row Dataset</span>
             </button>
           </div>
