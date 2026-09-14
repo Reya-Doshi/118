@@ -63,38 +63,15 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 pointer-events-none">
-      {/* 1. Edge-to-Edge Statutory Strip */}
-      <div className="pointer-events-auto w-full bg-[#06080B] text-[#9CA3AF] border-b border-white/[0.06] py-1 px-3 sm:px-6 text-[9px] sm:text-[10px] font-mono tracking-wider flex items-center justify-between shadow-xs">
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap w-full justify-between">
-          <div className="flex items-center gap-2.5 font-mono truncate">
-            <span className="relative flex h-2 w-2 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F59E0B] opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F59E0B]" />
-            </span>
-            <span className="font-bold text-[#F59E0B] shrink-0">STATUTORY PROTOCOL:</span>
-            <span className="text-[#D1D5DB] font-medium">
-              MINISTRY OF PETROLEUM & NATURAL GAS / MRPL MANGALORE REFINERY / SEC. 41F FACTORIES ACT COMPLIANT • PASSIVE H₂S DOSIMETRY PROTOCOL • SHIFT A: ACTIVE TELEMETRY • EMERGENCY REFINERY EXT: 4422
-            </span>
-          </div>
-          <div className="hidden lg:flex items-center gap-3 shrink-0 text-[10px] text-[#38BDF8] font-mono font-semibold">
-            <span>IS:41F CERTIFIED</span>
-            <span className="text-white/20">•</span>
-            <span className="text-[#F59E0B]">ATEX ZONE 0 // ZERO SPARK</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Floating Glass Capsule Navigation Bar */}
+      {/* Floating Glass Capsule Navigation Bar */}
       <div className={`pointer-events-auto max-w-7xl mx-auto px-3 sm:px-6 transition-all duration-300 ${
-        isScrolled ? 'pt-2' : 'pt-3'
+        isScrolled ? 'pt-2 sm:pt-3' : 'pt-3 sm:pt-5'
       }`}>
         <div 
-          className="rounded-2xl sm:rounded-full px-3.5 sm:px-5 py-2 flex items-center justify-between shadow-2xl transition-all duration-300"
+          className="rounded-2xl sm:rounded-full px-3.5 sm:px-5 py-2.5 flex items-center justify-between shadow-2xl transition-all duration-300 command-card"
           style={{
-            background: 'rgba(18, 22, 28, 0.65)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255, 255, 255, 0.08)'
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
           }}
         >
           
@@ -109,35 +86,35 @@ export const Navbar: React.FC = () => {
                 alt="SARVAS Emblem"
                 className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-lg object-contain shadow-[0_0_12px_rgba(245,158,11,0.35)] group-hover:scale-105 transition-transform"
               />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#F59E0B] animate-ping-slow border border-[#080A0E]" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#F59E0B] animate-ping-slow border border-[var(--canvas-bg)]" />
             </div>
             
             <div className="leading-tight">
               <div className="flex items-center gap-1.5">
-                <span className="font-heading font-extrabold text-sm sm:text-base tracking-tight text-white">
+                <span className="font-heading font-extrabold text-sm sm:text-base tracking-tight text-[var(--text-primary)]">
                   SARVAS
                 </span>
-                <span className="text-[8.5px] font-mono px-1 py-0.2 rounded bg-[#F59E0B]/15 text-[#F59E0B] font-bold border border-[#F59E0B]/30">
+                <span className="text-[8.5px] font-mono px-1.5 py-0.5 rounded bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold border border-[var(--accent-primary)]/30">
                   MRPL
                 </span>
               </div>
-              <span className="text-[8px] sm:text-[9px] font-mono tracking-wider text-[#9CA3AF] block font-medium">
+              <span className="text-[8px] sm:text-[9px] font-mono tracking-wider text-[var(--text-secondary)] block font-medium">
                 Zero-Power H₂S Dosimetry
               </span>
             </div>
           </button>
 
           {/* Center: 4 Clean Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 px-3 py-1 rounded-full bg-black/25 border border-white/[0.06]">
+          <nav className="hidden lg:flex items-center gap-1 px-3 py-1 rounded-full bg-black/10 dark:bg-black/30 border border-[var(--card-border)]">
             <button
               onClick={() => handleNavClick('landing', 'the-band')}
-              className="px-3 py-1.5 rounded-full text-xs font-mono font-medium text-[#9CA3AF] hover:text-white hover:bg-white/[0.06] transition-all cursor-pointer"
+              className="px-3 py-1.5 rounded-full text-xs font-mono font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/[0.06] transition-all cursor-pointer"
             >
               [Dosimeter Anatomy]
             </button>
             <button
               onClick={() => handleNavClick('landing', 'how-it-works')}
-              className="px-3 py-1.5 rounded-full text-xs font-mono font-medium text-[#9CA3AF] hover:text-white hover:bg-white/[0.06] transition-all cursor-pointer"
+              className="px-3 py-1.5 rounded-full text-xs font-mono font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/[0.06] transition-all cursor-pointer"
             >
               [Optical Pipeline]
             </button>
@@ -145,8 +122,8 @@ export const Navbar: React.FC = () => {
               onClick={() => handleNavClick('dashboard')}
               className={`px-3 py-1.5 rounded-full text-xs font-mono font-medium transition-all cursor-pointer ${
                 activePage === 'dashboard'
-                  ? 'bg-[#F59E0B] text-black font-bold shadow-xs'
-                  : 'text-[#9CA3AF] hover:text-white hover:bg-white/[0.06]'
+                  ? 'bg-[var(--accent-primary)] text-black font-bold shadow-xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/[0.06]'
               }`}
             >
               [Plant Safety]
@@ -155,8 +132,8 @@ export const Navbar: React.FC = () => {
               onClick={() => handleNavClick(currentUser?.role === 'WORKER' ? 'worker-dashboard' : 'workers')}
               className={`px-3 py-1.5 rounded-full text-xs font-mono font-medium transition-all cursor-pointer ${
                 activePage === 'worker-dashboard' || activePage === 'workers'
-                  ? 'bg-[#F59E0B] text-black font-bold shadow-xs'
-                  : 'text-[#9CA3AF] hover:text-white hover:bg-white/[0.06]'
+                  ? 'bg-[var(--accent-primary)] text-black font-bold shadow-xs'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-white/[0.06]'
               }`}
             >
               [Worker Dossier]
@@ -174,9 +151,9 @@ export const Navbar: React.FC = () => {
               title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
             >
               {theme === 'dark' ? (
-                <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#DFFF00]" />
+                <Sun className="w-4 h-4 text-[#F59E0B]" />
               ) : (
-                <Moon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D97706]" />
+                <Moon className="w-4 h-4 text-[#0284C7]" />
               )}
             </button>
 

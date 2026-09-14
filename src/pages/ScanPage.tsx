@@ -334,12 +334,12 @@ export const ScanPage: React.FC = () => {
             setLatestReading(reading);
             setIsAnalyzing(false);
             setActivePage('result');
-          }, 600);
+          }, 250);
           return 5;
         }
         return prev + 1;
       });
-    }, 700);
+    }, 220);
   };
 
   const featuredSamples = [

@@ -34,7 +34,7 @@ const MainContent: React.FC = () => {
       <main className={`flex-1 w-full ${
         activePage === 'landing'
           ? 'pt-0'
-          : 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-20 pb-8'
+          : 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-24 pb-8'
       }`}>
         {activePage === 'landing' && <LandingPage />}
         {activePage === 'dashboard' && <DashboardPage />}
