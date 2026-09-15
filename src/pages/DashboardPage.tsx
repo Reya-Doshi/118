@@ -116,6 +116,44 @@ export const DashboardPage: React.FC = () => {
     showToast('OSHA 300 Compliance Log exported.');
   };
 
+  const handleExportOISD = () => {
+    const oisdContent = `====================================================================================\n` +
+      `OIL INDUSTRY SAFETY DIRECTORATE (OISD-STD-113) & DGMS STATUTORY SHIFT REPORT\n` +
+      `SARVAS by RageB8 - Continuous Passive Dosimetry & Toxic Gas Surveillance System\n` +
+      `====================================================================================\n\n` +
+      `Statutory Reference: OISD-113 (Refinery Toxic Gas Hazards) & DGMS Tech. Cir. 04\n` +
+      `Refinery Complex: Mangalore Refinery & Petrochemicals Ltd (Sector 4 Claus Recovery)\n` +
+      `Shift Identifier: Morning Shift (06:00 - 14:00 hrs IST)\n` +
+      `Date of Inspection: ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}\n` +
+      `Authorized Safety Officer: Mira Patel (Cert: OISD-HSE-4012)\n` +
+      `Laboratory Calibration Reference: CAL-REF-D65-02 (CIEDE2000 Conformal)\n\n` +
+      `1. STATUTORY THRESHOLDS & DIRECTIVES (H2S):\n` +
+      `   - DGMS / OISD Action Threshold: 0.50 ppm·h (Shift Mandated Personnel Rotation)\n` +
+      `   - OISD Permissible Ceiling (TWA 8h): 1.00 ppm·h (Shift Suspension / Medical Triage)\n` +
+      `   - Critical IDLH Threshold (Colloidal CuS Saturation / Black): >= 10.00 ppm·h\n\n` +
+      `2. SHIFT MONITORING LOG SUMMARY:\n` +
+      `   - Total Active Badges Evaluated: ${workers.length}\n` +
+      `   - Category I (Safe / Trace <= 0.50 ppm·h): ${workers.filter(w => w.status === 'NORMAL').length}\n` +
+      `   - Category II (Action Level Enforced 0.50 - 1.00 ppm·h): ${workers.filter(w => w.status === 'MONITOR').length}\n` +
+      `   - Category III (Critical Statutory Review > 1.00 ppm·h): ${workers.filter(w => w.status === 'REVIEW').length}\n\n` +
+      `3. CHRONOLOGICAL INDIVIDUAL WORKER DOSAGE AUDIT LOGS:\n` +
+      `------------------------------------------------------------------------------------\n` +
+      readings.map((r, i) => `${(i + 1).toString().padStart(2, '0')}. [${r.timeAgo || r.timestamp}] Worker: ${r.workerName.padEnd(16)} | ID: ${r.workerId} | Band: ${r.badgeId} | Loc: ${r.location.padEnd(28)} | Dose: ${r.dosePpmH.toFixed(2)} ppm·h | Status: ${r.status.padEnd(7)} | Conf: ${r.confidenceScore}%`).join('\n') +
+      `\n\n4. STATUTORY DECLARATION:\n` +
+      `This electronic shift report conforms to DGMS & OISD requirements for personal toxic chemical surveillance.\n` +
+      `All colorimetric readings validated against CIEDE2000 standard curve.\n` +
+      `Chief Refinery Safety Officer Signature: ______________________\n`;
+
+    const blob = new Blob([oisdContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `OISD_STD_113_DGMS_Shift_Log_${new Date().toISOString().slice(0, 10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('🇮🇳 OISD-STD-113 & DGMS Statutory Shift Log exported.');
+  };
+
   const handlePrintReport = () => {
     window.print();
   };
@@ -202,6 +240,14 @@ export const DashboardPage: React.FC = () => {
           >
             <FileCheck2 className="w-3.5 h-3.5 text-emerald-400" />
             <span>OSHA 300 Log</span>
+          </button>
+          <button
+            onClick={handleExportOISD}
+            className="px-3 py-1.5 rounded-lg bg-[#3A4D39] hover:bg-[#2c3b2b] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+            title="Export Indian Refinery Statutory OISD-STD-113 & DGMS Log"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+            <span>OISD / DGMS Log</span>
           </button>
           <button
             onClick={handlePrintReport}

@@ -179,12 +179,15 @@ export class DosimeterApiService {
     // 1. Run Direct Gemini Vision Optical Audit & Localization
     const geminiAudit = await GeminiVisionDirect.analyzeImage(params.imageUri);
 
-    // 2. Run Calibrated Cu-PAN Chelation Engine
+    // 2. Run Calibrated Cu-PAN Chelation Engine with Gemini localization and color extraction
     const calibrationResult = await CalibrationEngine.analyzeRawImageAsync(
       params.imageUri,
       params.temperature ?? 25.0,
       params.humidity ?? 50.0,
-      params.shelfAgeDays ?? 15.0
+      params.shelfAgeDays ?? 15.0,
+      geminiAudit.bounding_boxes?.sensing_strip,
+      geminiAudit.sensing_patch_color?.hex,
+      geminiAudit.sensing_patch_color?.stage
     );
 
     // 3. Synthesize unified BackendAnalyzeResponse with Gemini metadata

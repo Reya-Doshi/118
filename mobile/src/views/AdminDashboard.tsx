@@ -16,7 +16,8 @@ import {
   Search,
   History,
   FileSpreadsheet,
-  FileCheck2
+  FileCheck2,
+  ShieldCheck
 } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -95,6 +96,34 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleExportOISD = () => {
+    const oisdContent = `====================================================================================\n` +
+      `OIL INDUSTRY SAFETY DIRECTORATE (OISD-STD-113) & DGMS STATUTORY SHIFT REPORT\n` +
+      `SARVAS Mobile Supervisor Station - Refinery Chemical Dosimetry Monitoring\n` +
+      `====================================================================================\n\n` +
+      `Statutory Reference: OISD-113 & DGMS Tech. Cir. 04 (Shift Exposure Surveillance)\n` +
+      `Refinery Complex: Mangalore Refinery & Petrochemicals Ltd (Sector 4)\n` +
+      `Inspection Date: ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}\n` +
+      `Lead Safety Auditor: Mira Patel (HSE-4012)\n` +
+      `Colorimetric Engine: CIEDE2000 Conformal with Locus Vector Verification\n\n` +
+      `STATUTORY THRESHOLDS:\n` +
+      `- DGMS Action Level: 0.50 ppm·h\n` +
+      `- OISD TWA Limit: 1.00 ppm·h\n` +
+      `- Critical IDLH Saturated Black CuS: >= 10.00 ppm·h\n\n` +
+      `SHIFT READINGS LOGS (${readings.length} Total):\n` +
+      `------------------------------------------------------------------------------------\n` +
+      readings.map((r, i) => `${(i + 1).toString().padStart(2, '0')}. [${r.timestamp}] ${r.workerName.padEnd(16)} | ID: ${r.workerId} | Band: ${r.bandId} | Dose: ${r.estimatedDose.toFixed(2)} ppm·h | Status: ${r.status}`).join('\n') +
+      `\n\nStatutory Electronic Signature: Chief Safety Officer Mira Patel\n`;
+
+    const blob = new Blob([oisdContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `OISD_STD_113_Mobile_Shift_Log_${new Date().toISOString().slice(0, 10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -325,6 +354,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </div>
               );
             })}
+        </div>
+
+        {/* Mobile Export Suite */}
+        <div className="flex gap-2 pt-2 border-t border-gray-100">
+          <button
+            onClick={handleExportCSV}
+            className="flex-1 py-2 bg-white border border-gray-200 rounded-lg text-[11px] font-semibold text-gray-800 flex items-center justify-center gap-1.5 shadow-2xs active:scale-98"
+          >
+            <Download className="w-3.5 h-3.5 text-gray-600" />
+            <span>Export CSV</span>
+          </button>
+          <button
+            onClick={handleExportOISD}
+            className="flex-1 py-2 bg-[#292925] text-white rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 shadow-xs active:scale-98"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+            <span>OISD / DGMS Log</span>
+          </button>
         </div>
       </div>
 

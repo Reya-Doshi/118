@@ -7,6 +7,11 @@ export interface GeminiDirectAuditResult {
   wristband_detected: boolean;
   wristband_type: string;
   provider: string;
+  sensing_patch_color?: {
+    hex: string;
+    stage: 'BASELINE_NORMAL' | 'LOW_EXPOSURE' | 'ACTION_MONITOR' | 'ELEVATED_REVIEW' | 'CRITICAL_BLACK' | 'NOT_A_DOSIMETER';
+    color_name: string;
+  };
   bounding_boxes: {
     sensing_strip: [number, number, number, number]; // [ymin, xmin, ymax, xmax] 0-1000
     reference_scale?: [number, number, number, number];
@@ -46,11 +51,20 @@ YOUR SOLE TASKS:
    - quality_verdict: "PASS", "WARNING", or "FAIL"
    - quality_score: float between 0.0 and 1.0
    - quality_notes: brief explanation
+5. Optical patch color extraction:
+   - sensing_patch_color: Extract the dominant hex color code of the chemical sensing strip on the wristband (e.g., "#5C3A7A" for fresh unexposed violet, "#8C5874" for low-dose mauve/red, "#7A5B43" for action-level amber, "#3D2B1F" for elevated brown, "#1E1A17" for critical black). If no wristband is present, set null.
+   - stage: "BASELINE_NORMAL" | "LOW_EXPOSURE" | "ACTION_MONITOR" | "ELEVATED_REVIEW" | "CRITICAL_BLACK" | "NOT_A_DOSIMETER"
+   - color_name: human description (e.g., "Pristine Violet Baseline", "Amber Action Level")
 
 Return strictly valid JSON with no markdown backticks:
 {
   "wristband_detected": true,
   "wristband_type": "RageB8 Cu-PAN Dosimeter",
+  "sensing_patch_color": {
+    "hex": "#5C3A7A",
+    "stage": "BASELINE_NORMAL",
+    "color_name": "Pristine Violet Baseline"
+  },
   "bounding_boxes": {
     "sensing_strip": [ymin, xmin, ymax, xmax],
     "reference_scale": [ymin, xmin, ymax, xmax]
@@ -156,6 +170,7 @@ export class GeminiVisionDirect {
               wristband_detected: parsed.wristband_detected ?? true,
               wristband_type: parsed.wristband_type ?? 'RageB8 Cu-PAN Dosimeter',
               provider: `Google Gemini Vision (${model} Direct)`,
+              sensing_patch_color: parsed.sensing_patch_color || undefined,
               bounding_boxes: {
                 sensing_strip: parsed.bounding_boxes?.sensing_strip || [380, 420, 580, 580],
                 reference_scale: parsed.bounding_boxes?.reference_scale || [620, 400, 720, 600]
