@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
+import mlVideo from '../assets/ml.mp4';
 import {
   Play,
   Pause,
@@ -130,14 +131,19 @@ export const ExplainabilityPage: React.FC = () => {
           <div className="relative bg-black rounded-2xl overflow-hidden shadow-2xl max-h-[460px] flex items-center justify-center group">
             <video
               ref={videoRef}
-              src="/assets/ml.mp4"
+              src={mlVideo}
               loop={isLooping}
               playsInline
+              controls={false}
               className="w-full h-full max-h-[460px] object-contain cursor-pointer"
               onClick={togglePlay}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
-            />
+            >
+              <source src={mlVideo} type="video/mp4" />
+              <source src="/assets/ml.mp4" type="video/mp4" />
+              Your browser does not support HTML5 video playback.
+            </video>
 
             {/* Play overlay button when paused */}
             {!isPlaying && (
