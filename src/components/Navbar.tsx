@@ -84,9 +84,9 @@ export const Navbar: React.FC = () => {
               className="flex items-center gap-2.5 group text-left focus:outline-none cursor-pointer"
             >
               <img
-                src="/sarvas_icon.png"
+                src="/sarvas_logo_v2.png"
                 alt="SARVAS Emblem"
-                className="w-8 h-8 rounded-lg object-contain bg-[#EDE5D6] p-0.5 border border-[#D8D0C2] shadow-2xs group-hover:scale-105 transition-transform"
+                className="w-8 h-8 rounded-lg object-contain bg-white p-0.5 border border-[#D8D0C2] shadow-2xs group-hover:scale-105 transition-transform"
               />
               <div>
                 <span className="text-xl font-bold tracking-tight block font-mono leading-none">

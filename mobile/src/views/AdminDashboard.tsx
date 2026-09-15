@@ -57,16 +57,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   return (
     <div className="space-y-4 pb-20">
       {/* Header */}
-      <div className="pt-1">
-        <span className="text-[11px] font-mono text-[#71806B] uppercase tracking-wider font-semibold">
-          Operations & Supervisor Station
-        </span>
-        <h1 className="text-xl font-serif font-bold text-[#292925]">
-          Facility Overview
-        </h1>
-        <p className="text-xs text-[#5D5B53]">
-          Refinery Plant Sector 4 · Dosimeter Wristband Inventory
-        </p>
+      <div className="pt-1 flex items-center gap-3">
+        <img 
+          src="/sarvas_logo_v2.png" 
+          alt="SARVAS Official Logo" 
+          className="w-11 h-11 rounded-2xl object-contain bg-white p-1 border border-gray-200 shadow-xs shrink-0"
+        />
+        <div>
+          <span className="text-[10px] font-mono text-[#71806B] uppercase tracking-wider font-semibold block">
+            Operations & Supervisor Station
+          </span>
+          <h1 className="text-xl font-serif font-bold text-[#292925]">
+            Facility Overview
+          </h1>
+          <p className="text-[11px] text-[#5D5B53]">
+            Refinery Plant Sector 4 · Dosimeter Wristband Inventory
+          </p>
+        </div>
       </div>
 
       {/* KPI 4-Card Summary */}

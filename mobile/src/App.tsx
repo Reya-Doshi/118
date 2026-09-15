@@ -270,9 +270,9 @@ const MainAppContent: React.FC = () => {
       <header className="flex items-center justify-between py-2 px-1 mb-2 border-b border-[#D8D0C2]/80">
         <div className="flex items-center gap-2.5">
           <img 
-            src="/sarvas_icon.png" 
+            src="/sarvas_logo_v2.png" 
             alt="SARVAS Logo" 
-            className="w-8 h-8 rounded-lg object-contain bg-[#EDE5D6] p-0.5 border border-[#D8D0C2] shadow-2xs"
+            className="w-9 h-9 rounded-xl object-contain bg-white p-0.5 border border-[#D8D0C2] shadow-xs"
           />
           <div>
             <div className="flex items-center gap-1.5 leading-none">

@@ -81,25 +81,32 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
     <div className="space-y-4 pb-24">
       {/* Top Header Card with Hindi / English Language Switcher */}
       <div className="flex items-center justify-between pt-1">
-        <div>
-          <div className="flex items-center gap-1.5 mb-1">
-            <span className="text-[10px] font-mono bg-[#4F5D4B]/20 text-[#2F6B38] px-2 py-0.5 rounded font-bold uppercase tracking-wider">
-              {isHindi ? 'कर्मचारी सुरक्षा साथी' : 'Active Worker Session'}
-            </span>
-            <span className="text-[10px] font-mono text-gray-500">
-              {isHindi ? 'रिफाइनरी प्रभाग' : 'MRPL Sector'}
-            </span>
+        <div className="flex items-center gap-3">
+          <img 
+            src="/sarvas_logo_v2.png" 
+            alt="SARVAS Official Logo" 
+            className="w-11 h-11 rounded-2xl object-contain bg-white p-1 border border-gray-200 shadow-xs shrink-0"
+          />
+          <div>
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <span className="text-[10px] font-mono bg-[#4F5D4B]/20 text-[#2F6B38] px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+                {isHindi ? 'कर्मचारी सुरक्षा साथी' : 'Active Worker Session'}
+              </span>
+              <span className="text-[10px] font-mono text-gray-500">
+                {isHindi ? 'रिफाइनरी प्रभाग' : 'MRPL Sector'}
+              </span>
+            </div>
+            <h1 className="text-xl font-serif font-bold text-gray-950 tracking-tight">
+              {isHindi ? `नमस्ते, ${worker.name}` : `Hello, ${worker.name}`}
+            </h1>
+            <p className="text-xs text-gray-600 flex items-center gap-1.5 mt-0.5">
+              <span className="font-semibold text-gray-900">
+                {isHindi ? 'प्रक्रिया संचालक' : worker.designation}
+              </span>
+              <span>·</span>
+              <span>{worker.department}</span>
+            </p>
           </div>
-          <h1 className="text-2xl font-serif font-bold text-gray-950 tracking-tight">
-            {isHindi ? `नमस्ते, ${worker.name}` : `Hello, ${worker.name}`}
-          </h1>
-          <p className="text-xs text-gray-600 flex items-center gap-1.5 mt-0.5">
-            <span className="font-semibold text-gray-900">
-              {isHindi ? 'प्रक्रिया संचालक' : worker.designation}
-            </span>
-            <span>·</span>
-            <span>{worker.department}</span>
-          </p>
         </div>
 
         {/* Language Switcher & Profile Initials */}

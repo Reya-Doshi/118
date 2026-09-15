@@ -26,7 +26,7 @@ export const SplashView: React.FC<SplashViewProps> = ({ onComplete }) => {
       <div className="flex flex-col items-center text-center max-w-sm my-auto">
         <div className="relative overflow-hidden rounded-3xl shadow-lg border border-[#D8D0C2] bg-white p-5 mb-3">
           <img 
-            src="/sarvas_icon.png" 
+            src="/sarvas_logo_v2.png" 
             alt="SARVAS Emblem"
             className="w-48 h-48 object-contain rounded-2xl" 
           />

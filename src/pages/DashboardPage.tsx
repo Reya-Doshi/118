@@ -56,26 +56,33 @@ export const DashboardPage: React.FC = () => {
       
       {/* Top Header Bar */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-[#D8D0C2]">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-[#292925]">
-              {isAdmin ? 'Facility Executive Overview & HSE Governance' : 'Shift Safety Overview'}
-            </h1>
-            {isAdmin ? (
-              <span className="px-2.5 py-0.5 rounded-full bg-[#9A6258]/15 border border-[#9A6258]/30 text-[#7A342B] text-[10px] font-mono font-bold uppercase tracking-wider">
-                Admin Privileges Active
-              </span>
-            ) : (
-              <span className="px-2.5 py-0.5 rounded-full bg-[#71806B]/15 border border-[#71806B]/30 text-[#4F5D4B] text-[10px] font-mono font-bold uppercase tracking-wider">
-                Safety Officer View
-              </span>
-            )}
+        <div className="flex items-center gap-3.5">
+          <img 
+            src="/sarvas_logo_v2.png" 
+            alt="SARVAS Logo" 
+            className="w-12 h-12 rounded-2xl object-contain bg-white p-1 border border-[#D8D0C2] shadow-xs shrink-0"
+          />
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold tracking-tight text-[#292925]">
+                {isAdmin ? 'Facility Executive Overview & HSE Governance' : 'Shift Safety Overview'}
+              </h1>
+              {isAdmin ? (
+                <span className="px-2.5 py-0.5 rounded-full bg-[#9A6258]/15 border border-[#9A6258]/30 text-[#7A342B] text-[10px] font-mono font-bold uppercase tracking-wider">
+                  Admin Privileges Active
+                </span>
+              ) : (
+                <span className="px-2.5 py-0.5 rounded-full bg-[#71806B]/15 border border-[#71806B]/30 text-[#4F5D4B] text-[10px] font-mono font-bold uppercase tracking-wider">
+                  Safety Officer View
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-[#5D5B53] mt-0.5 font-medium">
+              {isAdmin 
+                ? 'Plant-wide administrative precautions, batch calibration verification & emergency controls' 
+                : 'Real-time cumulative dosimetry tracking & exposure flags'}
+            </p>
           </div>
-          <p className="text-xs text-[#5D5B53] mt-0.5 font-medium">
-            {isAdmin 
-              ? 'Plant-wide administrative precautions, batch calibration verification & emergency controls' 
-              : 'Real-time cumulative dosimetry tracking & exposure flags'}
-          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 text-xs">

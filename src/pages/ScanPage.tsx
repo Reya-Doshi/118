@@ -644,7 +644,15 @@ export const ScanPage: React.FC = () => {
       />
 
       {/* Header */}
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-2.5">
+        <div className="flex items-center justify-center gap-2 mb-1">
+          <img 
+            src="/sarvas_logo_v2.png" 
+            alt="SARVAS Logo" 
+            className="w-10 h-10 rounded-xl object-contain bg-white p-1 border border-[#D8D0C2] shadow-xs"
+          />
+          <span className="font-mono font-bold text-lg text-[#292925] tracking-tight">SARVAS</span>
+        </div>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#B08A55]/15 border border-[#B08A55]/35 text-[#292925] text-xs font-mono font-semibold">
           <Sparkles className="w-3.5 h-3.5 text-[#B08A55]" />
           <span>{isHindiWorker ? 'एआई-सहायता प्राप्त वास्तविक रिस्टबैंड स्कैन' : 'Simulated Calibration Data · AI-Assisted Estimate'}</span>

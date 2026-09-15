@@ -12,9 +12,9 @@ export const Footer: React.FC = () => {
           <div className="space-y-1.5">
             <div className="flex items-center gap-2.5">
               <img 
-                src="/sarvas_icon.png" 
+                src="/sarvas_logo_v2.png" 
                 alt="SARVAS Logo" 
-                className="w-7 h-7 rounded-lg object-contain bg-[#FAF8F5] p-0.5 border border-white/20 shadow-xs"
+                className="w-7 h-7 rounded-lg object-contain bg-white p-0.5 border border-white/20 shadow-xs"
               />
               <span className="text-base font-bold font-mono tracking-wider text-white">SARVAS</span>
             </div>

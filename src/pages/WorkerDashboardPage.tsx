@@ -67,19 +67,25 @@ export const WorkerDashboardPage: React.FC = () => {
       
       {/* Top Header & Worker Profile + Hindi/English Language Switcher */}
       <div className="bg-[#EDE5D6]/40 p-4 sm:p-5 rounded-2xl border border-[#D8D0C2] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-mono bg-[#4F5D4B]/15 text-[#4F5D4B] px-2.5 py-0.5 rounded font-bold uppercase tracking-wider border border-[#4F5D4B]/20">
-              {isHindi ? 'कर्मचारी सुरक्षा पोर्टल' : 'Worker Safety Portal'}
-            </span>
-            <span className="text-[10px] font-mono text-[#878377]">
-              MRPL Refinery
-            </span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#292925] tracking-tight">
-            {isHindi ? `नमस्ते, ${activeWorker.name}` : `Hello, ${activeWorker.name}`}
-          </h1>
-          <p className="text-xs text-[#5D5B53] flex flex-wrap items-center gap-2 mt-0.5">
+        <div className="flex items-center gap-3.5">
+          <img 
+            src="/sarvas_logo_v2.png" 
+            alt="SARVAS Logo" 
+            className="w-12 h-12 rounded-2xl object-contain bg-white p-1 border border-[#D8D0C2] shadow-xs shrink-0"
+          />
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-mono bg-[#4F5D4B]/15 text-[#4F5D4B] px-2.5 py-0.5 rounded font-bold uppercase tracking-wider border border-[#4F5D4B]/20">
+                {isHindi ? 'कर्मचारी सुरक्षा पोर्टल' : 'Worker Safety Portal'}
+              </span>
+              <span className="text-[10px] font-mono text-[#878377]">
+                MRPL Refinery
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#292925] tracking-tight">
+              {isHindi ? `नमस्ते, ${activeWorker.name}` : `Hello, ${activeWorker.name}`}
+            </h1>
+            <p className="text-xs text-[#5D5B53] flex flex-wrap items-center gap-2 mt-0.5">
             <span className="font-semibold text-[#292925]">
               {isHindi ? 'ऑपरेटर (प्रक्रिया संचालक)' : (activeWorker.role || 'Process Operator')}
             </span>
@@ -89,6 +95,7 @@ export const WorkerDashboardPage: React.FC = () => {
             <span className="font-mono text-[11px] text-[#71806B] font-bold">ID: {activeWorker.workerId}</span>
           </p>
         </div>
+      </div>
 
         {/* Action Controls: Hindi Language Toggle + Switch Profile */}
         <div className="flex items-center gap-2.5 self-stretch sm:self-auto justify-between sm:justify-end">

@@ -195,9 +195,11 @@ export const LoginModal: React.FC = () => {
         {/* Header Bar */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-[#D8D0C2] bg-[#EDE5D6]/70">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#292925] text-[#F6F1E7] flex items-center justify-center font-mono font-bold text-xs shadow-xs">
-              118
-            </div>
+            <img 
+              src="/sarvas_logo_v2.png" 
+              alt="SARVAS Logo" 
+              className="w-10 h-10 rounded-xl object-contain bg-white p-1 border border-[#D8D0C2] shadow-xs"
+            />
             <div>
               <h3 className="text-base font-serif font-bold text-[#292925] tracking-tight flex items-center gap-2">
                 <span>Personnel Authentication</span>
