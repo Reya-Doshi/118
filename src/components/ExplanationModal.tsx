@@ -142,7 +142,7 @@ export const ExplanationModal: React.FC = () => {
             className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#292925] text-white text-xs font-semibold hover:bg-black transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
           >
             <Camera className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Watch ML Pipeline Video (ml.mp4) &amp; Architecture →</span>
+            <span>Watch ML Pipeline Video &amp; Architecture →</span>
           </button>
 
           <button

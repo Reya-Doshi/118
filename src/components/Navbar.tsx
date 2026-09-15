@@ -320,12 +320,12 @@ export const Navbar: React.FC = () => {
                   ? 'border-white/30 bg-white/10 text-[#F6F1E7] hover:bg-white/20'
                   : 'border-[#D8D0C2] bg-white text-[#292925] hover:bg-[#EDE5D6]'
               }`}
-              title="View Color-to-Dose ML Pipeline Diagram & ml.mp4 Video"
+              title="View Color-to-Dose ML Pipeline Diagram"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
               <span className="hidden lg:inline">ML Pipeline</span>
-              <span className="text-[9px] font-mono bg-amber-100 text-amber-900 px-1 py-0.2 rounded font-bold">
-                ml.mp4
+              <span className="text-[9px] font-mono bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-bold">
+                AI
               </span>
             </button>
 
