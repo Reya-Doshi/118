@@ -28,13 +28,13 @@ interface FaqItem {
   tags: string[];
 }
 
-export const FaqPage: React.FC = () => {
+export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = false }) => {
   const { setActivePage } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({
     'q-chem-1': true,
-    'q-ml-1': true
+    'q-ml-1': false
   });
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -49,7 +49,7 @@ export const FaqPage: React.FC = () => {
   };
 
   const categories = [
-    { id: 'all', label: 'All Defense Topics', icon: BookOpen, count: 18 },
+    { id: 'all', label: 'All Questions', icon: BookOpen, count: 18 },
     { id: 'chemistry', label: 'Chemistry & Reagents', icon: FlaskConical, count: 5 },
     { id: 'ml-cv', label: 'Computer Vision & AI', icon: Cpu, count: 4 },
     { id: 'regulatory', label: 'Standards & Compliance', icon: Scale, count: 3 },
@@ -121,7 +121,7 @@ export const FaqPage: React.FC = () => {
             Colorimetric badges inherently integrate mass flux over time. <strong>10.0 ppm·h</strong> represents 10 hours at 1.0 ppm (ACGIH 8-hour shift ceiling) or 1 hour at 10.0 ppm. If a strip reaches saturated black before shift end, it flags an immediate <strong>CRITICAL ACUTE EVENT</strong>.
           </p>
           <p>
-            To distinguish acute spikes from long baseline diffusion, SARVAS combines the wristband scan with plant telemetry: if the worker entered a localized area where telemetry logged a momentary release, the AI cross-references the spatial timestamp.
+            To distinguish acute spikes from long baseline diffusion, SARVAS combines the wristband scan with plant telemetry: if the worker entered a localized area where telemetry logged a momentary release, the system cross-references the spatial timestamp.
           </p>
         </div>
       ),
@@ -212,7 +212,7 @@ export const FaqPage: React.FC = () => {
             <div>4. Project to CIE 1976 L*a*b* under standard D65 illuminant (6504K)</div>
           </div>
           <p>
-            This hardware-anchored software normalization completely removes illuminant color temperature bias, whether scanned with a high-end iPhone or a budget ₹7,000 Android device.
+            This hardware-anchored software normalization completely removes illuminant color temperature bias, whether scanned with a high-end smartphone or an entry-level mobile device.
           </p>
         </div>
       ),
@@ -222,7 +222,7 @@ export const FaqPage: React.FC = () => {
       id: 'q-ml-2',
       category: 'ml-cv',
       badge: 'AI Architecture',
-      question: 'Which ML algorithm is used, and why not use an end-to-end deep convolutional neural network (CNN) on edge?',
+      question: 'Which algorithm is used, and why not use an end-to-end deep convolutional neural network (CNN) on edge?',
       quickPitch: 'We use a hybrid pipeline: Edge-CV for fiducial localization + deterministic CIEDE2000 colorimetry + XGBoost regression ensemble. Deep CNNs are non-transparent black boxes prone to hallucinating under glare; our pipeline is 100% auditable.',
       fullAnswer: (
         <div className="space-y-3 text-xs leading-relaxed text-[#5D5B53]">
@@ -230,9 +230,9 @@ export const FaqPage: React.FC = () => {
             End-to-end deep learning models (like ResNet or YOLO for direct regression) fail the safety-critical requirements of occupational health for three reasons:
           </p>
           <ul className="list-disc list-inside space-y-1 pl-1 text-[11px]">
-            <li><strong>Non-Deterministic Failures:</strong> Specular reflections or smudges can trigger unpredictable latent vector shifts, hallucinating safe readings in lethal environments.</li>
-            <li><strong>Zero Legal Auditability:</strong> When facing a DGMS or OSHA inquiry, a deep neural net\'s weights cannot be chemically or mathematically defended in court.</li>
-            <li><strong>High Latency &amp; Power:</strong> Heavy models drain worker mobile devices and lag on low-end kiosks.</li>
+            <li><strong>Non-Deterministic Failures:</strong> Specular reflections or smudges can trigger unpredictable latent vector shifts, hallucinating safe readings in hazardous environments.</li>
+            <li><strong>Auditability:</strong> In industrial safety investigations, a deep neural network\'s weights cannot be chemically or mathematically audited.</li>
+            <li><strong>Latency &amp; Power:</strong> Heavy models drain worker mobile devices and cause lag on low-power kiosk terminals.</li>
           </ul>
           <p>
             SARVAS pairs <strong>CIEDE2000 (ISO/CIE 11664-6)</strong> deterministic spectrophotometry with a lightweight <strong>XGBoost gradient-boosted ensemble</strong> trained on 120 environmental chamber samples. Inference takes <strong>&lt;45 ms</strong> in WebAssembly.
@@ -250,7 +250,7 @@ export const FaqPage: React.FC = () => {
       fullAnswer: (
         <div className="space-y-3 text-xs leading-relaxed text-[#5D5B53]">
           <p>
-            Refineries and mines are dirty environments. A naive colorimeter that measures only "darkness" would read a smudge of black axle grease as a fatal 15 ppm·h toxic exposure.
+            Refineries and mines are dirty environments. A naive colorimeter that measures only "darkness" would read a smudge of black axle grease as an extreme toxic exposure.
           </p>
           <p>
             SARVAS enforces <strong>Directional Locus Validation</strong> in CIE L*a*b* space:
@@ -298,7 +298,7 @@ export const FaqPage: React.FC = () => {
       id: 'q-reg-1',
       category: 'regulatory',
       badge: 'Statutory Limits',
-      question: 'Did you make up the 8.0 ppm·h threshold? How does it map to statutory OSHA, ACGIH, and DGMS limits?',
+      question: 'How are the 8.0 ppm·h and 4.0 ppm·h thresholds defined? How do they map to statutory OSHA, ACGIH, and DGMS limits?',
       quickPitch: 'The 8.0 ppm·h threshold is directly derived from the ACGIH TLV-TWA of 1.0 ppm over an 8-hour shift (1.0 ppm × 8h = 8.0 ppm·h). DGMS Technical Circular No. 3 and OISD-STD-113 mandate immediate rotation of personnel exceeding this limit.',
       fullAnswer: (
         <div className="space-y-3 text-xs leading-relaxed text-[#5D5B53]">
@@ -570,13 +570,13 @@ export const FaqPage: React.FC = () => {
     {
       id: 'q-ops-3',
       category: 'operations',
-      badge: 'PS-118 Superiority',
-      question: 'Why is SARVAS fundamentally superior to other student teams and commercial alternatives tackling PS-118?',
-      quickPitch: 'Most teams offer either basic color pickers (brittle under light) or non-scalable electronic mockups. SARVAS delivers a production-grade triad: chemically verified Cu-PAN dosimetry, CIEDE2000 lightness-locus contamination immunity, and statutory DGMS/OISD automated governance.',
+      badge: 'Technology Superiority',
+      question: 'How does SARVAS compare with traditional colorimetric tubes or simple mobile color pickers?',
+      quickPitch: 'Simple color pickers fail under plant lighting and cannot distinguish dirt from gas. SARVAS delivers a production triad: chemically verified Cu-PAN stoichiometry, CIEDE2000 lightness-locus contamination immunity, and statutory DGMS/OISD automated governance.',
       fullAnswer: (
         <div className="space-y-3 text-xs leading-relaxed text-[#5D5B53]">
           <p>
-            When judges evaluate submissions for Problem Statement 118, SARVAS stands unmatched across four pillars:
+            SARVAS stands distinct across four foundational pillars:
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
             <div className="p-2.5 rounded-lg bg-white border border-[#D8D0C2]">
@@ -606,7 +606,7 @@ export const FaqPage: React.FC = () => {
           </div>
         </div>
       ),
-      tags: ['superiority', 'ps-118', 'competitors', 'hackathon win', 'unbeatable']
+      tags: ['superiority', 'ps-118', 'technology', 'innovation']
     }
   ];
 
@@ -625,42 +625,65 @@ export const FaqPage: React.FC = () => {
   }, [selectedCategory, searchQuery, faqList]);
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto pb-16 animate-in fade-in duration-300">
+    <div className={isEmbedded ? "space-y-6" : "space-y-8 max-w-6xl mx-auto pb-16 animate-in fade-in duration-300"}>
       
-      {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-[#292925] text-[#F6F1E7] p-6 sm:p-8 border border-[#4F5D4B]/40 shadow-xl">
-        <div className="absolute -right-16 -top-16 w-64 h-64 bg-[#4F5D4B]/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4F5D4B]/40 border border-[#71806B]/50 text-[#EDE5D6] text-xs font-mono font-semibold mb-3">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>SIH 2026 Grand Jury Defense Portal</span>
-          </div>
-          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-white mb-2 font-serif">
-            Unbeatable Technical &amp; Statutory Defense Suite
-          </h1>
-          <p className="text-xs sm:text-sm text-[#EDE5D6]/80 leading-relaxed">
-            Every critical question a Senior Chemical Engineer, AI Researcher, Mining Safety Auditor (DGMS), or Plant Operations Director can cross-examine — answered with empirical data, chemical equations, and statutory references.
-          </p>
+      {/* Header: Standalone Hero Banner OR Embedded Section Header */}
+      {!isEmbedded ? (
+        <div className="relative overflow-hidden rounded-2xl bg-[#292925] text-[#F6F1E7] p-6 sm:p-8 border border-[#4F5D4B]/40 shadow-xl">
+          <div className="absolute -right-16 -top-16 w-64 h-64 bg-[#4F5D4B]/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative z-10 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4F5D4B]/40 border border-[#71806B]/50 text-[#EDE5D6] text-xs font-mono font-semibold mb-3">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Technical &amp; Regulatory Knowledge Base</span>
+            </div>
+            <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-white mb-2 font-serif">
+              Frequently Asked Questions &amp; Technical Specifications
+            </h1>
+            <p className="text-xs sm:text-sm text-[#EDE5D6]/80 leading-relaxed">
+              Comprehensive engineering documentation covering Cu-PAN reaction chemistry, optical fiducial normalization, CIEDE2000 dosimetry, and statutory compliance.
+            </p>
 
-          <div className="mt-4 flex flex-wrap gap-2.5 pt-2">
+            <div className="mt-4 flex flex-wrap gap-2.5 pt-2">
+              <button
+                onClick={() => setActivePage('explainability')}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#4F5D4B] hover:bg-[#5E6F59] text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <span>Interactive ML Simulator</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setActivePage('calibration')}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-[#EDE5D6] text-xs font-semibold transition-all border border-white/20 cursor-pointer"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-300" />
+                <span>120-Sample Calibration Matrix</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <span className="text-[11px] font-mono font-semibold text-[#71806B] uppercase">
+              TECHNICAL &amp; REGULATORY KNOWLEDGE BASE
+            </span>
+            <h3 className="text-2xl font-bold text-[#292925]">Frequently Asked Questions</h3>
+            <p className="text-xs text-[#5D5B53] mt-1">
+              Engineering documentation covering reaction chemistry, optical normalization, CIEDE2000 dosimetry, and compliance.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setActivePage('explainability')}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#4F5D4B] hover:bg-[#5E6F59] text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+              className="text-xs font-bold text-[#4F5D4B] hover:underline flex items-center gap-1"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>Interactive ML Simulator</span>
+              <span>ML Pipeline</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => setActivePage('calibration')}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-[#EDE5D6] text-xs font-semibold transition-all border border-white/20 cursor-pointer"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-300" />
-              <span>120-Sample Calibration Matrix</span>
             </button>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Search & Category Filter Bar */}
       <div className="bg-white rounded-xl border border-[#D8D0C2] p-4 shadow-sm space-y-3">
@@ -703,11 +726,11 @@ export const FaqPage: React.FC = () => {
       </div>
 
       {/* FAQ Accordion List */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {filteredFaq.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-xl border border-[#D8D0C2] p-6">
             <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto mb-2" />
-            <div className="text-sm font-bold text-[#292925]">No matching defense questions found</div>
+            <div className="text-sm font-bold text-[#292925]">No matching technical questions found</div>
             <div className="text-xs text-[#878377] mt-1">Try clearing your search keyword or switching category tabs.</div>
           </div>
         ) : (
@@ -745,11 +768,11 @@ export const FaqPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Quick Pitch Summary Callout (Always Visible) */}
+                {/* Quick Summary Callout (Always Visible) */}
                 <div className="px-4 sm:px-5 py-2.5 bg-[#EDE5D6]/30 border-t border-b border-[#D8D0C2]/50 flex items-start justify-between gap-3 text-xs">
                   <div className="flex items-start gap-2 text-[#292925]">
                     <span className="font-bold font-mono text-[10px] uppercase bg-[#B08A55] text-white px-1.5 py-0.5 rounded shrink-0 mt-0.5">
-                      30-Sec Pitch
+                      Quick Summary
                     </span>
                     <span className="font-medium leading-relaxed">
                       {item.quickPitch}
@@ -760,7 +783,7 @@ export const FaqPage: React.FC = () => {
                       e.stopPropagation();
                       copyToClipboard(item.id, item.quickPitch);
                     }}
-                    title="Copy pitch to clipboard for live jury verbal delivery"
+                    title="Copy summary to clipboard"
                     className="shrink-0 p-1 rounded hover:bg-[#EDE5D6] text-[#878377] hover:text-[#292925] transition-colors cursor-pointer"
                   >
                     {copiedId === item.id ? (
@@ -776,7 +799,7 @@ export const FaqPage: React.FC = () => {
                   <div className="p-4 sm:p-5 bg-white border-t border-[#D8D0C2]/60 animate-in slide-in-from-top-2 duration-150">
                     <div className="text-xs font-bold text-[#292925] font-mono uppercase tracking-wider mb-2 flex items-center gap-1.5">
                       <BookOpen className="w-3.5 h-3.5 text-[#71806B]" />
-                      <span>Deep Technical &amp; Regulatory Justification:</span>
+                      <span>Technical &amp; Regulatory Details:</span>
                     </div>
                     {item.fullAnswer}
                   </div>
@@ -787,28 +810,28 @@ export const FaqPage: React.FC = () => {
         )}
       </div>
 
-      {/* Jury Quick Tips / Elevator Cheatsheet Footer Card */}
-      <div className="bg-gradient-to-br from-[#EDE5D6] to-[#E5DDCB] rounded-2xl border border-[#D8D0C2] p-6 shadow-sm">
+      {/* Core Engineering Principles Footer Card */}
+      <div className="bg-gradient-to-br from-[#EDE5D6] to-[#E5DDCB] rounded-2xl border border-[#D8D0C2] p-5 sm:p-6 shadow-sm">
         <div className="flex items-start gap-3">
           <div className="p-2 rounded-xl bg-[#4F5D4B] text-white shrink-0 mt-0.5">
             <Sparkles className="w-5 h-5 text-amber-300" />
           </div>
           <div className="space-y-2">
             <h4 className="text-sm font-bold text-[#292925]">
-              Rules of Engagement for Live SIH 2026 Cross-Examination
+              Core Engineering &amp; Statutory Principles
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs text-[#5D5B53]">
               <div className="p-3 rounded-lg bg-white/70 border border-[#D8D0C2]">
-                <div className="font-bold text-[#292925] mb-1">1. Anchor in Chemistry</div>
-                <div>Always cite the Cu-PAN ligand displacement equation and CuS Ksp (6.3 × 10⁻³⁶) before discussing AI.</div>
+                <div className="font-bold text-[#292925] mb-1">1. Chemical Stoichiometry</div>
+                <div>Cu-PAN ligand displacement reaction with CuS precipitation (Ksp ≈ 6.3 × 10⁻³⁶).</div>
               </div>
               <div className="p-3 rounded-lg bg-white/70 border border-[#D8D0C2]">
-                <div className="font-bold text-[#292925] mb-1">2. Defense Against Glare</div>
-                <div>Emphasize dual on-band fiducials with von Kries chromatic adaptation over basic RGB averages.</div>
+                <div className="font-bold text-[#292925] mb-1">2. Optical Invariance</div>
+                <div>Dual on-band fiducials with von Kries chromatic adaptation over device-dependent RGB.</div>
               </div>
               <div className="p-3 rounded-lg bg-white/70 border border-[#D8D0C2]">
-                <div className="font-bold text-[#292925] mb-1">3. Regulatory Clout</div>
-                <div>Reference ACGIH TLV-TWA 1.0 ppm·8h and OISD-STD-113 compliance to prove thresholds are statutory, not guessed.</div>
+                <div className="font-bold text-[#292925] mb-1">3. Statutory Compliance</div>
+                <div>Exact alignment with ACGIH TLV-TWA 1.0 ppm·8h and OISD-STD-113 plant safety codes.</div>
               </div>
             </div>
           </div>
@@ -817,4 +840,8 @@ export const FaqPage: React.FC = () => {
 
     </div>
   );
+};
+
+export const FaqPage: React.FC = () => {
+  return <FaqSection isEmbedded={false} />;
 };

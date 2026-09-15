@@ -37,16 +37,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 const STORAGE_WORKERS_KEY = '118_workers_v1';
 const STORAGE_READINGS_KEY = '118_readings_v1';
 const STORAGE_ALERTS_KEY = '118_alerts_v1';
-const STORAGE_USER_KEY = '118_user_profile_v1';
-
-const DEFAULT_USER: UserProfile = {
-  id: 'usr_officer_01',
-  name: 'Mira Patel',
-  role: 'OFFICER',
-  employeeId: 'HSE-4012',
-  department: 'Plant HSE & Safety Audit',
-  avatarText: 'MP'
-};
+const STORAGE_USER_KEY = '118_user_profile_v2';
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activePage, setActivePage] = useState<PageView>('landing');
@@ -56,10 +47,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
     try {
+      // Clear legacy storage key so old sessions don't persist Mira
+      localStorage.removeItem('118_user_profile_v1');
       const saved = localStorage.getItem(STORAGE_USER_KEY);
-      return saved ? JSON.parse(saved) : DEFAULT_USER;
+      return saved ? JSON.parse(saved) : null;
     } catch {
-      return DEFAULT_USER;
+      return null;
     }
   });
 

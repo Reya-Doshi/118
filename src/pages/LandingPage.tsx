@@ -11,9 +11,10 @@ import {
   Scan,
   Database
 } from 'lucide-react';
+import { FaqSection } from './FaqPage';
 
 export const LandingPage: React.FC = () => {
-  const { setActivePage } = useApp();
+  const { setActivePage, currentUser } = useApp();
   const heroRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoError, setVideoError] = useState(false);
@@ -510,6 +511,13 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* 06.5 — FREQUENTLY ASKED QUESTIONS & TECHNICAL SPECIFICATIONS */}
+      {!currentUser && (
+        <section id="faq" className="max-w-5xl mx-auto px-4 sm:px-6">
+          <FaqSection isEmbedded={true} />
+        </section>
+      )}
 
       {/* 07 — FINAL CTA */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6">
