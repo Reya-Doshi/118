@@ -19,11 +19,11 @@ export const CalibrationPage: React.FC = () => {
 
     const matchesFilter =
       flagFilter === 'ALL' ||
-      (flagFilter === 'EXPIRED' && s.expiryStatus === 'EXPIRED') ||
-      (flagFilter === 'SAFE' && (s.actionFlag.includes('Normal') || s.actionFlag.includes('Baseline'))) ||
+      (flagFilter === 'EXPIRED' && (s.expiryStatus === 'EXPIRED' || s.actionFlag.includes('Expired'))) ||
+      (flagFilter === 'SAFE' && (s.actionFlag.includes('Safe') || s.actionFlag.includes('Clean') || s.actionFlag.includes('Normal') || s.actionFlag.includes('Baseline'))) ||
       (flagFilter === 'ACTION' && s.actionFlag.includes('Action Level')) ||
-      (flagFilter === 'PEL' && s.actionFlag.includes('PEL')) ||
-      (flagFilter === 'CRITICAL' && (s.actionFlag.includes('Critical') || s.actionFlag.includes('Exceeded')));
+      (flagFilter === 'PEL' && (s.actionFlag.includes('PEL') || s.actionFlag.includes('Limit') || s.actionFlag.includes('Elevated'))) ||
+      (flagFilter === 'CRITICAL' && (s.actionFlag.includes('Critical') || s.actionFlag.includes('Exceeded') || s.actionFlag.includes('Severe')));
 
     return matchesSearch && matchesFilter;
   });

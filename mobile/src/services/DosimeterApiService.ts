@@ -49,9 +49,9 @@ export class DosimeterApiService {
     const envUrl = (import.meta as any).env?.VITE_BACKEND_URL;
     if (envUrl) return envUrl.trim().replace(/\/+$/, '');
 
-    // 3. Android Native Emulator detection
+    // 3. Android Native Device / Emulator
     if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
-      return 'http://10.0.2.2:8000';
+      return 'http://10.98.31.126:8000';
     }
 
     // 4. Browser / Mobile Web: use current host on port 8000

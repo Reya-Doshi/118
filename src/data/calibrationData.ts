@@ -19,7 +19,6 @@ export interface CalibrationSample {
 
 // Convert CIE L*a*b* (D65 illuminant) to sRGB Hex for accurate visual rendering
 export function labToRgbHex(L: number, a: number, b: number): string {
-  // Reference white D65
   const Xn = 95.047;
   const Yn = 100.0;
   const Zn = 108.883;
@@ -42,12 +41,10 @@ export function labToRgbHex(L: number, a: number, b: number): string {
   const Y = (y * Yn) / 100;
   const Z = (z * Zn) / 100;
 
-  // sRGB conversion
   let r = X * 3.2406 + Y * -1.5372 + Z * -0.4986;
   let g = X * -0.9689 + Y * 1.8758 + Z * 0.0415;
   let bl = X * 0.0557 + Y * -0.204 + Z * 1.057;
 
-  // Gamma correction
   r = r > 0.0031308 ? 1.055 * Math.pow(r, 1 / 2.4) - 0.055 : 12.92 * r;
   g = g > 0.0031308 ? 1.055 * Math.pow(g, 1 / 2.4) - 0.055 : 12.92 * g;
   bl = bl > 0.0031308 ? 1.055 * Math.pow(bl, 1 / 2.4) - 0.055 : 12.92 * bl;
@@ -55,142 +52,142 @@ export function labToRgbHex(L: number, a: number, b: number): string {
   const clamp = (val: number) => Math.max(0, Math.min(255, Math.round(val * 255)));
   const toHex = (n: number) => n.toString(16).padStart(2, '0');
 
-  return `#${toHex(clamp(r))}${toHex(clamp(g))}${toHex(clamp(bl))}`;
+  return '#' + toHex(clamp(r)) + toHex(clamp(g)) + toHex(clamp(bl));
 }
 
 export function mapActionFlagToSafetyStatus(flag: string, expiry: string): ExposureStatus {
-  if (expiry === 'EXPIRED' || flag.includes('Reject')) return 'REVIEW';
-  if (flag.includes('Critical') || flag.includes('Exceeded') || flag.includes('PEL / TWA Limit')) return 'REVIEW';
-  if (flag.includes('Action Level') || flag.includes('Elevated') || flag.includes('Intermediate') || flag.includes('Chronic Baseline')) return 'MONITOR';
+  if (expiry === 'EXPIRED' || flag.includes('Expired') || flag.includes('Reject')) return 'REVIEW';
+  if (flag.includes('Critical') || flag.includes('Exceeded') || flag.includes('PEL / Limit')) return 'REVIEW';
+  if (flag.includes('Action Level') || flag.includes('Elevated')) return 'MONITOR';
   return 'NORMAL';
 }
 
 const RAW_CSV_LINES = [
-  'DS-001,0.0,0.00,8.0,25,50,1,"92.0, 1.2, 18.5",0.0,Fresh (Active),Baseline Clean',
-  'DS-002,4.0,0.50,8.0,25,50,7,"87.4, 2.1, 21.0",5.4,Fresh (Active),Normal / Safe',
-  'DS-003,8.0,1.00,8.0,30,65,14,"82.1, 3.2, 23.4",11.4,Fresh (Active),Normal / Safe',
-  'DS-004,16.0,2.00,8.0,25,50,30,"74.3, 4.8, 25.1",19.4,Valid (Active),Chronic Baseline',
-  'DS-005,24.0,3.00,8.0,35,75,45,"68.0, 6.1, 26.5",26.2,Valid (Active),Chronic Baseline',
-  'DS-006,40.0,5.00,8.0,28,60,60,"58.5, 7.9, 27.8",35.8,Valid (Active),Action Level (50% TWA)',
-  'DS-007,56.0,7.00,8.0,40,85,75,"50.2, 9.4, 28.2",44.2,Valid (Active),Elevated Caution',
-  'DS-008,80.0,10.00,8.0,25,50,90,"41.0, 11.0, 27.9",53.3,Valid (Active),PEL / TWA Limit (100%)',
-  'DS-009,120.0,15.00,8.0,32,70,30,"31.8, 12.5, 25.4",62.1,Valid (Active),Exceeded Limit (150%)',
-  'DS-010,160.0,20.00,8.0,38,80,15,"24.2, 13.1, 22.0",69.5,Valid (Active),Critical Overexposure',
-  'DS-011,40.0,10.00,4.0,15,30,20,"61.2, 7.1, 26.9",33.1,Valid (Active),Half-shift Intermediate',
-  'DS-012,40.0,2.00,20.0,45,90,85,"54.1, 8.8, 28.4",40.1,Valid (Active),Extended Multi-shift',
-  'DS-013,0.0,0.00,8.0,50,90,95,"89.1, 1.8, 24.2",6.5,EXPIRED,Reject (Badge Invalid)',
-  'DS-014,20.0,2.50,8.0,25,50,110,"66.5, 6.8, 28.0",28.1,EXPIRED,Reject (Degraded Chemistry)',
-  'DS-015,3.6,0.30,12.0,32,77,9,"88.5, 1.8, 19.6",3.7,Fresh (Active),Normal / Safe',
-  'DS-016,0.0,0.00,6.0,38,58,44,"92.1, 1.1, 18.4",0.2,Fresh (Active),Baseline Clean',
-  'DS-017,2.4,0.20,12.0,37,59,23,"89.7, 1.7, 19.6",2.6,Fresh (Active),Normal / Safe',
-  'DS-018,0.8,0.20,4.0,23,36,23,"91.5, 1.1, 18.7",0.6,Fresh (Active),Normal / Safe',
-  'DS-019,0.0,0.00,12.0,38,51,13,"92.4, 1.2, 18.6",0.4,Fresh (Active),Baseline Clean',
-  'DS-020,3.2,0.40,8.0,26,55,13,"89.4, 1.6, 20.1",3.0,Fresh (Active),Normal / Safe',
-  'DS-021,0.0,0.00,4.0,28,45,39,"92.1, 1.1, 18.7",0.3,Fresh (Active),Baseline Clean',
-  'DS-022,2.4,0.20,12.0,21,63,39,"90.3, 1.4, 19.3",2.0,Fresh (Active),Normal / Safe',
-  'DS-023,7.9,0.79,10.0,25,83,6,"82.4, 2.9, 23.3",10.9,Fresh (Active),Normal / Safe',
-  'DS-024,5.2,1.30,4.0,40,43,54,"85.5, 2.3, 21.6",7.3,Fresh (Active),Normal / Safe',
-  'DS-025,21.0,2.10,10.0,37,81,18,"69.1, 5.8, 26.6",24.9,Fresh (Active),Chronic Baseline',
-  'DS-026,6.2,1.55,4.0,23,54,19,"84.8, 2.5, 22.4",8.2,Fresh (Active),Normal / Safe',
-  'DS-027,9.7,0.97,10.0,34,74,22,"80.2, 3.4, 24.3",13.3,Fresh (Active),Normal / Safe',
-  'DS-028,10.8,1.80,6.0,39,74,55,"78.4, 3.9, 24.8",15.3,Fresh (Active),Normal / Safe',
-  'DS-029,5.8,0.97,6.0,23,75,53,"85.7, 2.3, 21.9",7.2,Fresh (Active),Normal / Safe',
-  'DS-030,13.2,2.20,6.0,27,67,10,"76.5, 4.4, 25.1",17.1,Fresh (Active),Normal / Safe',
-  'DS-031,8.8,1.10,8.0,23,55,28,"81.6, 3.1, 23.9",11.9,Fresh (Active),Normal / Safe',
-  'DS-032,4.2,0.70,6.0,34,69,19,"87.2, 2.0, 20.8",5.5,Fresh (Active),Normal / Safe',
-  'DS-033,12.0,2.00,6.0,35,55,40,"77.2, 4.2, 25.0",16.4,Fresh (Active),Normal / Safe',
-  'DS-034,20.6,2.06,10.0,40,44,56,"69.9, 5.6, 26.4",24.0,Fresh (Active),Chronic Baseline',
-  'DS-035,14.2,2.37,6.0,40,82,44,"74.3, 4.8, 25.7",19.5,Fresh (Active),Normal / Safe',
-  'DS-036,6.2,1.56,4.0,20,50,30,"85.2, 2.4, 22.0",7.7,Fresh (Active),Normal / Safe',
-  'DS-037,10.6,1.32,8.0,32,42,52,"80.1, 3.5, 23.9",13.2,Fresh (Active),Normal / Safe',
-  'DS-038,15.6,1.95,8.0,33,68,24,"74.3, 4.8, 25.3",19.4,Fresh (Active),Normal / Safe',
-  'DS-039,14.5,1.81,8.0,22,82,53,"75.6, 4.6, 25.2",18.1,Fresh (Active),Normal / Safe',
-  'DS-040,16.8,2.10,8.0,38,65,50,"72.8, 5.1, 26.0",21.0,Fresh (Active),Chronic Baseline',
-  'DS-041,6.1,1.53,4.0,27,67,12,"85.2, 2.3, 22.4",7.9,Fresh (Active),Normal / Safe',
-  'DS-042,10.4,1.30,8.0,24,42,42,"80.3, 3.4, 24.0",13.0,Fresh (Active),Normal / Safe',
-  'DS-043,16.7,2.09,8.0,37,56,32,"73.5, 4.9, 25.7",20.2,Fresh (Active),Chronic Baseline',
-  'DS-044,16.8,1.68,10.0,29,80,50,"72.8, 5.1, 25.7",20.9,Fresh (Active),Chronic Baseline',
-  'DS-045,12.0,1.20,10.0,37,64,41,"77.5, 4.1, 24.9",16.1,Fresh (Active),Normal / Safe',
-  'DS-046,14.4,3.59,4.0,26,55,60,"75.3, 4.5, 25.5",18.4,Fresh (Active),Normal / Safe',
-  'DS-047,24.5,4.08,6.0,41,72,19,"66.8, 6.3, 27.2",27.5,Fresh (Active),Chronic Baseline',
-  'DS-048,35.8,3.58,10.0,38,51,63,"60.1, 7.5, 27.8",34.4,Valid (Active),Chronic Baseline',
-  'DS-049,20.0,5.00,4.0,38,84,12,"70.0, 5.7, 26.6",24.1,Fresh (Active),Chronic Baseline',
-  'DS-050,37.0,3.70,10.0,38,56,68,"59.2, 7.8, 27.8",35.4,Valid (Active),Chronic Baseline',
-  'DS-051,23.3,2.91,8.0,39,74,34,"67.7, 6.1, 26.9",26.6,Fresh (Active),Chronic Baseline',
-  'DS-052,23.8,2.97,8.0,32,74,22,"68.3, 6.0, 26.6",25.9,Fresh (Active),Chronic Baseline',
-  'DS-053,19.6,4.90,4.0,24,45,47,"71.9, 5.3, 26.0",22.0,Fresh (Active),Chronic Baseline',
-  'DS-054,28.1,3.51,8.0,36,60,25,"64.9, 6.7, 27.4",29.5,Fresh (Active),Chronic Baseline',
-  'DS-055,26.8,4.47,6.0,28,47,10,"66.6, 6.4, 27.1",27.6,Fresh (Active),Chronic Baseline',
-  'DS-056,33.7,5.61,6.0,35,87,68,"59.9, 7.6, 27.9",34.6,Valid (Active),Chronic Baseline',
-  'DS-057,37.9,3.79,10.0,30,79,27,"59.5, 7.6, 27.9",35.0,Fresh (Active),Chronic Baseline',
-  'DS-058,41.5,4.15,10.0,39,67,73,"56.6, 8.2, 28.2",38.1,Valid (Active),Action Level (50% TWA)',
-  'DS-059,37.4,4.67,8.0,33,70,66,"59.1, 7.7, 27.9",35.5,Valid (Active),Chronic Baseline',
-  'DS-060,34.6,5.76,6.0,42,47,74,"59.9, 7.6, 27.8",34.6,Valid (Active),Chronic Baseline',
-  'DS-061,28.5,3.56,8.0,40,83,29,"63.7, 7.0, 27.5",30.7,Fresh (Active),Chronic Baseline',
-  'DS-062,39.7,4.96,8.0,34,50,56,"58.6, 7.8, 28.0",35.8,Fresh (Active),Chronic Baseline',
-  'DS-063,42.1,5.26,8.0,30,80,11,"57.8, 8.0, 27.8",36.7,Fresh (Active),Action Level (50% TWA)',
-  'DS-064,21.0,5.25,4.0,30,50,45,"70.8, 5.5, 26.5",23.3,Fresh (Active),Chronic Baseline',
-  'DS-065,16.8,4.21,4.0,40,46,21,"73.1, 5.0, 25.7",20.6,Fresh (Active),Chronic Baseline',
-  'DS-066,20.6,5.16,4.0,28,48,15,"71.3, 5.4, 26.3",22.7,Fresh (Active),Chronic Baseline',
-  'DS-067,15.6,3.91,4.0,25,50,64,"74.2, 4.8, 25.6",19.6,Valid (Active),Normal / Safe',
-  'DS-068,48.0,4.80,10.0,35,54,43,"54.4, 8.6, 28.2",40.3,Fresh (Active),Action Level (50% TWA)',
-  'DS-069,28.9,2.89,10.0,30,79,49,"64.9, 6.7, 27.2",29.5,Fresh (Active),Chronic Baseline',
-  'DS-070,17.4,4.36,4.0,41,57,62,"71.9, 5.3, 26.2",22.1,Valid (Active),Chronic Baseline',
-  'DS-071,26.5,4.42,6.0,33,47,37,"66.8, 6.3, 27.1",27.5,Fresh (Active),Chronic Baseline',
-  'DS-072,23.8,2.97,8.0,31,52,51,"69.1, 5.8, 26.6",24.9,Fresh (Active),Chronic Baseline',
-  'DS-073,34.0,3.40,10.0,41,46,14,"61.2, 7.4, 27.7",33.2,Fresh (Active),Chronic Baseline',
-  'DS-074,22.0,2.75,8.0,24,55,52,"70.0, 5.6, 26.3",23.9,Fresh (Active),Chronic Baseline',
-  'DS-075,35.6,5.94,6.0,40,63,36,"59.4, 7.8, 28.1",35.2,Fresh (Active),Chronic Baseline',
-  'DS-076,48.9,8.15,6.0,24,69,44,"54.7, 8.5, 28.3",40.0,Fresh (Active),Action Level (50% TWA)',
-  'DS-077,35.9,8.97,4.0,38,66,19,"59.8, 7.8, 28.0",34.9,Fresh (Active),Chronic Baseline',
-  'DS-078,56.6,9.44,6.0,26,58,49,"51.5, 9.1, 28.3",43.4,Fresh (Active),Action Level (50% TWA)',
-  'DS-079,55.4,6.93,8.0,35,86,73,"49.8, 9.4, 28.1",45.1,Valid (Active),Action Level (50% TWA)',
-  'DS-080,71.9,7.19,10.0,43,64,33,"43.1, 10.6, 27.6",51.9,Fresh (Active),PEL / TWA Limit (100%)',
-  'DS-081,63.8,10.64,6.0,39,74,74,"46.1, 10.1, 28.0",48.9,Valid (Active),PEL / TWA Limit (100%)',
-  'DS-082,87.2,8.72,10.0,42,45,45,"39.5, 11.2, 27.2",55.3,Fresh (Active),Exceeded Limit (150%)',
-  'DS-083,62.1,7.76,8.0,35,67,78,"47.7, 9.8, 28.0",47.3,Valid (Active),PEL / TWA Limit (100%)',
-  'DS-084,27.8,6.94,4.0,37,81,74,"63.9, 7.0, 27.7",30.5,Valid (Active),Chronic Baseline',
-  'DS-085,64.9,8.11,8.0,39,71,68,"45.4, 10.2, 27.8",49.5,Valid (Active),PEL / TWA Limit (100%)',
-  'DS-086,35.8,8.95,4.0,25,60,36,"60.7, 7.5, 27.8",33.8,Fresh (Active),Chronic Baseline',
-  'DS-087,90.5,9.05,10.0,41,85,19,"36.9, 11.8, 26.6",58.1,Fresh (Active),Exceeded Limit (150%)',
-  'DS-088,73.4,9.18,8.0,33,86,28,"43.7, 10.5, 27.7",51.3,Fresh (Active),PEL / TWA Limit (100%)',
-  'DS-089,53.0,10.60,5.0,38,51,85,"52.3, 9.0, 28.3",42.5,Valid (Active),Action Level (50% TWA)',
-  'DS-090,79.8,9.98,8.0,32,78,44,"41.8, 10.9, 27.8",53.1,Fresh (Active),PEL / TWA Limit (100%)',
-  'DS-091,61.3,7.66,8.0,30,50,83,"48.9, 9.7, 28.2",46.1,Valid (Active),PEL / TWA Limit (100%)',
-  'DS-092,64.5,6.45,10.0,38,55,56,"46.7, 10.0, 28.0",48.3,Fresh (Active),PEL / TWA Limit (100%)',
-  'DS-093,76.2,9.53,8.0,29,75,55,"43.1, 10.6, 27.8",52.0,Fresh (Active),PEL / TWA Limit (100%)',
-  'DS-094,50.8,8.47,6.0,31,54,26,"53.6, 8.8, 28.3",41.2,Fresh (Active),Action Level (50% TWA)',
-  'DS-095,62.0,10.33,6.0,41,58,47,"46.8, 10.0, 27.9",48.1,Fresh (Active),PEL / TWA Limit (100%)',
-  'DS-096,108.5,21.70,5.0,39,77,38,"32.9, 12.4, 25.4",61.9,Fresh (Active),Exceeded Limit (150%)',
-  'DS-097,56.5,14.13,4.0,32,70,79,"50.8, 9.3, 28.2",44.0,Valid (Active),Action Level (50% TWA)',
-  'DS-098,93.5,15.58,6.0,43,65,54,"36.4, 11.9, 26.6",58.6,Fresh (Active),Exceeded Limit (150%)',
-  'DS-099,27.8,13.90,2.0,31,63,31,"65.1, 6.7, 27.3",29.3,Fresh (Active),Chronic Baseline',
-  'DS-100,149.2,24.87,6.0,26,82,82,"26.5, 13.1, 23.1",67.8,Valid (Active),Critical Overexposure',
-  'DS-101,134.4,22.40,6.0,37,81,18,"28.2, 13.0, 23.9",66.2,Fresh (Active),Critical Overexposure',
-  'DS-102,127.1,15.89,8.0,29,74,21,"30.4, 12.7, 24.8",64.0,Fresh (Active),Critical Overexposure',
-  'DS-103,77.2,19.30,4.0,38,75,50,"41.5, 11.0, 27.8",53.4,Fresh (Active),PEL / TWA Limit (100%)',
-  'DS-104,43.1,21.55,2.0,34,88,49,"56.6, 8.3, 28.2",38.1,Fresh (Active),Action Level (50% TWA)',
-  'DS-105,108.9,18.15,6.0,29,80,79,"33.8, 12.3, 25.8",61.0,Valid (Active),Exceeded Limit (150%)',
-  'DS-106,129.4,21.57,6.0,40,66,28,"29.5, 12.8, 24.4",64.9,Fresh (Active),Critical Overexposure',
-  'DS-107,99.4,16.57,6.0,44,71,30,"34.6, 12.1, 26.1",60.3,Fresh (Active),Exceeded Limit (150%)',
-  'DS-108,86.8,21.70,4.0,35,86,45,"37.8, 11.6, 27.1",57.0,Fresh (Active),Exceeded Limit (150%)',
-  'DS-109,114.5,14.31,8.0,44,77,62,"30.5, 12.7, 24.8",63.9,Valid (Active),Exceeded Limit (150%)',
-  'DS-110,158.4,19.80,8.0,43,55,61,"25.2, 13.1, 22.5",69.2,Valid (Active),Critical Overexposure',
-  'DS-111,3.5,0.58,6.0,47,69,98,"87.2, 2.1, 21.1",5.6,EXPIRED,Reject (Degraded Chemistry)',
-  'DS-112,44.5,5.56,8.0,41,92,105,"53.4, 8.8, 28.5",40.8,EXPIRED,Reject (Degraded Chemistry)',
-  'DS-113,22.8,2.85,8.0,32,78,112,"67.8, 6.2, 27.4",26.5,EXPIRED,Reject (Degraded Chemistry)',
-  'DS-114,51.4,6.42,8.0,45,73,97,"50.6, 9.3, 28.3",43.6,EXPIRED,Reject (Degraded Chemistry)',
-  'DS-115,56.6,7.07,8.0,43,60,120,"48.9, 9.6, 28.5",45.4,EXPIRED,Reject (Degraded Chemistry)',
-  'DS-116,32.2,4.03,8.0,37,59,106,"61.2, 7.4, 28.2",33.3,EXPIRED,Reject (Degraded Chemistry)',
-  'DS-117,0.0,0.00,6.0,33,70,96,"90.2, 1.6, 20.3",2.6,EXPIRED,Reject (Badge Invalid)',
-  'DS-118,44.6,5.58,8.0,32,68,115,"54.8, 8.5, 28.5",39.4,EXPIRED,Reject (Degraded Chemistry)',
-  'DS-119,50.8,6.35,8.0,34,88,119,"50.5, 9.3, 28.5",43.7,EXPIRED,Reject (Degraded Chemistry)',
-  'DS-120,1.1,0.18,6.0,45,57,102,"88.9, 1.8, 20.9",4.0,EXPIRED,Reject (Degraded Chemistry)'
+  'CP-001,0.0,0.0,1.0,33,33,36,"40.6, 26.6, -22.5",0.8,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-002,0.0,0.0,0.5,20,53,4,"39.6, 26.1, -21.4",1.1,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-003,0.0,0.0,4.0,19,42,70,"40.6, 26.5, -22.0",0.5,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-004,0.0,0.0,2.0,37,67,44,"40.5, 26.6, -20.9",1.2,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-005,0.0,0.0,2.0,26,37,13,"40.9, 25.6, -21.7",0.6,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-006,0.0,0.0,0.5,31,81,49,"39.8, 25.3, -22.3",1.0,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-007,0.0,0.0,1.0,33,75,74,"40.5, 25.9, -21.9",0.1,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-008,0.0,0.0,4.0,20,44,13,"40.9, 25.9, -21.2",0.9,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-009,0.0,0.0,8.0,27,50,27,"40.4, 26.9, -22.5",1.0,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-010,0.0,0.0,4.0,22,68,21,"40.0, 25.1, -20.9",1.5,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-011,0.0,0.0,0.5,33,60,42,"40.5, 26.1, -22.2",0.2,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-012,0.0,0.0,1.0,23,79,41,"40.8, 25.8, -22.5",0.6,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-013,0.0,0.0,1.0,40,55,34,"40.5, 26.5, -22.1",0.5,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-014,0.0,0.0,1.0,40,52,29,"41.1, 25.8, -22.0",0.6,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-015,0.0,0.0,8.0,19,38,21,"40.4, 26.1, -23.3",1.3,Fresh (Active),Clean / Safe (Unexposed Baseline)',
+  'CP-016,0.27,0.05,5.3,40,54,71,"45.4, 30.3, -12.3",11.7,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-017,0.3,0.09,3.4,24,52,62,"45.8, 30.6, -13.1",11.3,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-018,0.15,0.08,1.9,42,45,59,"44.3, 28.9, -15.9",7.8,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-019,0.09,0.05,1.7,19,56,68,"42.3, 26.9, -19.5",3.2,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-020,0.32,0.12,2.7,24,38,73,"45.3, 30.0, -15.2",9.2,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-021,0.24,0.19,1.3,42,36,28,"45.3, 29.7, -14.0",10.0,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-022,0.07,0.24,0.3,24,46,57,"42.1, 26.9, -20.1",2.6,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-023,0.38,0.26,1.4,21,38,14,"44.9, 30.6, -12.0",11.8,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-024,0.42,0.19,2.2,26,66,34,"47.3, 31.7, -10.6",14.4,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-025,0.05,0.16,0.3,19,49,17,"40.9, 27.6, -19.7",2.8,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-026,0.29,0.21,1.4,40,59,48,"46.2, 31.0, -11.3",13.1,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-027,0.15,0.1,1.5,39,77,27,"43.3, 28.9, -16.4",6.9,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-028,0.15,0.1,1.5,28,41,43,"43.0, 27.9, -16.6",6.2,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-029,0.04,0.1,0.4,23,78,45,"41.6, 27.0, -19.7",2.7,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-030,0.06,0.13,0.5,39,80,36,"42.2, 27.1, -20.7",2.4,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-031,0.15,0.02,7.4,19,62,45,"42.5, 27.7, -17.4",5.3,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-032,0.29,0.24,1.2,36,66,47,"46.4, 30.4, -12.4",12.1,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-033,0.05,0.2,0.2,35,60,25,"41.3, 26.9, -19.3",3.0,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-034,0.38,0.05,7.6,32,65,60,"47.0, 32.0, -10.2",14.8,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-035,0.24,0.3,0.8,19,81,79,"44.6, 29.3, -13.8",9.7,Fresh (Active),Clean / Safe (Trace Baseline)',
+  'CP-036,1.33,0.62,2.1,30,56,60,"56.2, 37.6, 13.9",40.9,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-037,0.73,0.7,1.1,30,39,70,"50.5, 36.7, -1.9",24.9,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-038,1.3,0.27,4.8,22,76,21,"56.5, 38.9, 15.4",42.7,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-039,1.11,1.59,0.7,28,36,44,"54.3, 40.1, 8.8",36.6,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-040,0.45,0.32,1.4,36,54,14,"47.3, 32.5, -8.4",16.5,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-041,1.0,0.77,1.3,26,35,47,"52.0, 39.2, 4.0",31.3,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-042,0.96,1.05,0.9,20,76,81,"53.1, 40.9, 5.6",33.8,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-043,0.86,0.33,2.6,25,80,34,"52.9, 39.9, 5.3",33.0,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-044,1.06,1.38,0.8,38,52,3,"54.9, 39.5, 10.2",37.8,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-045,1.36,1.36,1.0,40,46,31,"57.1, 38.8, 17.0",44.3,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-046,1.26,0.27,4.7,31,81,69,"57.6, 38.3, 17.7",44.9,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-047,0.59,0.17,3.5,34,52,73,"48.8, 35.4, -4.9",21.2,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-048,1.39,1.22,1.1,38,79,15,"58.0, 37.1, 20.0",46.8,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-049,1.11,0.4,2.8,42,38,32,"55.5, 40.1, 9.6",37.7,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-050,1.0,1.21,0.8,19,50,58,"53.3, 39.3, 5.6",33.2,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-051,0.71,1.14,0.6,41,73,13,"52.2, 38.6, 3.1",30.4,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-052,0.66,1.12,0.6,20,70,28,"50.4, 36.1, -2.9",23.8,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-053,1.1,1.0,1.1,28,38,10,"52.7, 39.9, 8.1",35.3,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-054,0.81,1.21,0.7,39,58,60,"53.0, 40.3, 4.6",32.7,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-055,0.99,1.15,0.9,28,37,58,"52.7, 40.1, 4.0",32.0,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-056,1.49,0.67,2.2,42,58,60,"58.4, 37.0, 21.4",48.2,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-057,1.41,0.31,4.6,34,56,13,"57.9, 37.3, 17.3",44.4,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-058,0.48,0.23,2.1,26,38,47,"47.7, 32.4, -8.3",16.8,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-059,0.57,0.52,1.1,30,40,63,"48.7, 33.1, -7.1",18.4,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-060,1.07,0.19,5.6,37,74,81,"55.4, 39.5, 12.7",40.1,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-061,0.58,0.45,1.3,22,67,41,"48.9, 34.4, -5.8",20.1,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-062,0.94,1.25,0.8,20,58,50,"51.3, 38.9, 4.3",31.2,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-063,0.73,0.63,1.2,18,47,29,"49.3, 35.7, -3.3",22.8,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-064,1.42,0.27,5.2,24,60,47,"57.3, 38.7, 15.6",43.1,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-065,0.93,0.32,2.9,40,75,75,"54.5, 40.0, 10.1",37.7,Valid (Active),Action Level (Intermediate Dose)',
+  'CP-066,1.52,1.9,0.8,42,66,18,"61.0, 35.5, 24.5",51.7,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-067,2.04,2.91,0.7,22,77,20,"62.5, 31.6, 31.2",57.8,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-068,3.96,1.95,2.0,37,71,76,"69.9, 25.5, 47.9",75.8,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-069,3.62,1.23,2.9,36,67,69,"70.7, 25.2, 48.4",76.6,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-070,4.11,1.54,2.7,26,41,71,"70.7, 26.1, 48.8",77.0,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-071,4.98,0.65,7.7,40,72,38,"70.9, 26.3, 49.6",77.8,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-072,2.43,2.73,0.9,34,69,30,"66.6, 29.0, 41.8",69.0,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-073,4.31,3.68,1.2,18,60,23,"71.0, 25.1, 48.7",77.0,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-074,2.9,3.77,0.8,35,79,25,"70.7, 25.1, 48.8",77.0,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-075,2.52,0.53,4.8,39,46,7,"67.5, 29.9, 41.1",68.7,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-076,4.15,0.97,4.3,25,82,72,"70.4, 26.2, 48.6",76.7,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-077,2.65,2.3,1.1,34,68,4,"69.0, 27.5, 43.5",71.5,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-078,1.76,0.52,3.4,21,48,34,"58.2, 37.1, 19.7",46.6,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-079,2.83,2.92,1.0,32,45,49,"68.0, 28.7, 42.0",69.7,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-080,4.97,3.71,1.3,28,57,42,"71.0, 24.7, 49.2",77.5,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-081,1.86,0.91,2.0,22,75,59,"61.9, 34.1, 26.8",53.9,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-082,3.48,0.96,3.6,30,72,61,"70.0, 25.3, 48.8",76.7,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-083,2.03,0.66,3.1,18,45,3,"59.5, 36.9, 23.8",50.8,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-084,2.18,0.61,3.6,40,36,63,"63.9, 31.3, 33.6",60.6,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-085,2.0,1.82,1.1,28,82,51,"64.1, 32.3, 33.5",60.6,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-086,1.59,0.58,2.7,21,75,18,"58.2, 36.6, 19.0",45.9,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-087,2.35,3.18,0.7,24,49,38,"63.5, 31.7, 31.9",58.9,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-088,1.54,1.22,1.3,40,76,33,"61.1, 35.2, 24.7",51.9,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-089,4.99,3.22,1.6,36,52,32,"70.4, 25.8, 49.0",77.0,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-090,4.47,1.62,2.8,40,61,76,"70.9, 26.0, 49.1",77.3,Valid (Active),PEL / Limit (Elevated Exposure)',
+  'CP-091,13.04,11.24,1.2,30,56,61,"79.8, 14.2, 71.3",101.9,Valid (Active),Critical (Severe Overexposure)',
+  'CP-092,20.07,4.08,4.9,36,58,75,"79.0, 14.3, 70.9",101.2,Valid (Active),Critical (Severe Overexposure)',
+  'CP-093,43.98,7.14,6.2,28,41,60,"80.4, 13.7, 71.0",101.9,Valid (Active),Critical (Severe Overexposure)',
+  'CP-094,31.97,8.98,3.6,23,46,13,"80.0, 14.1, 71.3",102.0,Valid (Active),Critical (Severe Overexposure)',
+  'CP-095,33.13,9.63,3.4,34,56,45,"80.4, 13.5, 71.3",102.2,Valid (Active),Critical (Severe Overexposure)',
+  'CP-096,34.26,10.74,3.2,25,63,15,"79.4, 14.0, 71.3",101.8,Valid (Active),Critical (Severe Overexposure)',
+  'CP-097,14.66,7.44,2.0,27,39,54,"79.7, 14.2, 70.3",101.0,Valid (Active),Critical (Severe Overexposure)',
+  'CP-098,12.59,4.17,3.0,34,82,76,"79.5, 14.3, 71.9",102.3,Valid (Active),Critical (Severe Overexposure)',
+  'CP-099,19.67,8.3,2.4,33,75,6,"79.6, 14.3, 70.7",101.3,Valid (Active),Critical (Severe Overexposure)',
+  'CP-100,13.19,8.35,1.6,30,68,61,"79.6, 14.7, 71.1",101.6,Valid (Active),Critical (Severe Overexposure)',
+  'CP-101,37.2,5.75,6.5,25,46,73,"79.3, 13.7, 70.3",100.9,Valid (Active),Critical (Severe Overexposure)',
+  'CP-102,16.37,12.69,1.3,32,45,74,"80.0, 13.9, 70.3",101.1,Valid (Active),Critical (Severe Overexposure)',
+  'CP-103,27.0,7.85,3.4,42,37,36,"80.2, 13.6, 72.0",102.8,Valid (Active),Critical (Severe Overexposure)',
+  'CP-104,39.72,9.93,4.0,24,72,80,"80.0, 13.5, 70.4",101.3,Valid (Active),Critical (Severe Overexposure)',
+  'CP-105,19.48,6.56,3.0,38,72,77,"79.6, 13.9, 70.9",101.5,Valid (Active),Critical (Severe Overexposure)',
+  'CP-106,23.5,3.76,6.2,24,75,17,"79.6, 13.9, 71.1",101.7,Valid (Active),Critical (Severe Overexposure)',
+  'CP-107,31.39,5.25,6.0,25,65,21,"80.4, 13.4, 70.7",101.7,Valid (Active),Critical (Severe Overexposure)',
+  'CP-108,10.53,6.88,1.5,32,45,58,"79.3, 14.5, 69.5",100.0,Valid (Active),Critical (Severe Overexposure)',
+  'CP-109,1.44,0.25,5.7,38,66,92,"46.2, 17.6, -8.1",17.2,EXPIRED,Expired (Degraded Matrix Reissue)',
+  'CP-110,12.1,2.0,6.0,33,48,102,"45.9, 17.2, -6.8",18.4,EXPIRED,Expired (Degraded Matrix Reissue)',
+  'CP-111,0.36,0.25,1.4,37,68,93,"46.8, 16.9, -6.4",19.1,EXPIRED,Expired (Degraded Matrix Reissue)',
+  'CP-112,5.21,1.0,5.2,24,35,102,"47.1, 17.8, -7.3",18.1,EXPIRED,Expired (Degraded Matrix Reissue)',
+  'CP-113,2.74,2.0,1.4,37,77,101,"46.1, 17.4, -7.0",18.2,EXPIRED,Expired (Degraded Matrix Reissue)',
+  'CP-114,0.0,0.0,4.7,40,41,104,"45.5, 17.7, -8.3",16.8,EXPIRED,Expired (Degraded Matrix Reissue)',
+  'CP-115,0.0,0.0,4.3,24,36,96,"46.6, 16.2, -7.3",18.7,EXPIRED,Expired (Degraded Matrix Reissue)',
+  'CP-116,0.74,0.25,3.0,29,46,104,"46.2, 18.1, -7.8",17.2,EXPIRED,Expired (Degraded Matrix Reissue)',
+  'CP-117,22.12,3.5,6.3,29,62,98,"46.1, 17.2, -7.4",17.9,EXPIRED,Expired (Degraded Matrix Reissue)',
+  'CP-118,0.0,0.0,7.6,31,64,102,"46.6, 16.8, -6.9",18.7,EXPIRED,Expired (Degraded Matrix Reissue)',
+  'CP-119,0.58,0.1,5.8,24,57,91,"46.6, 17.1, -7.7",17.9,EXPIRED,Expired (Degraded Matrix Reissue)',
+  'CP-120,1.5,1.0,1.5,41,36,92,"45.4, 17.3, -7.1",17.9,EXPIRED,Expired (Degraded Matrix Reissue)'
 ];
 
 export const CALIBRATION_DATASET: CalibrationSample[] = RAW_CSV_LINES.map(line => {
   const parts = line.match(/(?:[^\s,"]|"(?:\\.|[^"])*")+/g) || [];
-  const sampleId = parts[0] || 'DS-000';
+  const sampleId = parts[0] || 'CP-000';
   const targetDose = parseFloat(parts[1] || '0');
   const gasConc = parseFloat(parts[2] || '0');
   const exposureTime = parseFloat(parts[3] || '8');
@@ -198,15 +195,15 @@ export const CALIBRATION_DATASET: CalibrationSample[] = RAW_CSV_LINES.map(line =
   const rh = parseFloat(parts[5] || '50');
   const shelfAge = parseInt(parts[6] || '1');
 
-  const rawColorString = (parts[7] || '"92.0, 1.2, 18.5"').replace(/"/g, '');
+  const rawColorString = (parts[7] || '"40.5, 26.0, -22.0"').replace(/"/g, '');
   const [L_str, a_str, b_str] = rawColorString.split(',').map(s => s.trim());
-  const L = parseFloat(L_str || '92.0');
-  const a = parseFloat(a_str || '1.2');
-  const b = parseFloat(b_str || '18.5');
+  const L = parseFloat(L_str || '40.5');
+  const a = parseFloat(a_str || '26.0');
+  const b = parseFloat(b_str || '-22.0');
 
   const deltaE = parseFloat(parts[8] || '0.0');
   const expiryStatus = (parts[9] || 'Fresh (Active)').trim();
-  const actionFlag = parts.slice(10).join(', ').trim() || 'Normal / Safe';
+  const actionFlag = parts.slice(10).join(', ').trim() || 'Clean / Safe';
 
   const hexColor = labToRgbHex(L, a, b);
   const safetyStatus = mapActionFlagToSafetyStatus(actionFlag, expiryStatus);
@@ -229,7 +226,6 @@ export const CALIBRATION_DATASET: CalibrationSample[] = RAW_CSV_LINES.map(line =
   };
 });
 
-// Environmental Compensation Algorithm Demonstration
 export interface EnvironmentalCompensationResult {
   rawDeltaE: number;
   tempCompensationFactor: number;
@@ -247,7 +243,6 @@ export function computeEnvironmentalCompensation(sample: CalibrationSample): Env
 
   const totalFactor = tempCompensationFactor * humidityCompensationFactor * shelfLifeDegradationFactor;
   const compensatedDeltaE = Number((sample.deltaE / Math.max(0.7, totalFactor)).toFixed(2));
-
   const estimatedDosePpmH = sample.targetDose;
 
   let confidence = 96;
