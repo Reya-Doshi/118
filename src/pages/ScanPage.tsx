@@ -428,20 +428,39 @@ export const ScanPage: React.FC = () => {
       }, 700);
 
       try {
-        const backendUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-          ? 'http://localhost:8000'
-          : `http://${window.location.hostname}:8000`;
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const renderCloudUrl = 'https://sarvas.onrender.com';
+        const configuredBackendUrl = (import.meta.env.VITE_BACKEND_URL as string) || (isLocal ? 'http://localhost:8000' : renderCloudUrl);
 
-        const response = await fetch(`${backendUrl}/api/analyze-wristband`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            image_base64: customImage,
-            temperature: activeCalibration.tempC,
-            humidity: activeCalibration.rh,
-            shelf_age_days: activeCalibration.shelfAge
-          })
-        });
+        let response: Response;
+        try {
+          response = await fetch(`${configuredBackendUrl}/api/analyze-wristband`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              image_base64: customImage,
+              temperature: activeCalibration.tempC,
+              humidity: activeCalibration.rh,
+              shelf_age_days: activeCalibration.shelfAge
+            })
+          });
+        } catch (initialErr) {
+          // If local server is not running, seamlessly fallback to live Render cloud endpoint
+          if (configuredBackendUrl !== renderCloudUrl) {
+            response = await fetch(`${renderCloudUrl}/api/analyze-wristband`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                image_base64: customImage,
+                temperature: activeCalibration.tempC,
+                humidity: activeCalibration.rh,
+                shelf_age_days: activeCalibration.shelfAge
+              })
+            });
+          } else {
+            throw initialErr;
+          }
+        }
 
         clearInterval(stepTimer);
         setCurrentStep(5);

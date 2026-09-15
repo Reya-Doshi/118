@@ -245,7 +245,7 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
                       onClick={() => handleSaveCustomServer(preset)}
                       className="px-2 py-1 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-[10px] font-mono text-gray-200"
                     >
-                      {preset.replace('http://', '').replace(':8000', '')}
+                      {preset.replace('https://', '').replace('http://', '').replace(':8000', '')}
                     </button>
                   ))}
                 </div>
@@ -254,7 +254,7 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
                     type="text"
                     value={customServerUrl}
                     onChange={(e) => setCustomServerUrl(e.target.value)}
-                    placeholder="http://172.16.102.101:8000"
+                    placeholder="https://sarvas.onrender.com"
                     className="flex-1 bg-black/60 border border-white/30 rounded-xl p-2 text-xs text-white font-mono"
                   />
                   <button

@@ -24,14 +24,15 @@ export const SplashView: React.FC<SplashViewProps> = ({ onComplete }) => {
       </div>
 
       <div className="flex flex-col items-center text-center max-w-sm my-auto">
-        <div className="relative overflow-hidden rounded-3xl shadow-md border border-[#D8D0C2] bg-[#F6F1E7] p-2 mb-3">
+        <div className="relative overflow-hidden rounded-3xl shadow-lg border border-[#D8D0C2] bg-white p-5 mb-3">
           <img 
-            src="/sarvas_splash.jpg" 
-            alt="SARVAS - Because not all danger announces itself."
-            className="w-72 h-auto max-w-full object-contain rounded-2xl" 
+            src="/sarvas_icon.png" 
+            alt="SARVAS Emblem"
+            className="w-48 h-48 object-contain rounded-2xl" 
           />
         </div>
-        <p className="text-xs text-[#5D5B53] font-mono tracking-wider uppercase font-semibold">
+        <h1 className="text-3xl font-serif font-bold text-[#292925] tracking-tight">SARVAS</h1>
+        <p className="text-xs text-[#5D5B53] font-mono tracking-wider uppercase font-semibold mt-1">
           Zero-Power Cumulative H₂S Dosimetry
         </p>
       </div>

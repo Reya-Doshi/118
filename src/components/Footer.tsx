@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -10,11 +10,13 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-[#3E3C36]">
           
           <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-[#4F5D4B] rounded-xs flex items-center justify-center">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#EDE5D6]" />
-              </div>
-              <span className="text-base font-bold font-mono tracking-wider text-white">118</span>
+            <div className="flex items-center gap-2.5">
+              <img 
+                src="/sarvas_icon.png" 
+                alt="SARVAS Logo" 
+                className="w-7 h-7 rounded-lg object-contain bg-[#FAF8F5] p-0.5 border border-white/20 shadow-xs"
+              />
+              <span className="text-base font-bold font-mono tracking-wider text-white">SARVAS</span>
             </div>
             <p className="text-xs text-[#B8B2A4]">Passive exposure intelligence for safer shifts in petroleum operations.</p>
           </div>

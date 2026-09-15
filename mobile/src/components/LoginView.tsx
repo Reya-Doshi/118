@@ -21,9 +21,12 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F1E7] flex flex-col justify-between p-6 max-w-md mx-auto">
+    <div 
+      className="min-h-screen bg-[#F6F1E7] flex flex-col justify-between p-6 max-w-md mx-auto"
+      style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 28px)' }}
+    >
       {/* Top Header */}
-      <div className="pt-8 pb-4">
+      <div className="pt-2 pb-4">
         <div className="flex items-center gap-2.5 mb-3">
           <img 
             src="/sarvas_icon.png" 

@@ -42,6 +42,7 @@ export class DosimeterApiService {
    */
   public static getPresetUrls(): string[] {
     return [
+      'https://sarvas.onrender.com',
       'http://172.16.102.101:8000',
       'http://10.98.31.126:8000',
       'http://10.0.2.2:8000',
@@ -61,18 +62,8 @@ export class DosimeterApiService {
     const envUrl = (import.meta as any).env?.VITE_BACKEND_URL;
     if (envUrl) return envUrl.trim().replace(/\/+$/, '');
 
-    // 3. Android Native Device / Emulator (Active Ethernet host: 172.16.102.101)
-    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
-      return 'http://172.16.102.101:8000';
-    }
-
-    // 4. Browser / Mobile Web: use current host on port 8000
-    if (typeof window !== 'undefined' && window.location) {
-      const hostname = window.location.hostname || 'localhost';
-      return `http://${hostname}:8000`;
-    }
-
-    return 'http://localhost:8000';
+    // 3. Default: Live Production Render Cloud Server
+    return 'https://sarvas.onrender.com';
   }
 
   /**
