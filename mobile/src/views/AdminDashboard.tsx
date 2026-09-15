@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { Worker, Wristband, Reading, Alert } from '../types/mobile';
 import { repository } from '../services/DosimeterRepository';
-import { Users, Radio, AlertTriangle, Activity, UserPlus, Check, X, ChevronRight, BarChart3 } from 'lucide-react';
+import { Users, Radio, AlertTriangle, Activity, UserPlus, Check, X, ChevronRight, BarChart3, ShieldAlert } from 'lucide-react';
 
 interface AdminDashboardProps {
   workers: Worker[];
@@ -182,6 +182,66 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <Radio className="w-4 h-4 text-[#71806B]" />
           Band Inventory ({wristbands.length})
         </button>
+      </div>
+
+      {/* Admin Precautionary Directives & Safety Escalations */}
+      <div className="bg-[#EDE5D6] border-2 border-[#9A6258]/40 rounded-2xl p-4 shadow-xs space-y-3">
+        <div className="flex items-center justify-between border-b border-[#D8D0C2] pb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-[#9A6258]/20 flex items-center justify-center text-[#9A6258]">
+              <ShieldAlert className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-xs font-serif font-bold text-[#292925] leading-tight">Admin Precautionary Directives</h3>
+              <span className="text-[9px] font-mono text-[#71806B] font-semibold">OSHA / DGMS REFINERY COMPLIANCE</span>
+            </div>
+          </div>
+          <span className="text-[10px] font-mono bg-[#9A6258]/15 text-[#9A6258] px-2 py-0.5 rounded font-bold">
+            MANDATORY SOP
+          </span>
+        </div>
+
+        <div className="space-y-2 text-xs text-[#292925]">
+          <div className="p-2.5 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2] flex items-start gap-2.5">
+            <span className="w-5 h-5 rounded-full bg-[#B08A55]/20 text-[#B08A55] font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+            <div>
+              <div className="font-semibold text-[#292925] text-[11px]">Action Level (0.50 – 1.00 ppm·h): Immediate Personnel Rotation</div>
+              <p className="text-[10px] text-[#5D5B53] mt-0.5 leading-relaxed">
+                Immediately rotate operator out of active battery (SRU/CDU) to pressurized control room. Cap remaining shift exposure.
+              </p>
+            </div>
+          </div>
+
+          <div className="p-2.5 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2] flex items-start gap-2.5">
+            <span className="w-5 h-5 rounded-full bg-[#9A6258]/20 text-[#9A6258] font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+            <div>
+              <div className="font-semibold text-[#292925] text-[11px]">Overexposure (&gt; 1.00 ppm·h): Shift Suspension &amp; OHC Triage</div>
+              <p className="text-[10px] text-[#5D5B53] mt-0.5 leading-relaxed">
+                Suspend shift immediately. Escort operator to Occupational Health Center for vitals &amp; peak flow. Mandatory 24h rest before next shift.
+              </p>
+            </div>
+          </div>
+
+          <div className="p-2.5 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2] flex items-start gap-2.5">
+            <span className="w-5 h-5 rounded-full bg-[#71806B]/20 text-[#4F5D4B] font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+            <div>
+              <div className="font-semibold text-[#292925] text-[11px]">Chemical Matrix Lifecycle &amp; Batch Quarantine</div>
+              <p className="text-[10px] text-[#5D5B53] mt-0.5 leading-relaxed">
+                Decommission and physically quarantine any Cu-PAN wristband older than 90 days or showing bleaching/matrix degradation.
+              </p>
+            </div>
+          </div>
+
+          <div className="p-2.5 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2] flex items-start gap-2.5">
+            <span className="w-5 h-5 rounded-full bg-[#292925]/10 text-[#292925] font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">4</span>
+            <div>
+              <div className="font-semibold text-[#292925] text-[11px]">Environmental Storage Standards</div>
+              <p className="text-[10px] text-[#5D5B53] mt-0.5 leading-relaxed">
+                Store unissued dosimeters in sealed foil pouches below 25°C and &lt;50% RH. Never store near open chemical solvent vents.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Wristbands Lifecycle Overview */}

@@ -1,6 +1,6 @@
 {
-  "model_name": "Random Forest Regressor",
-  "sensor_chemistry": "Cu-PAN",
+  "model_name": "Random Forest Regressor (Optimized Cu-PAN)",
+  "sensor_chemistry": "Cu-PAN Complex (Immobilized Pyridylazo-naphthol)",
   "target_variable": "Target_Dose_ppm_h",
   "features": [
     "L_star",
@@ -12,44 +12,16 @@
     "Shelf_Age_days"
   ],
   "evaluation_metrics": {
-    "test_mae_ppm_h": 1.3091,
-    "test_rmse_ppm_h": 3.1694,
-    "test_r2_score": 0.8676,
-    "train_r2_score": 0.9561
+    "training_mae_ppm_h": 0.6045,
+    "training_rmse_ppm_h": 1.5915,
+    "training_r2_score": 0.9732,
+    "sample_count": 108,
+    "dataset": "public/calibration_dataset.csv"
   },
-  "all_model_benchmarks": {
-    "Linear Regression": {
-      "test_mae": 2.6077,
-      "test_rmse": 3.9721,
-      "test_r2": 0.792
-    },
-    "Random Forest Regressor": {
-      "test_mae": 1.3091,
-      "test_rmse": 3.1694,
-      "test_r2": 0.8676
-    },
-    "Gradient Boosting Regressor": {
-      "test_mae": 1.2942,
-      "test_rmse": 3.3437,
-      "test_r2": 0.8526
-    }
-  },
-  "linear_regression_weights": {
-    "L_star": -1.38318,
-    "a_star": -0.8191,
-    "b_star": -3.357,
-    "Delta_E_CIE76": 3.74197,
-    "Temperature_C": -0.02898,
-    "Relative_Humidity_pct": -0.00889,
-    "Shelf_Age_days": -0.01391
-  },
-  "linear_regression_intercept": 3.85758,
-  "dataset_summary": {
-    "source_csv": "prototype_calibration.csv",
-    "active_training_samples": 235,
-    "train_split": 0.8,
-    "test_split": 0.2,
-    "min_dose_ppm_h": 0.0,
-    "max_dose_ppm_h": 43.982
+  "sensor_benchmarks": {
+    "normal_safe_max_ppm_h": 0.5,
+    "action_level_max_ppm_h": 1.0,
+    "pel_limit_max_ppm_h": 5.0,
+    "critical_threshold_ppm_h": 10.0
   }
 }
