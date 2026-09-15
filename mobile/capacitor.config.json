@@ -1,6 +1,6 @@
 {
   "appId": "com.sih.dosimeter118",
-  "appName": "118 Safety",
+  "appName": "SARVAS",
   "webDir": "dist",
   "plugins": {
     "Camera": {

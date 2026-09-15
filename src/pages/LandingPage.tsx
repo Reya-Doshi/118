@@ -120,11 +120,14 @@ export const LandingPage: React.FC = () => {
             <div className="flex items-center gap-2 sm:gap-3">
               <img 
                 src="/sarvas_logo_v2.png" 
-                alt="RageB8 Official Logo" 
+                alt="SARVAS Logo" 
                 className="w-7 h-7 rounded-lg object-contain bg-white p-0.5 border border-white/20 shadow-md"
               />
               <span className="text-xs font-bold font-mono tracking-widest text-white uppercase">
-                RageB8
+                SARVAS
+              </span>
+              <span className="text-[10px] font-mono bg-[#4F5D4B]/30 text-[#BACDB2] px-1.5 py-0.5 rounded font-bold">
+                by RageB8
               </span>
               <span className="text-[#D8D0C2]/60 font-mono text-xs">•</span>
               <span className="text-[10px] sm:text-[11px] font-mono tracking-widest text-[#EDE5D6] uppercase font-semibold">
@@ -274,14 +277,14 @@ export const LandingPage: React.FC = () => {
               <span className="text-[10px] font-mono tracking-widest text-[#C2CBBF] uppercase font-semibold">
                 PHYSICAL DOSIMETER ARCHITECTURE
               </span>
-              <div className="text-sm font-bold text-[#EDE5D6]">118 Hardware Anatomy</div>
+              <div className="text-sm font-bold text-[#EDE5D6]">SARVAS Hardware Anatomy</div>
             </div>
             <div className="flex items-center gap-2">
               <span className="px-2 py-0.5 rounded bg-[#32322D] border border-[#43423A] text-[#A69F91] text-[10px] font-mono">
                 Asset: band design.png
               </span>
               <span className="px-2 py-0.5 rounded bg-[#4F5D4B] text-[#EDE5D6] text-[10px] font-mono font-medium">
-                RAGEBYTERS
+                by RageB8
               </span>
             </div>
           </div>
@@ -542,7 +545,7 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="pt-6 border-t border-[#3E3C36] text-[11px] font-mono text-[#8E897E]">
-            Designed & developed by <strong>RAGEBYTERS</strong> for SIH 2026
+            Designed & developed by <strong>RageB8</strong> for SIH 2026
           </div>
         </div>
       </section>

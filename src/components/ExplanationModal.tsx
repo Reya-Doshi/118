@@ -57,9 +57,9 @@ export const ExplanationModal: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold tracking-tight text-[#292925]">How does 118 work?</h2>
+              <h2 className="text-xl font-bold tracking-tight text-[#292925]">How does SARVAS work?</h2>
               <span className="px-2 py-0.5 rounded bg-[#F3EDE2] text-[#826235] text-[10px] font-mono font-bold">
-                Prototype / Simulated Data
+                by RageB8
               </span>
             </div>
             <p className="text-xs text-[#5D5B53]">4-step occupational safety dosimetry workflow</p>
@@ -94,7 +94,7 @@ export const ExplanationModal: React.FC = () => {
             Why not a normal gas detector?
           </h4>
           <p className="text-xs text-[#5D5B53] leading-relaxed">
-            Electronic detectors are excellent for detecting immediate peaks. 118 is designed to visualize 
+            Electronic detectors are excellent for detecting immediate peaks. SARVAS is designed to visualize 
             <strong className="text-[#292925] font-semibold"> cumulative exposure over time</strong> across shift operations, helping identify low-level chronic risks that real-time alarms miss.
           </p>
         </div>
@@ -107,7 +107,7 @@ export const ExplanationModal: React.FC = () => {
               Simulated Calibration Dataset (120 Samples)
             </h4>
             <p className="text-xs leading-relaxed text-[#374234]">
-              118 is wired to a 120-row synthetic dataset mapping target doses (0–160 ppm·h), gas concentrations, CIE L*a*b* coordinates, and reference target ΔEab* values with temperature and humidity compensation factors.
+              SARVAS is wired to a 120-row synthetic dataset mapping target doses (0–160 ppm·h), gas concentrations, CIE L*a*b* coordinates, and reference target ΔEab* values with temperature and humidity compensation factors.
             </p>
           </div>
           <button
