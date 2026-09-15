@@ -13,7 +13,8 @@ import {
   Users,
   User,
   Clock,
-  Sparkles
+  Sparkles,
+  HelpCircle
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -329,6 +330,25 @@ export const Navbar: React.FC = () => {
               </span>
             </button>
 
+            {/* Judge Defense FAQ Nav Button */}
+            <button
+              onClick={() => handleNavClick('faq')}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer shadow-xs active:scale-95 ${
+                activePage === 'faq'
+                  ? 'bg-[#B08A55] text-white border-[#B08A55]'
+                  : isTransparentOnHero
+                  ? 'border-amber-400/40 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60'
+                  : 'border-[#D8D0C2] bg-white text-[#292925] hover:bg-[#EDE5D6]'
+              }`}
+              title="SIH 2026 Grand Jury Defense & Technical FAQ"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-[#B08A55]" />
+              <span className="hidden xl:inline">Judge Defense</span>
+              <span className="text-[9px] font-mono bg-[#B08A55]/20 text-[#B08A55] px-1.5 py-0.5 rounded font-bold uppercase">
+                FAQ
+              </span>
+            </button>
+
             {!currentUser && (
               <button
                 onClick={openExplanation}
@@ -413,20 +433,27 @@ export const Navbar: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 py-4 space-y-3">
             
             {/* Interactive Prototypes Mobile Quick Actions */}
-            <div className="grid grid-cols-2 gap-2 pb-2 border-b border-[#D8D0C2]">
+            <div className="grid grid-cols-3 gap-1.5 pb-2 border-b border-[#D8D0C2]">
               <button
                 onClick={() => handleNavClick('kiosk')}
-                className="p-2.5 rounded-xl bg-[#292925] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm"
+                className="p-2 rounded-xl bg-[#292925] text-white text-[11px] font-bold flex flex-col sm:flex-row items-center justify-center gap-1 shadow-xs cursor-pointer"
               >
                 <Scan className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Kiosk Prototype</span>
+                <span>Kiosk</span>
               </button>
               <button
                 onClick={() => handleNavClick('explainability')}
-                className="p-2.5 rounded-xl bg-[#4F5D4B] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm"
+                className="p-2 rounded-xl bg-[#4F5D4B] text-white text-[11px] font-bold flex flex-col sm:flex-row items-center justify-center gap-1 shadow-xs cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                 <span>ML Pipeline</span>
+              </button>
+              <button
+                onClick={() => handleNavClick('faq')}
+                className="p-2 rounded-xl bg-[#B08A55] text-white text-[11px] font-bold flex flex-col sm:flex-row items-center justify-center gap-1 shadow-xs cursor-pointer"
+              >
+                <HelpCircle className="w-3.5 h-3.5 text-white" />
+                <span>Judge FAQ</span>
               </button>
             </div>
 

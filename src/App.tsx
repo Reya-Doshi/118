@@ -14,6 +14,7 @@ import { WorkersPage } from './pages/WorkersPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { KioskPage } from './pages/KioskPage';
 import { ExplainabilityPage } from './pages/ExplainabilityPage';
+import { FaqPage } from './pages/FaqPage';
 import { CheckCircle } from 'lucide-react';
 
 const MainContent: React.FC = () => {
@@ -48,6 +49,7 @@ const MainContent: React.FC = () => {
         {activePage === 'history' && <HistoryPage />}
         {activePage === 'kiosk' && <KioskPage />}
         {activePage === 'explainability' && <ExplainabilityPage />}
+        {activePage === 'faq' && <FaqPage />}
       </main>
 
       {/* Modals & Dialogs */}
