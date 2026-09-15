@@ -8,6 +8,9 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     host: true,
-    port: 5173
+    port: 5173,
+    watch: {
+      ignored: ['**/mobile/android/**', '**/mobile/dist/**']
+    }
   }
 })
