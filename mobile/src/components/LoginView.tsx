@@ -30,11 +30,11 @@ export const LoginView: React.FC = () => {
         <div className="flex items-center gap-2.5 mb-3">
           <img 
             src="/sarvas_logo_v2.png" 
-            alt="SARVAS Emblem" 
+            alt="RageB8 Emblem" 
             className="w-10 h-10 rounded-xl object-contain bg-white p-1 border border-[#D8D0C2] shadow-xs" 
           />
           <div>
-            <h2 className="text-lg font-serif font-bold text-[#292925] leading-none">SARVAS</h2>
+            <h2 className="text-lg font-serif font-bold text-[#292925] leading-none">RageB8</h2>
             <span className="text-[10px] text-[#71806B] font-mono tracking-wider font-semibold">PS-118 · SIH 2026</span>
           </div>
         </div>

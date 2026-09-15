@@ -120,11 +120,11 @@ export const LandingPage: React.FC = () => {
             <div className="flex items-center gap-2 sm:gap-3">
               <img 
                 src="/sarvas_logo_v2.png" 
-                alt="SARVAS Official Logo" 
+                alt="RageB8 Official Logo" 
                 className="w-7 h-7 rounded-lg object-contain bg-white p-0.5 border border-white/20 shadow-md"
               />
               <span className="text-xs font-bold font-mono tracking-widest text-white uppercase">
-                SARVAS
+                RageB8
               </span>
               <span className="text-[#D8D0C2]/60 font-mono text-xs">•</span>
               <span className="text-[10px] sm:text-[11px] font-mono tracking-widest text-[#EDE5D6] uppercase font-semibold">

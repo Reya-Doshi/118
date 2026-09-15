@@ -85,17 +85,17 @@ export const Navbar: React.FC = () => {
             >
               <img
                 src="/sarvas_logo_v2.png"
-                alt="SARVAS Emblem"
+                alt="RageB8 Emblem"
                 className="w-8 h-8 rounded-lg object-contain bg-white p-0.5 border border-[#D8D0C2] shadow-2xs group-hover:scale-105 transition-transform"
               />
               <div>
                 <span className="text-xl font-bold tracking-tight block font-mono leading-none">
-                  SARVAS
+                  RageB8
                 </span>
                 <span className={`text-[9px] font-mono tracking-wider mt-0.5 block ${
                   isTransparentOnHero ? 'text-[#EDE5D6]/80' : 'text-[#878377]'
                 }`}>
-                  by RAGEBYTERS
+                  SIH 2026 · PS-118
                 </span>
               </div>
             </button>
@@ -334,7 +334,7 @@ export const Navbar: React.FC = () => {
               <button
                 onClick={logout}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
-                title="Sign out of SARVAS"
+                title="Sign out of RageB8"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Sign Out</span>

@@ -197,7 +197,7 @@ export const LoginModal: React.FC = () => {
           <div className="flex items-center gap-3">
             <img 
               src="/sarvas_logo_v2.png" 
-              alt="SARVAS Logo" 
+              alt="RageB8 Logo" 
               className="w-10 h-10 rounded-xl object-contain bg-white p-1 border border-[#D8D0C2] shadow-xs"
             />
             <div>

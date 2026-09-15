@@ -1,4 +1,4 @@
-# SARVAS: Intelligent Passive H₂S Cumulative Dosimetry & AI-Assisted Optical Quantification System
+# RageB8: Intelligent Passive H₂S Cumulative Dosimetry & AI-Assisted Optical Quantification System
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -6,7 +6,7 @@
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-4.3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![SIH](https://img.shields.io/badge/Smart_India_Hackathon-2026-orange?style=for-the-badge)](https://sih.gov.in/)
 
-> **Project Identity:** SARVAS (SIH Problem Statement 118)  
+> **Project Identity:** RageB8 (SIH Problem Statement 118)  
 > **Engineering Team:** RAGEBYTERS  
 > **Platform / Competition:** Smart India Hackathon (SIH) 2026  
 > **Industry Demonstration:** Petroleum Refining & Petrochemical Plants (Mangalore Refinery and Petrochemicals Limited – MRPL)  

@@ -271,12 +271,12 @@ const MainAppContent: React.FC = () => {
         <div className="flex items-center gap-2.5">
           <img 
             src="/sarvas_logo_v2.png" 
-            alt="SARVAS Logo" 
+            alt="RageB8 Logo" 
             className="w-9 h-9 rounded-xl object-contain bg-white p-0.5 border border-[#D8D0C2] shadow-xs"
           />
           <div>
             <div className="flex items-center gap-1.5 leading-none">
-              <span className="font-serif font-bold text-base text-[#292925] tracking-tight">SARVAS</span>
+              <span className="font-serif font-bold text-base text-[#292925] tracking-tight">RageB8</span>
               <span className="text-[9px] font-mono bg-[#71806B]/20 text-[#4F5D4B] px-1.5 py-0.5 rounded font-semibold">PS-118</span>
             </div>
             <span className="text-[9px] font-mono text-[#878377] block mt-0.5">SIH 2026 · Dosimeter</span>

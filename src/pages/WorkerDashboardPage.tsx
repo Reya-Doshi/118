@@ -70,7 +70,7 @@ export const WorkerDashboardPage: React.FC = () => {
         <div className="flex items-center gap-3.5">
           <img 
             src="/sarvas_logo_v2.png" 
-            alt="SARVAS Logo" 
+            alt="RageB8 Logo" 
             className="w-12 h-12 rounded-2xl object-contain bg-white p-1 border border-[#D8D0C2] shadow-xs shrink-0"
           />
           <div>

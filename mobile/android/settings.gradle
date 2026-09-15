@@ -1,4 +1,4 @@
 include ':app'
-rootProject.name = 'SARVAS'
+rootProject.name = 'RageB8'
 
 apply from: 'capacitor.settings.gradle'

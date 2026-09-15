@@ -84,7 +84,7 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
         <div className="flex items-center gap-3">
           <img 
             src="/sarvas_logo_v2.png" 
-            alt="SARVAS Official Logo" 
+            alt="RageB8 Official Logo" 
             className="w-11 h-11 rounded-2xl object-contain bg-white p-1 border border-gray-200 shadow-xs shrink-0"
           />
           <div>

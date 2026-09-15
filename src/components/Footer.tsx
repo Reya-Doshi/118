@@ -13,10 +13,10 @@ export const Footer: React.FC = () => {
             <div className="flex items-center gap-2.5">
               <img 
                 src="/sarvas_logo_v2.png" 
-                alt="SARVAS Logo" 
+                alt="RageB8 Logo" 
                 className="w-7 h-7 rounded-lg object-contain bg-white p-0.5 border border-white/20 shadow-xs"
               />
-              <span className="text-base font-bold font-mono tracking-wider text-white">SARVAS</span>
+              <span className="text-base font-bold font-mono tracking-wider text-white">RageB8</span>
             </div>
             <p className="text-xs text-[#B8B2A4]">Passive exposure intelligence for safer shifts in petroleum operations.</p>
           </div>
