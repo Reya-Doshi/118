@@ -5,14 +5,14 @@ import {
   Scan,
   LayoutDashboard,
   Info,
-  RotateCcw,
   Database,
   Menu,
   X,
   ChevronRight,
-  LogIn,
+  LogOut,
   Users,
-  User
+  User,
+  Clock
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -20,9 +20,9 @@ export const Navbar: React.FC = () => {
     activePage, 
     setActivePage, 
     openExplanation, 
-    resetDemoData, 
     currentUser, 
-    openLoginModal 
+    openLoginModal,
+    logout
   } = useApp();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -104,48 +104,50 @@ export const Navbar: React.FC = () => {
             <nav className={`hidden md:flex items-center gap-1 ml-4 border-l pl-5 transition-colors ${
               isTransparentOnHero ? 'border-white/20' : 'border-[#D8D0C2]'
             }`}>
-              <button
-                onClick={() => handleNavClick('landing', 'the-band')}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
-                  isTransparentOnHero
-                    ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10'
-                    : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
-                }`}
-              >
-                The Band
-              </button>
+              {!currentUser ? (
+                <>
+                  <button
+                    onClick={() => handleNavClick('landing', 'the-band')}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      isTransparentOnHero
+                        ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    The Band
+                  </button>
 
-              <button
-                onClick={() => handleNavClick('landing', 'how-it-works')}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
-                  isTransparentOnHero
-                    ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10'
-                    : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
-                }`}
-              >
-                How It Works
-              </button>
+                  <button
+                    onClick={() => handleNavClick('landing', 'how-it-works')}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      isTransparentOnHero
+                        ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    How It Works
+                  </button>
 
-              <button
-                onClick={() => handleNavClick('scan')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
-                  activePage === 'scan'
-                    ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
-                    : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
-                }`}
-              >
-                <Scan className="w-3.5 h-3.5" />
-                <span>Read Wristband</span>
-              </button>
-
-              {currentUser?.role === 'WORKER' ? (
+                  <button
+                    onClick={() => handleNavClick('scan')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'scan'
+                        ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <Scan className="w-3.5 h-3.5" />
+                    <span>Read Wristband</span>
+                  </button>
+                </>
+              ) : currentUser.role === 'WORKER' ? (
                 <>
                   <button
                     onClick={() => handleNavClick('worker-dashboard')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
                       activePage === 'worker-dashboard'
-                        ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
-                        : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
                     }`}
                   >
                     <User className="w-3.5 h-3.5" />
@@ -153,92 +155,158 @@ export const Navbar: React.FC = () => {
                   </button>
 
                   <button
+                    onClick={() => handleNavClick('scan')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'scan'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <Scan className="w-3.5 h-3.5" />
+                    <span>Read Wristband</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('history')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'history'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Shift History</span>
+                  </button>
+                </>
+              ) : currentUser.role === 'OFFICER' ? (
+                <>
+                  <button
                     onClick={() => handleNavClick('dashboard')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
                       activePage === 'dashboard'
-                        ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
-                        : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
                     }`}
                   >
                     <LayoutDashboard className="w-3.5 h-3.5" />
-                    <span>Plant Safety</span>
+                    <span>Plant Safety Dashboard</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('scan')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'scan'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <Scan className="w-3.5 h-3.5" />
+                    <span>Read Wristband</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('workers')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'workers'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <Users className="w-3.5 h-3.5" />
+                    <span>Workers</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('history')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'history'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Shift History</span>
                   </button>
                 </>
               ) : (
-                <button
-                  onClick={() => handleNavClick('dashboard')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
-                    activePage === 'dashboard'
-                      ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
-                      : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
-                  }`}
-                >
-                  <LayoutDashboard className="w-3.5 h-3.5" />
-                  <span>Dashboard</span>
-                </button>
+                /* ADMIN */
+                <>
+                  <button
+                    onClick={() => handleNavClick('dashboard')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'dashboard'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <LayoutDashboard className="w-3.5 h-3.5" />
+                    <span>Facility Overview</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('workers')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'workers'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <Users className="w-3.5 h-3.5" />
+                    <span>Worker Directory</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('calibration')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'calibration'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <Database className="w-3.5 h-3.5" />
+                    <span>Calibration Matrix</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('history')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'history'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Audit Logs</span>
+                  </button>
+                </>
               )}
-
-              <button
-                onClick={() => handleNavClick('workers')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
-                  activePage === 'workers'
-                    ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
-                    : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
-                }`}
-              >
-                <Users className="w-3.5 h-3.5" />
-                <span>Workers</span>
-              </button>
-
-              <button
-                onClick={() => handleNavClick('calibration')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
-                  activePage === 'calibration'
-                    ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
-                    : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
-                }`}
-              >
-                <Database className="w-3.5 h-3.5" />
-                <span>Calibration</span>
-              </button>
             </nav>
           </div>
 
           {/* Right: Desktop Controls + Mobile Hamburger */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={openExplanation}
-              className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded border text-xs font-medium transition-colors cursor-pointer ${
-                isTransparentOnHero
-                  ? 'border-white/30 bg-white/10 text-[#F6F1E7] hover:bg-white/20'
-                  : 'border-[#D8D0C2] bg-[#EDE5D6] text-[#292925] hover:bg-[#E5DDCB]'
-              }`}
-              title="How 118 Works"
-            >
-              <Info className="w-3.5 h-3.5 text-[#71806B]" />
-              <span>Understand 118</span>
-            </button>
-
-            {/* Reset Demo State (Desktop) */}
-            <button
-              onClick={resetDemoData}
-              className={`hidden sm:flex p-1.5 rounded border transition-colors cursor-pointer ${
-                isTransparentOnHero
-                  ? 'border-white/30 text-[#EDE5D6] hover:bg-white/10'
-                  : 'border-[#D8D0C2] text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
-              }`}
-              title="Reset Demo Data"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {!currentUser && (
+              <button
+                onClick={openExplanation}
+                className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded border text-xs font-medium transition-colors cursor-pointer ${
+                  isTransparentOnHero
+                    ? 'border-white/30 bg-white/10 text-[#F6F1E7] hover:bg-white/20'
+                    : 'border-[#D8D0C2] bg-[#EDE5D6] text-[#292925] hover:bg-[#E5DDCB]'
+                }`}
+                title="How 118 Works"
+              >
+                <Info className="w-3.5 h-3.5 text-[#71806B]" />
+                <span>Understand 118</span>
+              </button>
+            )}
 
             {/* Top Login / Account Option (Desktop) */}
             <button
               onClick={openLoginModal}
-              className={`flex items-center gap-2 pl-2 pr-3 py-1 rounded-lg border transition-all cursor-pointer shadow-xs active:scale-95 ${
+              className={`flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl border transition-all cursor-pointer shadow-xs active:scale-95 ${
                 isTransparentOnHero
                   ? 'border-white/35 bg-white/15 text-[#F6F1E7] hover:bg-white/25'
-                  : 'border-[#D8D0C2] bg-[#EDE5D6] text-[#292925] hover:bg-[#E2D8C5] hover:border-[#71806B]'
+                  : 'border-[#D8D0C2] bg-white text-[#292925] hover:border-[#71806B]'
               }`}
               title="Click to Switch Account or Role (Worker, Safety Officer, Admin)"
             >
@@ -254,13 +322,24 @@ export const Navbar: React.FC = () => {
               <div className="text-left">
                 <div className={`text-xs font-bold leading-none flex items-center gap-1 ${isTransparentOnHero ? 'text-[#F6F1E7]' : 'text-[#292925]'}`}>
                   <span>{currentUser?.name || 'Sign In'}</span>
-                  <LogIn className="w-2.5 h-2.5 opacity-60" />
                 </div>
                 <div className={`text-[9px] font-mono leading-tight mt-0.5 ${isTransparentOnHero ? 'text-[#EDE5D6]/80' : 'text-[#71806B] font-bold'}`}>
-                  {currentUser ? `${currentUser.role} · Login` : 'Login / Switch'}
+                  {currentUser ? `${currentUser.role}` : 'Choose Role'}
                 </div>
               </div>
             </button>
+
+            {/* Dedicated Sign Out Button */}
+            {currentUser && (
+              <button
+                onClick={logout}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
+                title="Sign out of SARVAS"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Sign Out</span>
+              </button>
+            )}
 
             {/* Mobile Menu Toggle Button */}
             <button
@@ -291,50 +370,52 @@ export const Navbar: React.FC = () => {
             
             {/* Primary Navigation Links */}
             <div className="space-y-1">
-              <button
-                onClick={() => handleNavClick('landing')}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                  activePage === 'landing'
-                    ? 'bg-[#EDE5D6] text-[#292925]'
-                    : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
-                }`}
-              >
-                <span>Overview (Home)</span>
-                <ChevronRight className="w-4 h-4 text-[#878377]" />
-              </button>
+              {!currentUser ? (
+                <>
+                  <button
+                    onClick={() => handleNavClick('landing')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                      activePage === 'landing'
+                        ? 'bg-[#EDE5D6] text-[#292925]'
+                        : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
+                    }`}
+                  >
+                    <span>Overview (Home)</span>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
 
-              <button
-                onClick={() => handleNavClick('landing', 'the-band')}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold text-[#5D5B53] hover:bg-[#EDE5D6]/60 transition-colors cursor-pointer"
-              >
-                <span>The Band (Hardware Anatomy)</span>
-                <ChevronRight className="w-4 h-4 text-[#878377]" />
-              </button>
+                  <button
+                    onClick={() => handleNavClick('landing', 'the-band')}
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold text-[#5D5B53] hover:bg-[#EDE5D6]/60 transition-colors cursor-pointer"
+                  >
+                    <span>The Band (Hardware Anatomy)</span>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
 
-              <button
-                onClick={() => handleNavClick('landing', 'how-it-works')}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold text-[#5D5B53] hover:bg-[#EDE5D6]/60 transition-colors cursor-pointer"
-              >
-                <span>How It Works (Workflow)</span>
-                <ChevronRight className="w-4 h-4 text-[#878377]" />
-              </button>
+                  <button
+                    onClick={() => handleNavClick('landing', 'how-it-works')}
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold text-[#5D5B53] hover:bg-[#EDE5D6]/60 transition-colors cursor-pointer"
+                  >
+                    <span>How It Works (Workflow)</span>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
 
-              <button
-                onClick={() => handleNavClick('scan')}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-                  activePage === 'scan'
-                    ? 'bg-[#4F5D4B] text-[#F6F1E7]'
-                    : 'text-[#292925] bg-[#EDE5D6]/40 hover:bg-[#EDE5D6]'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <Scan className="w-4 h-4" />
-                  <span>Read Wristband</span>
-                </div>
-                <ChevronRight className="w-4 h-4 opacity-70" />
-              </button>
-
-              {currentUser?.role === 'WORKER' ? (
+                  <button
+                    onClick={() => handleNavClick('scan')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                      activePage === 'scan'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#292925] bg-[#EDE5D6]/40 hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Scan className="w-4 h-4" />
+                      <span>Read Wristband</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 opacity-70" />
+                  </button>
+                </>
+              ) : currentUser.role === 'WORKER' ? (
                 <>
                   <button
                     onClick={() => handleNavClick('worker-dashboard')}
@@ -352,6 +433,38 @@ export const Navbar: React.FC = () => {
                   </button>
 
                   <button
+                    onClick={() => handleNavClick('scan')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                      activePage === 'scan'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#292925] bg-[#EDE5D6]/40 hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Scan className="w-4 h-4" />
+                      <span>Read Wristband</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 opacity-70" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('history')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                      activePage === 'history'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      <span>Shift Exposure History</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
+                </>
+              ) : currentUser.role === 'OFFICER' ? (
+                <>
+                  <button
                     onClick={() => handleNavClick('dashboard')}
                     className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                       activePage === 'dashboard'
@@ -361,96 +474,133 @@ export const Navbar: React.FC = () => {
                   >
                     <div className="flex items-center gap-2">
                       <LayoutDashboard className="w-4 h-4" />
-                      <span>Plant Safety Overview</span>
+                      <span>Plant Safety Dashboard</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('scan')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                      activePage === 'scan'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#292925] bg-[#EDE5D6]/40 hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Scan className="w-4 h-4" />
+                      <span>Read Wristband</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 opacity-70" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('workers')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                      activePage === 'workers'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      <span>Workers Roster</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('history')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                      activePage === 'history'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      <span>Shift History</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-[#878377]" />
                   </button>
                 </>
               ) : (
-                <button
-                  onClick={() => handleNavClick('dashboard')}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                    activePage === 'dashboard'
-                      ? 'bg-[#4F5D4B] text-[#F6F1E7]'
-                      : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <LayoutDashboard className="w-4 h-4" />
-                    <span>Safety Dashboard</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-[#878377]" />
-                </button>
+                /* ADMIN */
+                <>
+                  <button
+                    onClick={() => handleNavClick('dashboard')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                      activePage === 'dashboard'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <LayoutDashboard className="w-4 h-4" />
+                      <span>Facility Overview</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('workers')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                      activePage === 'workers'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      <span>Workers Directory</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('calibration')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                      activePage === 'calibration'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Database className="w-4 h-4" />
+                      <span>Calibration Matrix</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('history')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                      activePage === 'history'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      <span>Audit Logs</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
+                </>
               )}
-
-              <button
-                onClick={() => handleNavClick('workers')}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                  activePage === 'workers'
-                    ? 'bg-[#4F5D4B] text-[#F6F1E7]'
-                    : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4" />
-                  <span>Workers Roster</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-[#878377]" />
-              </button>
-
-              <button
-                onClick={() => handleNavClick('calibration')}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                  activePage === 'calibration'
-                    ? 'bg-[#4F5D4B] text-[#F6F1E7]'
-                    : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <Database className="w-4 h-4" />
-                  <span>Calibration Dataset</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-[#878377]" />
-              </button>
             </div>
 
-            {/* Quick Actions & Profile */}
-            <div className="pt-3 border-t border-[#D8D0C2] flex flex-col gap-2">
-              <div className="flex items-center justify-between gap-2">
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    openExplanation();
-                  }}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#EDE5D6] text-xs font-semibold text-[#292925] hover:bg-[#E5DDCB] transition-colors cursor-pointer"
-                >
-                  <Info className="w-3.5 h-3.5 text-[#71806B]" />
-                  <span>Understand 118</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    resetDemoData();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg border border-[#D8D0C2] text-xs font-semibold text-[#5D5B53] hover:bg-[#EDE5D6] transition-colors cursor-pointer"
-                  title="Reset Demo Data"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Reset</span>
-                </button>
-              </div>
-
-              {/* Login / Role Switcher Card on mobile */}
+            {/* Mobile Account / Sign Out Section */}
+            <div className="pt-3 border-t border-[#D8D0C2] space-y-2">
               <button
                 onClick={() => {
-                  setIsMobileMenuOpen(false);
                   openLoginModal();
+                  setIsMobileMenuOpen(false);
                 }}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#EDE5D6]/70 border border-[#D8D0C2] hover:border-[#71806B] text-xs transition-colors cursor-pointer text-left"
+                className="w-full flex items-center justify-between p-3 rounded-xl bg-white border border-[#D8D0C2] text-xs font-semibold"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className={`w-8 h-8 rounded-lg text-white flex items-center justify-center text-xs font-bold font-mono shadow-xs ${
+                  <div className={`w-7 h-7 rounded flex items-center justify-center text-[10px] font-bold font-mono text-white ${
                     currentUser?.role === 'WORKER'
                       ? 'bg-[#B08A55]'
                       : currentUser?.role === 'ADMIN'
@@ -459,23 +609,26 @@ export const Navbar: React.FC = () => {
                   }`}>
                     {currentUser?.avatarText || 'OP'}
                   </div>
-                  <div>
-                    <div className="font-bold text-[#292925] flex items-center gap-1.5">
-                      <span>{currentUser?.name || 'Sign In'}</span>
-                      <span className="text-[9px] font-mono px-1 py-0.2 rounded border border-[#D8D0C2] text-[#5D5B53]">
-                        {currentUser?.role || 'Guest'}
-                      </span>
-                    </div>
-                    <div className="text-[10px] text-[#71806B] font-medium font-serif">
-                      Tap to switch role or account
-                    </div>
+                  <div className="text-left">
+                    <div className="font-bold text-gray-900">{currentUser?.name || 'Sign In / Select Role'}</div>
+                    <div className="text-[10px] text-gray-500">{currentUser ? `Role: ${currentUser.role}` : 'Tap to choose profile'}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 text-[10px] text-[#4F5D4B] font-mono font-bold">
-                  <LogIn className="w-3.5 h-3.5" />
-                  <span>Login</span>
-                </div>
+                <ChevronRight className="w-4 h-4 text-gray-400" />
               </button>
+
+              {currentUser && (
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs border border-red-200 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Sign Out</span>
+                </button>
+              )}
             </div>
 
           </div>

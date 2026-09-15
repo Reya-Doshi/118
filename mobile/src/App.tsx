@@ -18,10 +18,10 @@ import { WorkersListView } from './views/WorkersListView';
 import { AlertsListView } from './views/AlertsListView';
 import { BandsManagementView } from './views/BandsManagementView';
 
-import { Home, Camera, Clock, User, ShieldAlert, Users, Radio } from 'lucide-react';
+import { Home, Camera, Clock, User, ShieldAlert, Users, Radio, LogOut } from 'lucide-react';
 
 const MainAppContent: React.FC = () => {
-  const { currentUser, role, isAuthenticated } = useMobileAuth();
+  const { currentUser, role, isAuthenticated, logout } = useMobileAuth();
 
   const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState<'HOME' | 'SCAN' | 'HISTORY' | 'PROFILE' | 'WORKERS' | 'ALERTS' | 'BANDS'>('HOME');
@@ -275,9 +275,17 @@ const MainAppContent: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] font-mono font-medium text-[#5D5B53] bg-[#EDE5D6] px-2 py-0.5 rounded border border-[#D8D0C2]">
+          <span className="text-[10px] font-mono font-medium text-[#4B5563] bg-white px-2 py-0.5 rounded-lg border border-[#E5DFD7]">
             {role ? role.replace('_', ' ') : 'OPERATOR'}
           </span>
+          <button
+            onClick={logout}
+            className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[10px] font-semibold flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
+            title="Sign Out"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span className="text-[10px] font-bold">Sign Out</span>
+          </button>
         </div>
       </header>
 

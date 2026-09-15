@@ -1,13 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { MetricCard } from '../components/MetricCard';
 import { StatusBadge } from '../components/StatusBadge';
 import { SHIFT_TREND_DATA } from '../data/mockData';
-import { Users, Scan, AlertTriangle, Clock, MapPin, ArrowUpRight, ChevronRight, ShieldAlert } from 'lucide-react';
+import { 
+  Users, 
+  Scan, 
+  AlertTriangle, 
+  Clock, 
+  MapPin, 
+  ArrowUpRight, 
+  ChevronRight, 
+  ShieldAlert, 
+  ShieldCheck, 
+  Wind, 
+  Radio, 
+  FileCheck2, 
+  UserCheck
+} from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
 export const DashboardPage: React.FC = () => {
-  const { workers, setActivePage, setSelectedWorker, alerts } = useApp();
+  const { workers, setActivePage, setSelectedWorker, alerts, currentUser, showToast } = useApp();
+  const [scrubberActive, setScrubberActive] = useState(false);
+  const [broadcastActive, setBroadcastActive] = useState(false);
+  const [auditSigned, setAuditSigned] = useState(false);
+
+  const isAdmin = currentUser?.role === 'ADMIN';
+
+  const handleScrubberToggle = () => {
+    setScrubberActive(!scrubberActive);
+    showToast(!scrubberActive ? 'HVAC Scrubber Bank 2 elevated to 100% Emergency Airflow' : 'HVAC Scrubber returned to standard cycling mode');
+  };
+
+  const handleBroadcast = () => {
+    setBroadcastActive(true);
+    showToast('🚨 Plant-Wide H2S Caution Broadcasted to All Pagers & Radios');
+  };
+
+  const handleAuditSign = () => {
+    setAuditSigned(true);
+    showToast('✅ OSHA 1910.1000 Shift Dosimetry Log Signed by Plant Admin');
+  };
 
   const handleWorkerClick = (workerId: string) => {
     const found = workers.find(w => w.workerId === workerId || w.badgeId === workerId);
@@ -23,8 +57,25 @@ export const DashboardPage: React.FC = () => {
       {/* Top Header Bar */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-[#D8D0C2]">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#292925]">Shift Safety Overview</h1>
-          <p className="text-xs text-[#5D5B53] mt-0.5 font-medium">Real-time cumulative dosimetry tracking & exposure flags</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold tracking-tight text-[#292925]">
+              {isAdmin ? 'Facility Executive Overview & HSE Governance' : 'Shift Safety Overview'}
+            </h1>
+            {isAdmin ? (
+              <span className="px-2.5 py-0.5 rounded-full bg-[#9A6258]/15 border border-[#9A6258]/30 text-[#7A342B] text-[10px] font-mono font-bold uppercase tracking-wider">
+                Admin Privileges Active
+              </span>
+            ) : (
+              <span className="px-2.5 py-0.5 rounded-full bg-[#71806B]/15 border border-[#71806B]/30 text-[#4F5D4B] text-[10px] font-mono font-bold uppercase tracking-wider">
+                Safety Officer View
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-[#5D5B53] mt-0.5 font-medium">
+            {isAdmin 
+              ? 'Plant-wide administrative precautions, batch calibration verification & emergency controls' 
+              : 'Real-time cumulative dosimetry tracking & exposure flags'}
+          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 text-xs">
@@ -46,6 +97,113 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* ADMIN PRECAUTIONARY COMMAND DIRECTIVES (Highlighted when Admin is logged in) */}
+      {isAdmin && (
+        <div className="bg-[#EDE5D6]/40 p-5 rounded-xl border border-[#D8D0C2] shadow-xs space-y-4 animate-in fade-in duration-200">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#D8D0C2] pb-3">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-[#4F5D4B]" />
+              <div>
+                <h3 className="text-sm font-bold text-[#292925]">Facility Executive Precaution & Control Directives</h3>
+                <p className="text-xs text-[#5D5B53]">Plant-level safety overrides, batch certification & emergency intervention</p>
+              </div>
+            </div>
+            <span className="px-2.5 py-0.5 rounded bg-[#4F5D4B] text-[#F6F1E7] text-[10px] font-mono font-bold">
+              Director Authorization
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+            {/* 1. Emergency Ventilation / Scrubber Overdrive */}
+            <div className="p-4 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#292925] flex items-center gap-1.5">
+                  <Wind className="w-4 h-4 text-[#4F5D4B]" />
+                  <span>Air Scrubber Overdrive</span>
+                </span>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                  scrubberActive ? 'bg-[#71806B]/20 text-[#4F5D4B]' : 'bg-[#D8D0C2] text-[#5D5B53]'
+                }`}>
+                  {scrubberActive ? '100% BOOST' : 'CYCLING (65%)'}
+                </span>
+              </div>
+              <p className="text-[11px] text-[#5D5B53] leading-relaxed">
+                Emergency ventilation boost for Hydrocracker Unit 2 & Desulfurizer area to purge airborne trace H₂S.
+              </p>
+              <button
+                onClick={handleScrubberToggle}
+                className={`w-full py-2 rounded-md text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                  scrubberActive
+                    ? 'bg-[#71806B] text-[#F6F1E7] hover:bg-[#5e6b59]'
+                    : 'bg-[#EDE5D6] border border-[#D8D0C2] text-[#292925] hover:bg-[#E5DDCB]'
+                }`}
+              >
+                <Wind className="w-3.5 h-3.5" />
+                <span>{scrubberActive ? 'Active (Click to Throttle)' : 'Engage 100% Overdrive'}</span>
+              </button>
+            </div>
+
+            {/* 2. Plant-wide Emergency Warning Broadcast */}
+            <div className="p-4 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#292925] flex items-center gap-1.5">
+                  <Radio className="w-4 h-4 text-[#9A6258]" />
+                  <span>HSE Caution Broadcast</span>
+                </span>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                  broadcastActive ? 'bg-[#9A6258]/20 text-[#7A342B]' : 'bg-[#D8D0C2] text-[#5D5B53]'
+                }`}>
+                  {broadcastActive ? 'TRANSMITTED' : 'STANDBY'}
+                </span>
+              </div>
+              <p className="text-[11px] text-[#5D5B53] leading-relaxed">
+                Broadcast instant audible caution notification to all field workers and safety officers carrying pagers.
+              </p>
+              <button
+                onClick={handleBroadcast}
+                className={`w-full py-2 rounded-md text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                  broadcastActive
+                    ? 'bg-[#9A6258]/20 text-[#7A342B] border border-[#9A6258]/40'
+                    : 'bg-[#9A6258] text-[#F6F1E7] hover:bg-[#834f46]'
+                }`}
+              >
+                <Radio className="w-3.5 h-3.5" />
+                <span>{broadcastActive ? 'Broadcast Dispatched' : 'Issue Plant-Wide Advisory'}</span>
+              </button>
+            </div>
+
+            {/* 3. OSHA Compliance Sign-off & Batch Recall */}
+            <div className="p-4 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#292925] flex items-center gap-1.5">
+                  <FileCheck2 className="w-4 h-4 text-[#4F5D4B]" />
+                  <span>OSHA 1910.1000 Sign-off</span>
+                </span>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                  auditSigned ? 'bg-[#71806B]/20 text-[#4F5D4B]' : 'bg-[#B08A55]/20 text-[#8C6D48]'
+                }`}>
+                  {auditSigned ? 'SIGNED' : 'PENDING REVIEW'}
+                </span>
+              </div>
+              <p className="text-[11px] text-[#5D5B53] leading-relaxed">
+                Certified audit of current shift 8h TWA dosage slope (Peak: 1.48 ppm·h in Zone 2).
+              </p>
+              <button
+                onClick={handleAuditSign}
+                className={`w-full py-2 rounded-md text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                  auditSigned
+                    ? 'bg-[#71806B]/20 text-[#4F5D4B] border border-[#71806B]/40'
+                    : 'bg-[#4F5D4B] text-[#F6F1E7] hover:bg-[#3d493a]'
+                }`}
+              >
+                <FileCheck2 className="w-3.5 h-3.5" />
+                <span>{auditSigned ? 'Audit Log Signed & Sealed' : 'Sign Digital HSE Log'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* SUMMARY METRIC CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -246,6 +404,140 @@ export const DashboardPage: React.FC = () => {
 
         </div>
 
+      </div>
+
+      {/* OPERATIONAL HIERARCHY & ROLE PRECAUTIONS DISTINCTION MATRIX */}
+      <div className="bg-[#EDE5D6]/30 p-6 rounded-2xl border border-[#D8D0C2] shadow-xs space-y-5">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[#D8D0C2] pb-3">
+          <div>
+            <h3 className="text-sm font-bold text-[#292925]">Operational Role Distinction & Safety SOP Guidelines</h3>
+            <p className="text-xs text-[#5D5B53]">Clear distinction of authority, responsibilities & mandated safety precautions across personnel tiers</p>
+          </div>
+          <span className="px-2.5 py-0.5 rounded bg-[#EDE5D6] border border-[#D8D0C2] text-[#4F5D4B] text-[10px] font-mono font-bold">
+            OSHA / ISO 45001 Framework
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          
+          {/* 1. Facility Admin / Director */}
+          <div className={`p-4 rounded-xl border transition-all space-y-3 ${
+            isAdmin ? 'bg-[#EDE5D6] border-[#4F5D4B] ring-1 ring-[#4F5D4B] shadow-xs' : 'bg-[#F6F1E7] border-[#D8D0C2]'
+          }`}>
+            <div className="flex items-center justify-between border-b border-[#D8D0C2] pb-2">
+              <div className="flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-[#9A6258]" />
+                <span className="text-xs font-bold text-[#292925] uppercase tracking-wide">Plant Administrator</span>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#9A6258]/15 text-[#7A342B] font-bold">
+                Level 1 · Governance
+              </span>
+            </div>
+            <p className="text-[11px] text-[#5D5B53] leading-relaxed">
+              Executive authority over plant-wide operations, batch safety parameters, and regulatory reporting.
+            </p>
+            <div className="space-y-2 text-xs">
+              <span className="text-[10px] font-bold text-[#292925] uppercase tracking-wide block">Mandated Admin Precautions:</span>
+              <ul className="space-y-1.5 text-[11px] text-[#5D5B53]">
+                <li className="flex items-start gap-1.5">
+                  <span className="text-[#9A6258] font-bold">•</span>
+                  <span><strong>Scrubber Escalation:</strong> Order 100% HVAC overdrive when zone exposure exceeds 1.5 ppm·h.</span>
+                </li>
+                <li className="flex items-start gap-1.5">
+                  <span className="text-[#9A6258] font-bold">•</span>
+                  <span><strong>Batch Recall:</strong> Quarantine & recall dosimeters exceeding 90-day matrix stability.</span>
+                </li>
+                <li className="flex items-start gap-1.5">
+                  <span className="text-[#9A6258] font-bold">•</span>
+                  <span><strong>Regulatory Sign-Off:</strong> Sign digital OSHA 1910.1000 & NIOSH audit logs daily.</span>
+                </li>
+                <li className="flex items-start gap-1.5">
+                  <span className="text-[#9A6258] font-bold">•</span>
+                  <span><strong>Plant Evacuation:</strong> Authorize sirens & sirens broadcast during Tier 3 emergencies.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* 2. Safety Officer (Mira Patel) */}
+          <div className={`p-4 rounded-xl border transition-all space-y-3 ${
+            currentUser?.role === 'OFFICER' ? 'bg-[#EDE5D6] border-[#4F5D4B] ring-1 ring-[#4F5D4B] shadow-xs' : 'bg-[#F6F1E7] border-[#D8D0C2]'
+          }`}>
+            <div className="flex items-center justify-between border-b border-[#D8D0C2] pb-2">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-[#4F5D4B]" />
+                <span className="text-xs font-bold text-[#292925] uppercase tracking-wide">Safety Officer</span>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#4F5D4B]/15 text-[#4F5D4B] font-bold">
+                Level 2 · Field Audit
+              </span>
+            </div>
+            <p className="text-[11px] text-[#5D5B53] leading-relaxed">
+              Real-time shift inspection, optical wristband reading, worker rotation, and personal protective compliance.
+            </p>
+            <div className="space-y-2 text-xs">
+              <span className="text-[10px] font-bold text-[#292925] uppercase tracking-wide block">Mandated Officer Precautions:</span>
+              <ul className="space-y-1.5 text-[11px] text-[#5D5B53]">
+                <li className="flex items-start gap-1.5">
+                  <span className="text-[#4F5D4B] font-bold">•</span>
+                  <span><strong>Optical Verification:</strong> Scan dosimeter strips at shift start, hour 4, and shift completion.</span>
+                </li>
+                <li className="flex items-start gap-1.5">
+                  <span className="text-[#4F5D4B] font-bold">•</span>
+                  <span><strong>Worker Zone Rotation:</strong> Reassign operators with &gt;0.50 ppm·h to low-risk exterior areas within 1h.</span>
+                </li>
+                <li className="flex items-start gap-1.5">
+                  <span className="text-[#4F5D4B] font-bold">•</span>
+                  <span><strong>PPE Inspection:</strong> Verify positive-pressure SCBA seal and cartridge expiration dates.</span>
+                </li>
+                <li className="flex items-start gap-1.5">
+                  <span className="text-[#4F5D4B] font-bold">•</span>
+                  <span><strong>Medical Escort:</strong> Directly accompany workers with 'REVIEW' flags to health clinic.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* 3. Field Worker (Ramesh Kumar) */}
+          <div className={`p-4 rounded-xl border transition-all space-y-3 ${
+            currentUser?.role === 'WORKER' ? 'bg-[#EDE5D6] border-[#4F5D4B] ring-1 ring-[#4F5D4B] shadow-xs' : 'bg-[#F6F1E7] border-[#D8D0C2]'
+          }`}>
+            <div className="flex items-center justify-between border-b border-[#D8D0C2] pb-2">
+              <div className="flex items-center gap-2">
+                <UserCheck className="w-4 h-4 text-[#B08A55]" />
+                <span className="text-xs font-bold text-[#292925] uppercase tracking-wide">Field Worker</span>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#B08A55]/15 text-[#8C6D48] font-bold">
+                Level 3 · Operations
+              </span>
+            </div>
+            <p className="text-[11px] text-[#5D5B53] leading-relaxed">
+              Frontline equipment operation, continuous passive dosimeter wearing, and early symptom self-reporting.
+            </p>
+            <div className="space-y-2 text-xs">
+              <span className="text-[10px] font-bold text-[#292925] uppercase tracking-wide block">Mandated Worker Precautions:</span>
+              <ul className="space-y-1.5 text-[11px] text-[#5D5B53]">
+                <li className="flex items-start gap-1.5">
+                  <span className="text-[#B08A55] font-bold">•</span>
+                  <span><strong>Wear Protocol:</strong> Fasten 118 band securely on outer wrist without glove overlap.</span>
+                </li>
+                <li className="flex items-start gap-1.5">
+                  <span className="text-[#B08A55] font-bold">•</span>
+                  <span><strong>Hourly Visual Inspection:</strong> Violet/pink is safe; brown/amber indicates H₂S exposure.</span>
+                </li>
+                <li className="flex items-start gap-1.5">
+                  <span className="text-[#B08A55] font-bold">•</span>
+                  <span><strong>Immediate Retreat:</strong> Evacuate crosswind/upwind if rotten-egg odor or strip darkens.</span>
+                </li>
+                <li className="flex items-start gap-1.5">
+                  <span className="text-[#B08A55] font-bold">•</span>
+                  <span><strong>Daily Logging:</strong> Present band for camera scan before leaving facility gates.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
       </div>
 
     </div>

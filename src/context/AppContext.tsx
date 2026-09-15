@@ -27,6 +27,7 @@ interface AppContextType {
   toastMessage: string | null;
   showToast: (msg: string) => void;
   resetDemoData: () => void;
+  logout: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -199,6 +200,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('Demo data reset to initial shift state.');
   };
 
+  const logout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem(STORAGE_USER_KEY);
+    setActivePage('landing');
+    showToast('Signed out successfully.');
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -225,7 +233,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         saveReading,
         toastMessage,
         showToast,
-        resetDemoData
+        resetDemoData,
+        logout
       }}
     >
       {children}
