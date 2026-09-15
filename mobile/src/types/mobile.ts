@@ -116,6 +116,7 @@ export interface BackendAnalyzeResponse {
   };
   vision_engine?: string;
   action_guideline?: string;
+  precautions?: string[];
   prototype: boolean;
   timestamp?: string;
 }

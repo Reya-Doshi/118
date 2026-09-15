@@ -38,6 +38,18 @@ export class DosimeterApiError extends Error {
 
 export class DosimeterApiService {
   /**
+   * Pre-configured endpoint presets for quick switching on device.
+   */
+  public static getPresetUrls(): string[] {
+    return [
+      'http://172.16.102.101:8000',
+      'http://10.98.31.126:8000',
+      'http://10.0.2.2:8000',
+      'http://localhost:8000'
+    ];
+  }
+
+  /**
    * Resolves the backend server endpoint automatically based on runtime environment.
    */
   public static getBaseUrl(): string {
@@ -49,9 +61,9 @@ export class DosimeterApiService {
     const envUrl = (import.meta as any).env?.VITE_BACKEND_URL;
     if (envUrl) return envUrl.trim().replace(/\/+$/, '');
 
-    // 3. Android Native Device / Emulator
+    // 3. Android Native Device / Emulator (Active Ethernet host: 172.16.102.101)
     if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
-      return 'http://10.98.31.126:8000';
+      return 'http://172.16.102.101:8000';
     }
 
     // 4. Browser / Mobile Web: use current host on port 8000

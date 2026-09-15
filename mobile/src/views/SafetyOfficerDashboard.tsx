@@ -67,64 +67,64 @@ export const SafetyOfficerDashboard: React.FC<SafetyOfficerDashboardProps> = ({
 
       {/* KPI Grid (4 Metrics) */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3.5 shadow-xs">
+        <div className="card-glow p-3.5">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-mono uppercase text-[#5D5B53]">Active Workers</span>
-            <Users className="w-4 h-4 text-[#71806B]" />
+            <span className="text-[11px] font-mono uppercase text-gray-500 font-semibold">Active Workers</span>
+            <Users className="w-4 h-4 text-emerald-700" />
           </div>
-          <div className="text-2xl font-mono font-bold text-[#292925]">{activeWorkersCount}</div>
-          <span className="text-[10px] text-[#878377]">All shifts tracked</span>
+          <div className="text-2xl font-mono font-bold text-gray-900">{activeWorkersCount}</div>
+          <span className="text-[10px] text-gray-500 font-medium">All shifts tracked</span>
         </div>
 
-        <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3.5 shadow-xs">
+        <div className="card-glow p-3.5">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-mono uppercase text-[#5D5B53]">Active Bands</span>
-            <Radio className="w-4 h-4 text-[#71806B]" />
+            <span className="text-[11px] font-mono uppercase text-gray-500 font-semibold">Active Bands</span>
+            <Radio className="w-4 h-4 text-emerald-700" />
           </div>
-          <div className="text-2xl font-mono font-bold text-[#292925]">{activeBandsCount}</div>
-          <span className="text-[10px] text-[#878377]">{wristbands.length - activeBandsCount} expired/degraded</span>
+          <div className="text-2xl font-mono font-bold text-gray-900">{activeBandsCount}</div>
+          <span className="text-[10px] text-gray-500 font-medium">{wristbands.length - activeBandsCount} degraded/discarded</span>
         </div>
 
-        <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3.5 shadow-xs">
+        <div className="card-glow p-3.5">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-mono uppercase text-[#5D5B53]">Readings Today</span>
-            <Activity className="w-4 h-4 text-[#71806B]" />
+            <span className="text-[11px] font-mono uppercase text-gray-500 font-semibold">Readings Today</span>
+            <Activity className="w-4 h-4 text-emerald-700" />
           </div>
-          <div className="text-2xl font-mono font-bold text-[#292925]">{readingsTodayCount}</div>
-          <span className="text-[10px] text-[#878377]">Colorimetric scans</span>
+          <div className="text-2xl font-mono font-bold text-gray-900">{readingsTodayCount}</div>
+          <span className="text-[10px] text-gray-500 font-medium">Colorimetric scans</span>
         </div>
 
         <div 
           onClick={onViewAlerts}
-          className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3.5 shadow-xs cursor-pointer active:bg-[#E2DBD0]"
+          className="card-glow p-3.5 cursor-pointer active:scale-98 transition-all"
         >
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-mono uppercase text-[#5D5B53]">Exposure Alerts</span>
-            <AlertTriangle className={`w-4 h-4 ${unresolvedAlerts.length > 0 ? 'text-[#9A6258]' : 'text-[#71806B]'}`} />
+            <span className="text-[11px] font-mono uppercase text-gray-500 font-semibold">Exposure Alerts</span>
+            <AlertTriangle className={`w-4 h-4 ${unresolvedAlerts.length > 0 ? 'text-red-600' : 'text-emerald-700'}`} />
           </div>
-          <div className={`text-2xl font-mono font-bold ${unresolvedAlerts.length > 0 ? 'text-[#7A342B]' : 'text-[#292925]'}`}>
+          <div className={`text-2xl font-mono font-bold ${unresolvedAlerts.length > 0 ? 'text-red-700' : 'text-gray-900'}`}>
             {unresolvedAlerts.length}
           </div>
-          <span className="text-[10px] text-[#878377]">Action required</span>
+          <span className="text-[10px] text-gray-500 font-medium">Action required</span>
         </div>
       </div>
 
       {/* Critical Alerts Banner (if any) */}
       {unresolvedAlerts.length > 0 && (
-        <div className="bg-[#F6E2DF] border border-[#E4B5AF] rounded-xl p-3.5 space-y-2 shadow-xs">
+        <div className="card-glow-review p-3.5 space-y-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#7A342B]">
-              <AlertTriangle className="w-4 h-4 text-[#9A6258]" />
+            <div className="flex items-center gap-2 text-xs font-bold text-red-800">
+              <AlertTriangle className="w-4 h-4 text-red-600" />
               <span>Pending Safety Alerts ({unresolvedAlerts.length})</span>
             </div>
             <button
               onClick={onViewAlerts}
-              className="text-[11px] font-medium text-[#7A342B] underline"
+              className="text-[11px] font-bold text-red-700 underline hover:text-red-900"
             >
               View All
             </button>
           </div>
-          <p className="text-xs text-[#7A342B] leading-relaxed">
+          <p className="text-xs text-red-800/90 leading-relaxed font-medium">
             {unresolvedAlerts[0].message}
           </p>
         </div>
@@ -133,12 +133,12 @@ export const SafetyOfficerDashboard: React.FC<SafetyOfficerDashboardProps> = ({
       {/* Workers Roster List Preview */}
       <div className="space-y-2 pt-1">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs font-mono uppercase tracking-wider text-[#5D5B53] font-bold">
+          <h3 className="text-xs font-mono uppercase tracking-wider text-gray-600 font-bold">
             Worker Exposure Status
           </h3>
           <button
             onClick={onViewWorkers}
-            className="text-xs text-[#71806B] font-medium flex items-center gap-0.5 active:underline"
+            className="text-xs text-emerald-800 font-bold flex items-center gap-0.5 hover:underline"
           >
             All Workers <ChevronRight className="w-3.5 h-3.5" />
           </button>
@@ -149,17 +149,17 @@ export const SafetyOfficerDashboard: React.FC<SafetyOfficerDashboardProps> = ({
             <div
               key={worker.workerId}
               onClick={() => onSelectWorker(worker)}
-              className="bg-[#EDE5D6] hover:bg-[#E2DBD0] border border-[#D8D0C2] rounded-xl p-3 flex items-center justify-between text-xs cursor-pointer transition-colors"
+              className="card-glow p-3 flex items-center justify-between text-xs cursor-pointer transition-all hover:border-emerald-500/40 active:scale-98"
             >
               <div>
-                <div className="font-semibold text-sm text-[#292925]">{worker.name}</div>
-                <div className="text-[11px] text-[#5D5B53]">
-                  {worker.department} · Band: {worker.assignedBandId}
+                <div className="font-bold text-sm text-gray-900">{worker.name}</div>
+                <div className="text-[11px] text-gray-500 font-medium mt-0.5">
+                  {worker.department} · Band: <span className="font-mono text-gray-700">{worker.assignedBandId}</span>
                 </div>
               </div>
 
               <div className="text-right space-y-1">
-                <div className="font-mono font-bold text-xs text-[#292925]">
+                <div className="font-mono font-bold text-xs text-gray-900">
                   {worker.currentDose.toFixed(2)} ppm·h
                 </div>
                 <div>{getStatusBadge(worker.status)}</div>
@@ -171,21 +171,21 @@ export const SafetyOfficerDashboard: React.FC<SafetyOfficerDashboardProps> = ({
 
       {/* Recent Readings Stream */}
       <div className="space-y-2 pt-1">
-        <h3 className="text-xs font-mono uppercase tracking-wider text-[#5D5B53] font-bold">
+        <h3 className="text-xs font-mono uppercase tracking-wider text-gray-600 font-bold">
           Live Dosimeter Readings
         </h3>
         <div className="space-y-2">
           {readings.slice(0, 4).map((reading) => (
             <div
               key={reading.readingId}
-              className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3 text-xs space-y-1"
+              className="card-glow p-3 text-xs space-y-1"
             >
               <div className="flex items-center justify-between">
-                <span className="font-medium text-[#292925]">{reading.workerName}</span>
-                <span className="font-mono text-[10px] text-[#878377]">{reading.timestamp}</span>
+                <span className="font-bold text-gray-900">{reading.workerName}</span>
+                <span className="font-mono text-[10px] text-gray-500">{reading.timestamp}</span>
               </div>
               <div className="flex items-center justify-between pt-0.5">
-                <span className="font-mono text-xs font-semibold text-[#292925]">
+                <span className="font-mono text-xs font-bold text-gray-800">
                   {reading.estimatedDose.toFixed(2)} ppm·h · Band {reading.bandId}
                 </span>
                 <div>{getStatusBadge(reading.status)}</div>

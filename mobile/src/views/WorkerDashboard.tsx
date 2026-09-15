@@ -66,22 +66,22 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
       </div>
 
       {/* Workplace Location & Hazard Zone Banner */}
-      <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3 space-y-1.5 shadow-xs">
+      <div className="card-glow p-3.5 space-y-2">
         <div className="flex items-start gap-2">
-          <MapPin className="w-4 h-4 text-[#71806B] shrink-0 mt-0.5" />
+          <MapPin className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
           <div className="text-xs leading-tight">
-            <span className="text-[10px] font-mono uppercase text-[#878377] block">Assigned Work Area</span>
-            <span className="font-semibold text-[#292925] block">{worker.workLocation}</span>
+            <span className="text-[10px] font-mono uppercase text-gray-500 block font-semibold">Assigned Work Area</span>
+            <span className="font-bold text-gray-900 block mt-0.5">{worker.workLocation}</span>
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-1 border-t border-[#D8D0C2]/60 text-[11px]">
-          <div className="flex items-center gap-1 text-[#5D5B53]">
-            <Flame className="w-3.5 h-3.5 text-[#B08A55]" />
-            <span className="truncate max-w-[210px]">{worker.hazardZone}</span>
+        <div className="flex items-center justify-between pt-1.5 border-t border-gray-100 text-[11px]">
+          <div className="flex items-center gap-1.5 text-gray-600">
+            <Flame className="w-3.5 h-3.5 text-amber-600" />
+            <span className="truncate max-w-[210px] font-medium">{worker.hazardZone}</span>
           </div>
-          <span className={`font-mono font-bold text-[10px] px-1.5 py-0.5 rounded ${
-            worker.riskLevel === 'HIGH' ? 'bg-[#9A6258]/20 text-[#7A342B]' : 'bg-[#71806B]/20 text-[#4F5D4B]'
+          <span className={`font-mono font-bold text-[10px] px-2 py-0.5 rounded-md ${
+            worker.riskLevel === 'HIGH' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
           }`}>
             {worker.riskLevel} RISK
           </span>
@@ -89,79 +89,85 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
       </div>
 
       {/* Shift Progress & Assigned Band ID Strip */}
-      <div className="grid grid-cols-2 gap-2 text-xs">
-        <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-2.5 flex items-center gap-2">
-          <Clock className="w-4 h-4 text-[#71806B] shrink-0" />
+      <div className="grid grid-cols-2 gap-2.5 text-xs">
+        <div className="card-glow p-3 flex items-center gap-2.5">
+          <Clock className="w-4 h-4 text-emerald-700 shrink-0" />
           <div>
-            <span className="text-[10px] text-[#878377] block font-mono uppercase">Shift Time</span>
-            <span className="font-semibold text-[#292925]">{worker.shift.split('·')[1]?.trim() || worker.shift}</span>
+            <span className="text-[10px] text-gray-500 block font-mono uppercase font-semibold">Shift Time</span>
+            <span className="font-bold text-gray-900">{worker.shift.split('·')[1]?.trim() || worker.shift}</span>
           </div>
         </div>
 
-        <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-2.5 flex items-center justify-between">
+        <div className="card-glow p-3 flex items-center justify-between">
           <div>
-            <span className="text-[10px] text-[#878377] block font-mono uppercase">Assigned Band</span>
-            <span className="font-mono font-bold text-[#292925]">{worker.assignedBandId}</span>
+            <span className="text-[10px] text-gray-500 block font-mono uppercase font-semibold">Assigned Band</span>
+            <span className="font-mono font-bold text-gray-900">{worker.assignedBandId}</span>
           </div>
-          <Tag className="w-4 h-4 text-[#71806B]" />
+          <Tag className="w-4 h-4 text-emerald-700" />
         </div>
       </div>
 
       {/* Current Shift Cumulative Exposure Card */}
-      <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-2xl p-5 shadow-xs relative overflow-hidden">
+      <div className={`rounded-2xl p-5 relative overflow-hidden ${
+        worker.status === 'REVIEW'
+          ? 'card-glow-review'
+          : worker.status === 'MONITOR'
+          ? 'card-glow-monitor'
+          : 'card-glow-safe'
+      }`}>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[11px] font-mono uppercase tracking-wider text-[#5D5B53] font-semibold">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-gray-600 font-bold">
             Shift Cumulative Exposure (ppm·h)
           </span>
           {getStatusBadge(worker.status)}
         </div>
 
         <div className="flex items-baseline gap-2 mb-3">
-          <span className="text-4xl font-mono font-bold text-[#292925] tracking-tight">
+          <span className="text-4xl font-mono font-bold text-gray-900 tracking-tight">
             {worker.currentDose.toFixed(2)}
           </span>
-          <span className="text-sm font-serif text-[#5D5B53]">
+          <span className="text-sm font-serif text-gray-600 font-medium">
             ppm·h
           </span>
-          <span className="text-[11px] text-[#878377] ml-auto font-mono">
+          <span className="text-[11px] text-gray-500 ml-auto font-mono">
             Limit: 1.00 ppm·h
           </span>
         </div>
 
         {/* Progress Bar towards Shift Target Limit */}
-        <div className="w-full bg-[#D8D0C2] h-2.5 rounded-full overflow-hidden mb-2">
+        <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden mb-2 border border-gray-200/60">
           <div
             className={`h-full rounded-full transition-all duration-500 ${
               worker.status === 'REVIEW'
-                ? 'bg-[#9A6258]'
+                ? 'bg-red-600'
                 : worker.status === 'MONITOR'
-                ? 'bg-[#B08A55]'
-                : 'bg-[#5A7456]'
+                ? 'bg-amber-600'
+                : 'bg-emerald-600'
             }`}
             style={{ width: `${dosePercent}%` }}
           />
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-[#5D5B53] pt-1">
+        <div className="flex items-center justify-between text-[11px] text-gray-600 pt-1 font-medium">
           <span>{dosePercent}% of Action Level</span>
-          <span className="font-medium text-[#292925]">Last scan: {worker.lastReadingTime || '11:37 AM'}</span>
+          <span className="font-semibold text-gray-900">Last scan: {worker.lastReadingTime || '11:37 AM'}</span>
         </div>
 
         {/* Safety Recommendation Banner based on dose */}
-        <div className="mt-3 pt-2.5 border-t border-[#D8D0C2] text-xs leading-relaxed text-[#5D5B53]">
+        <div className="mt-3 pt-2.5 border-t border-gray-100 text-xs leading-relaxed">
           {worker.status === 'REVIEW' ? (
-            <div className="flex items-start gap-1.5 text-[#7A342B] font-medium">
-              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-[#9A6258]" />
+            <div className="flex items-start gap-1.5 text-red-700 font-semibold">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-red-600" />
               <span>Shift dose threshold exceeded. Report to safety officer Meera Patel and step out of catalytic area.</span>
             </div>
           ) : worker.status === 'MONITOR' ? (
-            <div className="flex items-start gap-1.5 text-[#795726]">
-              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-[#B08A55]" />
+            <div className="flex items-start gap-1.5 text-amber-800 font-medium">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
               <span>Elevated exposure. Wear breathing protection if servicing high-elevation flanges on Deck B.</span>
             </div>
           ) : (
-            <div className="flex items-start gap-1.5 text-[#385034]">
-              <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-[#5A7456]" />
+            <div className="flex items-start gap-1.5 text-emerald-800 font-medium">
+              <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
               <span>Within safe 8-hour shift limits. Continue routine monitoring protocol.</span>
             </div>
           )}
@@ -172,53 +178,53 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
       <div>
         <button
           onClick={onOpenScan}
-          className="w-full py-4 bg-[#292925] hover:bg-[#1a1a17] text-[#F6F1E7] rounded-2xl font-serif text-base font-bold flex items-center justify-center gap-3 shadow-lg active:scale-[0.98] transition-all"
+          className="w-full py-4 bg-gray-950 hover:bg-black text-white rounded-2xl font-serif text-base font-bold flex items-center justify-center gap-3 shadow-xl active:scale-[0.98] transition-all border border-gray-800"
         >
-          <div className="w-8 h-8 rounded-full bg-[#5A7456] flex items-center justify-center text-white shadow-xs">
+          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white shadow-sm">
             <Camera className="w-4 h-4" />
           </div>
-          <span>SCAN MY WRISTBAND ({worker.assignedBandId})</span>
+          <span className="tracking-wide">SCAN MY WRISTBAND ({worker.assignedBandId})</span>
         </button>
-        <p className="text-center text-[10px] text-[#878377] font-mono mt-1.5">
+        <p className="text-center text-[10px] text-gray-500 font-mono mt-1.5 font-medium">
           Reads chemical color response · AI-assisted illumination correction
         </p>
       </div>
 
       {/* Color Scale Strip Reference Accordion */}
-      <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3.5 space-y-2">
+      <div className="card-glow p-4 space-y-2">
         <div
           onClick={() => setShowColorScaleGuide(!showColorScaleGuide)}
-          className="flex items-center justify-between cursor-pointer"
+          className="flex items-center justify-between cursor-pointer select-none"
         >
-          <span className="text-xs font-serif font-bold text-[#292925] flex items-center gap-1.5">
-            <HelpCircle className="w-4 h-4 text-[#71806B]" />
+          <span className="text-xs font-serif font-bold text-gray-900 flex items-center gap-1.5">
+            <HelpCircle className="w-4 h-4 text-emerald-700" />
             Colorimetric Strip Threshold Guide
           </span>
-          <span className="text-[11px] text-[#71806B] font-medium">
+          <span className="text-[11px] text-emerald-700 font-bold hover:underline">
             {showColorScaleGuide ? 'Hide' : 'View Scale'}
           </span>
         </div>
 
         {showColorScaleGuide && (
-          <div className="pt-2 border-t border-[#D8D0C2] space-y-2 text-xs">
-            <p className="text-[11px] text-[#5D5B53] leading-relaxed">
+          <div className="pt-2 border-t border-gray-100 space-y-2 text-xs">
+            <p className="text-[11px] text-gray-600 leading-relaxed font-medium">
               The sensing strip turns darker as silver nanoparticles form silver sulfide (Ag₂S) upon H₂S exposure:
             </p>
             <div className="grid grid-cols-3 gap-2 text-center pt-1">
-              <div className="bg-[#F6F1E7] p-2 rounded-lg border border-[#D8D0C2]">
-                <div className="w-full h-4 rounded bg-[#d4c5a9] mb-1 border border-black/10"></div>
-                <span className="font-mono font-bold text-[11px] text-[#385034]">0.0 – 0.50</span>
-                <span className="block text-[10px] text-[#5D5B53]">NORMAL</span>
+              <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200">
+                <div className="w-full h-4 rounded bg-[#d4c5a9] mb-1.5 border border-black/10 shadow-xs"></div>
+                <span className="font-mono font-bold text-[11px] text-emerald-800">0.0 – 0.50</span>
+                <span className="block text-[10px] text-gray-600 font-bold uppercase mt-0.5">NORMAL</span>
               </div>
-              <div className="bg-[#F6F1E7] p-2 rounded-lg border border-[#D8D0C2]">
-                <div className="w-full h-4 rounded bg-[#8c6d48] mb-1 border border-black/10"></div>
-                <span className="font-mono font-bold text-[11px] text-[#795726]">0.50 – 1.00</span>
-                <span className="block text-[10px] text-[#5D5B53]">MONITOR</span>
+              <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200">
+                <div className="w-full h-4 rounded bg-[#8c6d48] mb-1.5 border border-black/10 shadow-xs"></div>
+                <span className="font-mono font-bold text-[11px] text-amber-800">0.50 – 1.00</span>
+                <span className="block text-[10px] text-gray-600 font-bold uppercase mt-0.5">MONITOR</span>
               </div>
-              <div className="bg-[#F6F1E7] p-2 rounded-lg border border-[#D8D0C2]">
-                <div className="w-full h-4 rounded bg-[#3a2e2b] mb-1 border border-black/10"></div>
-                <span className="font-mono font-bold text-[11px] text-[#7A342B]">&gt; 1.00 ppm·h</span>
-                <span className="block text-[10px] text-[#5D5B53]">REVIEW</span>
+              <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200">
+                <div className="w-full h-4 rounded bg-[#3a2e2b] mb-1.5 border border-black/10 shadow-xs"></div>
+                <span className="font-mono font-bold text-[11px] text-red-800">&gt; 1.00 ppm·h</span>
+                <span className="block text-[10px] text-gray-600 font-bold uppercase mt-0.5">REVIEW</span>
               </div>
             </div>
           </div>
@@ -226,13 +232,13 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
       </div>
 
       {/* 7-Day Exposure Trend Chart Preview */}
-      <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-4 space-y-2.5">
+      <div className="card-glow p-4 space-y-2.5">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-serif font-bold text-[#292925] flex items-center gap-1.5">
-            <Activity className="w-4 h-4 text-[#71806B]" />
+          <span className="text-xs font-serif font-bold text-gray-900 flex items-center gap-1.5">
+            <Activity className="w-4 h-4 text-emerald-700" />
             7-Day Personal Exposure Trend
           </span>
-          <span className="text-[10px] font-mono text-[#878377]">Weekly Log</span>
+          <span className="text-[10px] font-mono text-gray-500 font-semibold">Weekly Log</span>
         </div>
 
         <div className="flex items-end justify-between gap-2 h-20 pt-2 px-1">
@@ -242,20 +248,20 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
 
             return (
               <div key={item.day} className="flex-1 flex flex-col items-center gap-1">
-                <span className="text-[9px] font-mono text-[#5D5B53]">
+                <span className="text-[9px] font-mono text-gray-600 font-medium">
                   {item.dose.toFixed(2)}
                 </span>
                 <div
-                  className={`w-full rounded-t transition-all ${
+                  className={`w-full rounded-t-md transition-all ${
                     item.dose >= 1.0
-                      ? 'bg-[#9A6258]'
+                      ? 'bg-red-500'
                       : item.dose >= 0.5
-                      ? 'bg-[#B08A55]'
-                      : 'bg-[#5A7456]'
-                  } ${isToday ? 'opacity-100' : 'opacity-70'}`}
+                      ? 'bg-amber-500'
+                      : 'bg-emerald-600'
+                  }`}
                   style={{ height: `${barHeight}px` }}
                 />
-                <span className="text-[10px] font-mono text-[#878377]">{item.day}</span>
+                <span className="text-[9px] font-mono font-bold text-gray-700">{item.day}</span>
               </div>
             );
           })}

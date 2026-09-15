@@ -155,17 +155,23 @@ export const ResultModal: React.FC<ResultModalProps> = ({
           </div>
         )}
 
-        {/* Primary Dose Card */}
-        <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-2xl p-4 text-center shadow-xs">
-          <span className="text-[10px] font-mono tracking-widest uppercase text-[#5D5B53] font-semibold block mb-1">
+        {/* Primary Dose Card with Dynamic Status Glow */}
+        <div className={`p-4 text-center rounded-2xl ${
+          isExpired || apiResult.status === 'REVIEW'
+            ? 'card-glow-review'
+            : apiResult.status === 'MONITOR'
+            ? 'card-glow-monitor'
+            : 'card-glow-safe'
+        }`}>
+          <span className="text-[10px] font-mono tracking-widest uppercase text-gray-500 font-bold block mb-1">
             Estimated Cumulative H₂S Exposure
           </span>
 
           <div className="flex items-baseline justify-center gap-1.5 my-1">
-            <span className="text-5xl font-mono font-bold text-[#292925] tracking-tight">
+            <span className="text-5xl font-mono font-bold text-gray-900 tracking-tight">
               {apiResult.estimated_exposure_ppm_h.toFixed(2)}
             </span>
-            <span className="text-base font-serif text-[#5D5B53]">
+            <span className="text-base font-serif text-gray-600 font-medium">
               ppm·h
             </span>
           </div>
@@ -174,7 +180,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
             {getStatusBadge(apiResult.status, isExpired)}
           </div>
 
-          <div className="border-t border-[#D8D0C2] pt-2 text-xs text-[#5D5B53] leading-relaxed">
+          <div className="border-t border-gray-100 pt-2 text-xs text-gray-600 leading-relaxed font-medium">
             {apiResult.action_guideline || (
               apiResult.status === 'NORMAL' 
                 ? 'Safe working level. Within permissible 8-hr exposure limits.'
@@ -185,26 +191,51 @@ export const ResultModal: React.FC<ResultModalProps> = ({
           </div>
         </div>
 
-        {/* Worker, Band ID & Location */}
-        <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3 text-xs space-y-1.5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 font-medium text-[#292925]">
-              <UserCheck className="w-3.5 h-3.5 text-[#71806B]" />
-              <span className="font-semibold">{workerName}</span>
-              <span className="text-[#5D5B53] text-[11px]">({workerId})</span>
+        {/* Actionable Precautionary Directives (Mandatory SOP) */}
+        {apiResult.precautions && apiResult.precautions.length > 0 && (
+          <div className="card-glow p-3.5 space-y-2 border-emerald-500/30">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                Mandatory Safety SOP Directives
+              </span>
+              <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-semibold border border-emerald-200">
+                Action Required
+              </span>
             </div>
-            <span className="font-mono font-bold text-[11px] bg-[#F6F1E7] px-2 py-0.5 rounded border border-[#D8D0C2]">
+            <ul className="space-y-1.5 pt-0.5">
+              {apiResult.precautions.map((precaution, idx) => (
+                <li key={idx} className="flex items-start gap-2 text-[11px] text-gray-700 leading-snug">
+                  <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    {idx + 1}
+                  </span>
+                  <span>{precaution}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Worker, Band ID & Location */}
+        <div className="card-glow p-3 text-xs space-y-1.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 font-medium text-gray-900">
+              <UserCheck className="w-3.5 h-3.5 text-emerald-700" />
+              <span className="font-bold">{workerName}</span>
+              <span className="text-gray-500 text-[11px]">({workerId})</span>
+            </div>
+            <span className="font-mono font-bold text-[11px] bg-gray-50 px-2 py-0.5 rounded border border-gray-200 text-gray-800">
               Band: {bandId}
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 text-[11px] text-[#5D5B53] pt-1 border-t border-[#D8D0C2]/50">
-            <MapPin className="w-3 h-3 text-[#71806B] shrink-0" />
+          <div className="flex items-center gap-1.5 text-[11px] text-gray-600 pt-1 border-t border-gray-100">
+            <MapPin className="w-3 h-3 text-emerald-700 shrink-0" />
             <span className="truncate">{inspectionLocation || resolvedWorker?.workLocation}</span>
           </div>
 
           {officerNotes && (
-            <div className="bg-[#F6F1E7] p-2 rounded-lg border border-[#D8D0C2] text-[11px] text-[#5D5B53] italic">
+            <div className="bg-gray-50 p-2 rounded-lg border border-gray-200 text-[11px] text-gray-700 italic">
               Note: "{officerNotes}"
             </div>
           )}

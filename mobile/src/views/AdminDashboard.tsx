@@ -71,70 +71,70 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* KPI 4-Card Summary */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3.5 shadow-xs">
+        <div className="card-glow p-3.5">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-mono uppercase text-[#5D5B53]">Total Workforce</span>
-            <Users className="w-4 h-4 text-[#71806B]" />
+            <span className="text-[11px] font-mono uppercase text-gray-500 font-semibold">Total Workforce</span>
+            <Users className="w-4 h-4 text-emerald-700" />
           </div>
-          <div className="text-2xl font-mono font-bold text-[#292925]">{totalWorkers}</div>
-          <span className="text-[10px] text-[#878377]">All registered operators</span>
+          <div className="text-2xl font-mono font-bold text-gray-900">{totalWorkers}</div>
+          <span className="text-[10px] text-gray-500 font-medium">All registered operators</span>
         </div>
 
-        <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3.5 shadow-xs">
+        <div className="card-glow p-3.5">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-mono uppercase text-[#5D5B53]">Wristbands</span>
-            <Radio className="w-4 h-4 text-[#71806B]" />
+            <span className="text-[11px] font-mono uppercase text-gray-500 font-semibold">Wristbands</span>
+            <Radio className="w-4 h-4 text-emerald-700" />
           </div>
-          <div className="text-2xl font-mono font-bold text-[#292925]">{activeBands}</div>
-          <span className="text-[10px] text-[#9A6258] font-medium">{expiredBands} expired in stock</span>
+          <div className="text-2xl font-mono font-bold text-gray-900">{activeBands}</div>
+          <span className="text-[10px] text-red-600 font-semibold">{expiredBands} expired in stock</span>
         </div>
 
-        <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3.5 shadow-xs">
+        <div className="card-glow p-3.5">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-mono uppercase text-[#5D5B53]">Readings Today</span>
-            <Activity className="w-4 h-4 text-[#71806B]" />
+            <span className="text-[11px] font-mono uppercase text-gray-500 font-semibold">Readings Today</span>
+            <Activity className="w-4 h-4 text-emerald-700" />
           </div>
-          <div className="text-2xl font-mono font-bold text-[#292925]">{readingsCount}</div>
-          <span className="text-[10px] text-[#878377]">AI optical estimations</span>
+          <div className="text-2xl font-mono font-bold text-gray-900">{readingsCount}</div>
+          <span className="text-[10px] text-gray-500 font-medium">AI optical estimations</span>
         </div>
 
         <div 
           onClick={onViewAlerts}
-          className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-3.5 shadow-xs cursor-pointer active:bg-[#E2DBD0]"
+          className="card-glow p-3.5 cursor-pointer active:scale-98 transition-all"
         >
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-mono uppercase text-[#5D5B53]">High Alerts</span>
-            <AlertTriangle className="w-4 h-4 text-[#9A6258]" />
+            <span className="text-[11px] font-mono uppercase text-gray-500 font-semibold">High Alerts</span>
+            <AlertTriangle className="w-4 h-4 text-red-600" />
           </div>
-          <div className="text-2xl font-mono font-bold text-[#7A342B]">{highAlertsCount}</div>
-          <span className="text-[10px] text-[#878377]">Requires review</span>
+          <div className="text-2xl font-mono font-bold text-red-700">{highAlertsCount}</div>
+          <span className="text-[10px] text-gray-500 font-medium">Requires review</span>
         </div>
       </div>
 
       {/* Workforce Exposure Distribution */}
-      <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-2xl p-4 shadow-xs space-y-3">
+      <div className="card-glow p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-serif font-bold text-[#292925] flex items-center gap-1.5">
-            <BarChart3 className="w-4 h-4 text-[#71806B]" />
+          <span className="text-xs font-serif font-bold text-gray-900 flex items-center gap-1.5">
+            <BarChart3 className="w-4 h-4 text-emerald-700" />
             Workforce Exposure Breakdown
           </span>
-          <span className="text-[10px] font-mono text-[#878377]">Current Shift</span>
+          <span className="text-[10px] font-mono text-gray-500 font-semibold">Current Shift</span>
         </div>
 
         {/* Visual Multi-segment bar */}
-        <div className="w-full h-3 bg-[#D8D0C2] rounded-full overflow-hidden flex">
+        <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden flex border border-gray-200/60">
           <div 
-            className="bg-[#5A7456] h-full transition-all" 
+            className="bg-emerald-600 h-full transition-all" 
             style={{ width: `${(normalWorkers / totalWorkers) * 100}%` }}
             title="Normal"
           />
           <div 
-            className="bg-[#B08A55] h-full transition-all" 
+            className="bg-amber-500 h-full transition-all" 
             style={{ width: `${(monitorWorkers / totalWorkers) * 100}%` }}
             title="Monitor"
           />
           <div 
-            className="bg-[#9A6258] h-full transition-all" 
+            className="bg-red-500 h-full transition-all" 
             style={{ width: `${(reviewWorkers / totalWorkers) * 100}%` }}
             title="Review"
           />
@@ -143,24 +143,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {/* Legend */}
         <div className="grid grid-cols-3 gap-2 text-xs pt-1">
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#5A7456]"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-600"></div>
             <div>
-              <div className="font-mono font-bold text-[#292925]">{normalWorkers}</div>
-              <div className="text-[10px] text-[#5D5B53]">Normal</div>
+              <div className="font-mono font-bold text-gray-900">{normalWorkers}</div>
+              <div className="text-[10px] text-gray-500 font-medium">Normal</div>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#B08A55]"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
             <div>
-              <div className="font-mono font-bold text-[#292925]">{monitorWorkers}</div>
-              <div className="text-[10px] text-[#5D5B53]">Monitor</div>
+              <div className="font-mono font-bold text-gray-900">{monitorWorkers}</div>
+              <div className="text-[10px] text-gray-500 font-medium">Monitor</div>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#9A6258]"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
             <div>
-              <div className="font-mono font-bold text-[#292925]">{reviewWorkers}</div>
-              <div className="text-[10px] text-[#5D5B53]">Review</div>
+              <div className="font-mono font-bold text-gray-900">{reviewWorkers}</div>
+              <div className="text-[10px] text-gray-500 font-medium">Review</div>
             </div>
           </div>
         </div>
@@ -170,73 +170,73 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       <div className="grid grid-cols-2 gap-2.5">
         <button
           onClick={() => setShowAssignModal(true)}
-          className="p-3 bg-[#292925] text-[#F6F1E7] rounded-xl text-xs font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-xs"
+          className="p-3 bg-gray-950 hover:bg-black text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-md border border-gray-800"
         >
-          <UserPlus className="w-4 h-4" />
+          <UserPlus className="w-4 h-4 text-emerald-400" />
           Assign Wristband
         </button>
         <button
           onClick={onViewBands}
-          className="p-3 bg-[#EDE5D6] border border-[#D8D0C2] text-[#292925] rounded-xl text-xs font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+          className="card-glow p-3 text-gray-900 text-xs font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-all hover:border-emerald-500/40"
         >
-          <Radio className="w-4 h-4 text-[#71806B]" />
+          <Radio className="w-4 h-4 text-emerald-700" />
           Band Inventory ({wristbands.length})
         </button>
       </div>
 
       {/* Admin Precautionary Directives & Safety Escalations */}
-      <div className="bg-[#EDE5D6] border-2 border-[#9A6258]/40 rounded-2xl p-4 shadow-xs space-y-3">
-        <div className="flex items-center justify-between border-b border-[#D8D0C2] pb-2">
+      <div className="card-glow p-4 space-y-3 border-red-500/30">
+        <div className="flex items-center justify-between border-b border-gray-100 pb-2">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-[#9A6258]/20 flex items-center justify-center text-[#9A6258]">
+            <div className="w-6 h-6 rounded-md bg-red-50 flex items-center justify-center text-red-700 border border-red-200">
               <ShieldAlert className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-xs font-serif font-bold text-[#292925] leading-tight">Admin Precautionary Directives</h3>
-              <span className="text-[9px] font-mono text-[#71806B] font-semibold">OSHA / DGMS REFINERY COMPLIANCE</span>
+              <h3 className="text-xs font-serif font-bold text-gray-900 leading-tight">Admin Precautionary Directives</h3>
+              <span className="text-[9px] font-mono text-emerald-700 font-bold">OSHA / DGMS REFINERY COMPLIANCE</span>
             </div>
           </div>
-          <span className="text-[10px] font-mono bg-[#9A6258]/15 text-[#9A6258] px-2 py-0.5 rounded font-bold">
+          <span className="text-[10px] font-mono bg-red-50 text-red-700 px-2 py-0.5 rounded font-bold border border-red-200">
             MANDATORY SOP
           </span>
         </div>
 
-        <div className="space-y-2 text-xs text-[#292925]">
-          <div className="p-2.5 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2] flex items-start gap-2.5">
-            <span className="w-5 h-5 rounded-full bg-[#B08A55]/20 text-[#B08A55] font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+        <div className="space-y-2 text-xs text-gray-900">
+          <div className="p-2.5 bg-gray-50 rounded-xl border border-gray-200 flex items-start gap-2.5">
+            <span className="w-5 h-5 rounded-full bg-amber-100 text-amber-800 font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">1</span>
             <div>
-              <div className="font-semibold text-[#292925] text-[11px]">Action Level (0.50 – 1.00 ppm·h): Immediate Personnel Rotation</div>
-              <p className="text-[10px] text-[#5D5B53] mt-0.5 leading-relaxed">
+              <div className="font-bold text-gray-900 text-[11px]">Action Level (0.50 – 1.00 ppm·h): Immediate Personnel Rotation</div>
+              <p className="text-[10px] text-gray-600 mt-0.5 leading-relaxed font-medium">
                 Immediately rotate operator out of active battery (SRU/CDU) to pressurized control room. Cap remaining shift exposure.
               </p>
             </div>
           </div>
 
-          <div className="p-2.5 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2] flex items-start gap-2.5">
-            <span className="w-5 h-5 rounded-full bg-[#9A6258]/20 text-[#9A6258] font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+          <div className="p-2.5 bg-gray-50 rounded-xl border border-gray-200 flex items-start gap-2.5">
+            <span className="w-5 h-5 rounded-full bg-red-100 text-red-800 font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">2</span>
             <div>
-              <div className="font-semibold text-[#292925] text-[11px]">Overexposure (&gt; 1.00 ppm·h): Shift Suspension &amp; OHC Triage</div>
-              <p className="text-[10px] text-[#5D5B53] mt-0.5 leading-relaxed">
+              <div className="font-bold text-gray-900 text-[11px]">Overexposure (&gt; 1.00 ppm·h): Shift Suspension &amp; OHC Triage</div>
+              <p className="text-[10px] text-gray-600 mt-0.5 leading-relaxed font-medium">
                 Suspend shift immediately. Escort operator to Occupational Health Center for vitals &amp; peak flow. Mandatory 24h rest before next shift.
               </p>
             </div>
           </div>
 
-          <div className="p-2.5 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2] flex items-start gap-2.5">
-            <span className="w-5 h-5 rounded-full bg-[#71806B]/20 text-[#4F5D4B] font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+          <div className="p-2.5 bg-gray-50 rounded-xl border border-gray-200 flex items-start gap-2.5">
+            <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">3</span>
             <div>
-              <div className="font-semibold text-[#292925] text-[11px]">Chemical Matrix Lifecycle &amp; Batch Quarantine</div>
-              <p className="text-[10px] text-[#5D5B53] mt-0.5 leading-relaxed">
+              <div className="font-bold text-gray-900 text-[11px]">Chemical Matrix Lifecycle &amp; Batch Quarantine</div>
+              <p className="text-[10px] text-gray-600 mt-0.5 leading-relaxed font-medium">
                 Decommission and physically quarantine any Cu-PAN wristband older than 90 days or showing bleaching/matrix degradation.
               </p>
             </div>
           </div>
 
-          <div className="p-2.5 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2] flex items-start gap-2.5">
-            <span className="w-5 h-5 rounded-full bg-[#292925]/10 text-[#292925] font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">4</span>
+          <div className="p-2.5 bg-gray-50 rounded-xl border border-gray-200 flex items-start gap-2.5">
+            <span className="w-5 h-5 rounded-full bg-gray-200 text-gray-800 font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">4</span>
             <div>
-              <div className="font-semibold text-[#292925] text-[11px]">Environmental Storage Standards</div>
-              <p className="text-[10px] text-[#5D5B53] mt-0.5 leading-relaxed">
+              <div className="font-bold text-gray-900 text-[11px]">Environmental Storage Standards</div>
+              <p className="text-[10px] text-gray-600 mt-0.5 leading-relaxed font-medium">
                 Store unissued dosimeters in sealed foil pouches below 25°C and &lt;50% RH. Never store near open chemical solvent vents.
               </p>
             </div>
