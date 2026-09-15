@@ -12,6 +12,8 @@ import { ResultPage } from './pages/ResultPage';
 import { CalibrationPage } from './pages/CalibrationPage';
 import { WorkersPage } from './pages/WorkersPage';
 import { HistoryPage } from './pages/HistoryPage';
+import { KioskPage } from './pages/KioskPage';
+import { ExplainabilityPage } from './pages/ExplainabilityPage';
 import { CheckCircle } from 'lucide-react';
 
 const MainContent: React.FC = () => {
@@ -44,6 +46,8 @@ const MainContent: React.FC = () => {
         {activePage === 'calibration' && <CalibrationPage />}
         {activePage === 'workers' && <WorkersPage />}
         {activePage === 'history' && <HistoryPage />}
+        {activePage === 'kiosk' && <KioskPage />}
+        {activePage === 'explainability' && <ExplainabilityPage />}
       </main>
 
       {/* Modals & Dialogs */}

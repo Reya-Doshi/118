@@ -16,15 +16,27 @@ import {
   Wind, 
   Radio, 
   FileCheck2, 
-  UserCheck
+  UserCheck,
+  Download,
+  Search,
+  FileSpreadsheet,
+  Printer,
+  X,
+  History,
+  Activity
 } from 'lucide-react';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine } from 'recharts';
 
 export const DashboardPage: React.FC = () => {
-  const { workers, setActivePage, setSelectedWorker, alerts, currentUser, showToast } = useApp();
+  const { workers, readings, setActivePage, alerts, currentUser, showToast } = useApp();
   const [scrubberActive, setScrubberActive] = useState(false);
   const [broadcastActive, setBroadcastActive] = useState(false);
   const [auditSigned, setAuditSigned] = useState(false);
+
+  // Deliverable 3: Exposure Logs & Worker History state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'NORMAL' | 'MONITOR' | 'REVIEW'>('ALL');
+  const [inspectorWorker, setInspectorWorker] = useState<any | null>(null);
 
   const isAdmin = currentUser?.role === 'ADMIN';
 
@@ -46,9 +58,66 @@ export const DashboardPage: React.FC = () => {
   const handleWorkerClick = (workerId: string) => {
     const found = workers.find(w => w.workerId === workerId || w.badgeId === workerId);
     if (found) {
-      setSelectedWorker(found);
-      setActivePage('workers');
+      setInspectorWorker(found);
     }
+  };
+
+  const handleExportCSV = () => {
+    const headers = ['Timestamp', 'Worker Name', 'Worker ID', 'Badge ID', 'Shift', 'Dose (ppm·h)', 'Status', 'Location', 'Confidence (%)'];
+    const rows = readings.map(r => [
+      r.timeAgo || r.timestamp,
+      `"${r.workerName}"`,
+      r.workerId,
+      r.badgeId,
+      `"${r.shift}"`,
+      r.dosePpmH.toFixed(2),
+      r.status,
+      `"${r.location}"`,
+      `${r.confidenceScore}%`
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `SARVAS_Exposure_Audit_Logs_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Exposure logs successfully exported to CSV.');
+  };
+
+  const handleExportOSHA = () => {
+    const oshaContent = `==========================================================\n` +
+      `OSHA FORM 300 COMPLIANCE SUMMARY & AUDIT LOG\n` +
+      `SARVAS by RageB8 Industrial Passive Chemical Dosimeter\n` +
+      `==========================================================\n\n` +
+      `Facility: MRPL Refinery Sector 4 (Demo Unit)\n` +
+      `Shift Date: ${new Date().toLocaleDateString()}\n` +
+      `Safety Officer: Mira Patel (HSE-4012)\n` +
+      `Plant Administrator: Level 1 HSE Governance\n\n` +
+      `SUMMARY OF MONITORED PERSONNEL:\n` +
+      `----------------------------------------------------------\n` +
+      `Total Registered Operators: ${workers.length}\n` +
+      `Shift Exposure Scans Logged: ${readings.length}\n` +
+      `Normal Status (<= 0.50 ppm·h): ${workers.filter(w => w.status === 'NORMAL').length}\n` +
+      `Action Level Required (0.50 - 1.00 ppm·h): ${workers.filter(w => w.status === 'MONITOR').length}\n` +
+      `Critical Overexposure Flags (> 1.00 ppm·h): ${workers.filter(w => w.status === 'REVIEW').length}\n\n` +
+      `REGULATORY STANDARD:\n` +
+      `OSHA 1910.1000 Table Z-2 Permissible Exposure Limit: 1.00 ppm·h\n` +
+      `ACGIH 8-Hour Threshold Limit Value (TLV): 1.00 ppm·h\n` +
+      `Status: AUDIT SEALED & ELECTRONICALLY SIGNED\n`;
+    const blob = new Blob([oshaContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `OSHA_300_Safety_Audit_${new Date().toISOString().slice(0, 10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('OSHA 300 Compliance Log exported.');
+  };
+
+  const handlePrintReport = () => {
+    window.print();
   };
 
   return (
@@ -102,6 +171,46 @@ export const DashboardPage: React.FC = () => {
           <div className="px-3 py-1.5 bg-[#E5EADF] rounded border border-[#C5CEC0] text-[#4F5D4B] font-semibold font-mono">
             Morning · 06:00–14:00
           </div>
+        </div>
+      </div>
+
+      {/* SAFETY MANAGER AUDIT & EXPORT SUITE (Deliverable 3) */}
+      <div className="bg-white p-4 rounded-xl border border-[#D8D0C2] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-[#4F5D4B] text-[#F6F1E7] flex items-center justify-center shrink-0">
+            <FileSpreadsheet className="w-5 h-5" />
+          </div>
+          <div>
+            <span className="text-xs font-bold text-[#292925] block">Safety Manager Exposure Logs &amp; Audit Suite</span>
+            <span className="text-[10px] text-[#5D5B53] font-mono">OSHA 1910.1000 &amp; NIOSH Shift Dosimetry Registry</span>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleExportCSV}
+            className="px-3 py-1.5 rounded-lg bg-[#4F5D4B] hover:bg-[#3d493a] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+            title="Download full exposure logs in CSV format"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Export CSV</span>
+          </button>
+          <button
+            onClick={handleExportOSHA}
+            className="px-3 py-1.5 rounded-lg bg-[#292925] hover:bg-black text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+            title="Export OSHA 300 Safety Summary"
+          >
+            <FileCheck2 className="w-3.5 h-3.5 text-emerald-400" />
+            <span>OSHA 300 Log</span>
+          </button>
+          <button
+            onClick={handlePrintReport}
+            className="px-3 py-1.5 rounded-lg border border-[#D8D0C2] bg-[#EDE5D6] hover:bg-[#E5DDCB] text-[#292925] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            title="Print Shift Audit Report"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print Report</span>
+          </button>
         </div>
       </div>
 
@@ -249,60 +358,120 @@ export const DashboardPage: React.FC = () => {
         {/* Left Column (2 cols): Current Shift Roster & Trend Chart */}
         <div className="lg:col-span-2 space-y-8">
           
-          {/* Current Shift Table */}
-          <div className="bg-[#EDE5D6] rounded-xl border border-[#D8D0C2] shadow-xs overflow-hidden">
-            <div className="p-4 border-b border-[#D8D0C2] flex items-center justify-between">
+          {/* Current Shift Table & Exposure Logs Filter */}
+          <div className="bg-[#EDE5D6] rounded-xl border border-[#D8D0C2] shadow-xs overflow-hidden space-y-3">
+            <div className="p-4 border-b border-[#D8D0C2] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h2 className="text-sm font-bold text-[#292925]">Current Shift Readings</h2>
-                <p className="text-xs text-[#5D5B53]">Active dosimeter readings recorded this shift</p>
+                <h2 className="text-sm font-bold text-[#292925]">Shift Exposure Logs &amp; Dosimeter Readings</h2>
+                <p className="text-xs text-[#5D5B53]">Click any operator row to inspect detailed individual 7-day dosage history</p>
               </div>
-              <button
-                onClick={() => setActivePage('workers')}
-                className="text-xs font-semibold text-[#4F5D4B] hover:underline flex items-center gap-1"
-              >
-                <span>View All Roster</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono font-bold text-[#4F5D4B] bg-white px-2 py-0.5 rounded border border-[#D8D0C2]">
+                  {workers.length} Monitored
+                </span>
+                <button
+                  onClick={() => setActivePage('workers')}
+                  className="text-xs font-semibold text-[#4F5D4B] hover:underline flex items-center gap-0.5 cursor-pointer"
+                >
+                  <span>Full Roster</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Filter Controls Bar */}
+            <div className="px-4 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+              <div className="relative w-full sm:w-64">
+                <Search className="w-3.5 h-3.5 text-gray-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search worker or badge ID..."
+                  className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-white border border-[#D8D0C2] text-xs text-[#292925] focus:outline-none focus:border-[#4F5D4B]"
+                />
+              </div>
+
+              <div className="flex items-center gap-1 bg-[#F6F1E7] p-1 rounded-lg border border-[#D8D0C2] text-xs font-semibold self-stretch sm:self-auto justify-center">
+                {(['ALL', 'NORMAL', 'MONITOR', 'REVIEW'] as const).map(st => (
+                  <button
+                    key={st}
+                    onClick={() => setStatusFilter(st)}
+                    className={`px-2 py-0.5 rounded transition-colors cursor-pointer text-[10px] ${
+                      statusFilter === st ? 'bg-[#292925] text-white' : 'text-[#5D5B53] hover:text-[#292925]'
+                    }`}
+                  >
+                    {st}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-[#E5DDCB] text-[#5D5B53] font-mono border-b border-[#D8D0C2]">
                   <tr>
-                    <th className="py-2.5 px-4 font-medium">Worker</th>
-                    <th className="py-2.5 px-4 font-medium">Badge</th>
-                    <th className="py-2.5 px-4 font-medium">Dose Estimate</th>
+                    <th className="py-2.5 px-4 font-medium">Worker Profile</th>
+                    <th className="py-2.5 px-4 font-medium">Badge ID</th>
+                    <th className="py-2.5 px-4 font-medium">Strip Color</th>
+                    <th className="py-2.5 px-4 font-medium">Cumulative Dose</th>
                     <th className="py-2.5 px-4 font-medium">Status</th>
                     <th className="py-2.5 px-4 font-medium">Shift</th>
-                    <th className="py-2.5 px-4 font-medium text-right">Last Reading</th>
+                    <th className="py-2.5 px-4 font-medium text-right">Audit Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#D8D0C2]">
-                  {workers.map(w => (
-                    <tr
-                      key={w.id}
-                      onClick={() => handleWorkerClick(w.workerId)}
-                      className="hover:bg-[#E5DDCB]/60 cursor-pointer transition-colors"
-                    >
-                      <td className="py-3 px-4 font-medium text-[#292925]">
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded bg-[#D8D0C2] text-[#292925] flex items-center justify-center font-mono font-bold text-[10px]">
-                            {w.name.split(' ').map(n => n[0]).join('')}
+                  {workers
+                    .filter(w => {
+                      const matchesSearch = w.name.toLowerCase().includes(searchTerm.toLowerCase()) || w.badgeId.toLowerCase().includes(searchTerm.toLowerCase());
+                      const matchesStatus = statusFilter === 'ALL' || w.status === statusFilter;
+                      return matchesSearch && matchesStatus;
+                    })
+                    .map(w => (
+                      <tr
+                        key={w.id}
+                        onClick={() => handleWorkerClick(w.workerId)}
+                        className="hover:bg-[#E5DDCB]/60 cursor-pointer transition-colors"
+                      >
+                        <td className="py-3 px-4 font-medium text-[#292925]">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded bg-[#D8D0C2] text-[#292925] flex items-center justify-center font-mono font-bold text-[10px]">
+                              {w.name.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div>
+                              <span className="font-bold">{w.name}</span>
+                              <span className="text-[10px] text-gray-500 font-mono block">{w.workerId}</span>
+                            </div>
                           </div>
-                          <span>{w.name}</span>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 font-mono text-[#5D5B53]">{w.badgeId}</td>
-                      <td className="py-3 px-4 font-mono font-bold text-[#292925]">
-                        {w.currentDose.toFixed(2)} ppm·h
-                      </td>
-                      <td className="py-3 px-4">
-                        <StatusBadge status={w.status} size="sm" />
-                      </td>
-                      <td className="py-3 px-4 text-[#5D5B53]">{w.shift.split('·')[0]}</td>
-                      <td className="py-3 px-4 font-mono text-[#878377] text-right">{w.lastReadingTime}</td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="py-3 px-4 font-mono text-[#5D5B53]">{w.badgeId}</td>
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-1.5">
+                            <div
+                              className="w-4 h-4 rounded-full border border-gray-300 shadow-2xs shrink-0"
+                              style={{
+                                backgroundColor: w.status === 'NORMAL' ? '#B8728A' : w.status === 'MONITOR' ? '#7A5B43' : '#3D2B1F'
+                              }}
+                            />
+                            <span className="text-[10px] font-mono text-gray-500">
+                              {w.status === 'NORMAL' ? 'Pink' : w.status === 'MONITOR' ? 'Amber' : 'Bronze'}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 font-mono font-bold text-[#292925]">
+                          {w.currentDose.toFixed(2)} ppm·h
+                        </td>
+                        <td className="py-3 px-4">
+                          <StatusBadge status={w.status} size="sm" />
+                        </td>
+                        <td className="py-3 px-4 text-[#5D5B53]">{w.shift.split('·')[0]}</td>
+                        <td className="py-3 px-4 text-right">
+                          <span className="text-[10px] font-mono font-bold text-[#4F5D4B] bg-white px-2 py-1 rounded border border-[#D8D0C2] hover:bg-[#EDE5D6] transition-colors">
+                            Inspect History →
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -546,6 +715,161 @@ export const DashboardPage: React.FC = () => {
 
         </div>
       </div>
+
+      {/* WORKER EXPOSURE HISTORY INSPECTOR MODAL (Deliverable 3) */}
+      {inspectorWorker && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-2xl rounded-2xl border border-[#D8D0C2] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            
+            {/* Modal Header */}
+            <div className="p-4 bg-[#EDE5D6] border-b border-[#D8D0C2] flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#292925] text-white flex items-center justify-center font-mono font-bold text-sm">
+                  {inspectorWorker.name.split(' ').map((n: string) => n[0]).join('')}
+                </div>
+                <div>
+                  <h3 className="text-base font-serif font-bold text-[#292925] flex items-center gap-2">
+                    <span>{inspectorWorker.name}</span>
+                    <StatusBadge status={inspectorWorker.status} size="sm" />
+                  </h3>
+                  <span className="text-[10px] font-mono text-[#5D5B53]">
+                    {inspectorWorker.workerId} · Badge #{inspectorWorker.badgeId} · {inspectorWorker.department}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setInspectorWorker(null)}
+                className="w-8 h-8 rounded-full bg-white/70 border border-[#D8D0C2] flex items-center justify-center text-gray-500 hover:text-gray-900 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Scrollable Body */}
+            <div className="p-5 overflow-y-auto space-y-6">
+              
+              {/* Key Worker Stats Row */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="p-3 bg-[#FAF8F5] rounded-xl border border-gray-200">
+                  <span className="text-[10px] font-mono text-gray-500 uppercase block">Current Shift Dose</span>
+                  <span className="font-mono font-bold text-[#292925] text-base">{inspectorWorker.currentDose.toFixed(2)} ppm·h</span>
+                  <span className="text-[9px] text-gray-500 block mt-0.5">Shift: {inspectorWorker.shift.split('·')[0]}</span>
+                </div>
+                <div className="p-3 bg-[#FAF8F5] rounded-xl border border-gray-200">
+                  <span className="text-[10px] font-mono text-gray-500 uppercase block">7-Day Max Exposure</span>
+                  <span className="font-mono font-bold text-amber-800 text-base">
+                    {Math.max(...(inspectorWorker.trend7Day?.map((t: any) => t.dose) || [0.65])).toFixed(2)} ppm·h
+                  </span>
+                  <span className="text-[9px] text-gray-500 block mt-0.5">Cumulative peak</span>
+                </div>
+                <div className="p-3 bg-[#FAF8F5] rounded-xl border border-gray-200">
+                  <span className="text-[10px] font-mono text-gray-500 uppercase block">Badge Validity</span>
+                  <span className="font-mono font-bold text-emerald-800 text-base">{inspectorWorker.badgeValidityDays} days left</span>
+                  <span className="text-[9px] text-gray-500 block mt-0.5">Expires: {inspectorWorker.badgeExpiryDate}</span>
+                </div>
+                <div className="p-3 bg-[#FAF8F5] rounded-xl border border-gray-200">
+                  <span className="text-[10px] font-mono text-gray-500 uppercase block">OSHA Status</span>
+                  <span className={`font-mono font-bold text-sm ${inspectorWorker.status === 'NORMAL' ? 'text-emerald-700' : inspectorWorker.status === 'MONITOR' ? 'text-amber-700' : 'text-red-700'}`}>
+                    {inspectorWorker.status === 'NORMAL' ? 'COMPLIANT' : inspectorWorker.status === 'MONITOR' ? 'ACTION LEVEL' : 'OVEREXPOSED'}
+                  </span>
+                  <span className="text-[9px] text-gray-500 block mt-0.5">1.00 ppm·h ceiling</span>
+                </div>
+              </div>
+
+              {/* 7-Day Dosage Trend Chart with OSHA Permissible Limit Line */}
+              <div className="bg-[#FAF8F5] p-4 rounded-xl border border-gray-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-xs font-bold text-[#292925] flex items-center gap-1.5">
+                      <Activity className="w-3.5 h-3.5 text-[#4F5D4B]" />
+                      <span>7-Day Exposure History vs OSHA Permissible Limit</span>
+                    </h4>
+                    <span className="text-[10px] text-gray-500 font-mono">Daily cumulative dosage slope</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[10px] font-mono">
+                    <span className="flex items-center gap-1 text-red-600 font-bold">
+                      <span className="w-2.5 h-0.5 bg-red-500" />
+                      OSHA PEL (1.00)
+                    </span>
+                  </div>
+                </div>
+
+                <div className="h-44 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={inspectorWorker.trend7Day || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#E5DDCB" vertical={false} />
+                      <XAxis dataKey="day" stroke="#878377" fontSize={10} tickLine={false} />
+                      <YAxis stroke="#878377" fontSize={10} tickLine={false} unit=" ppm·h" domain={[0, 1.6]} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#292925', border: '1px solid #3E3C36', borderRadius: '6px', color: '#EDE5D6', fontSize: '11px' }}
+                      />
+                      <ReferenceLine y={1.00} stroke="#dc2626" strokeDasharray="4 4" label={{ value: 'OSHA PEL', fill: '#dc2626', fontSize: 10, position: 'top' }} />
+                      <Line type="monotone" dataKey="dose" stroke="#4F5D4B" strokeWidth={2.5} dot={{ r: 3, fill: '#4F5D4B' }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Chronological Shift Exposure Logs for this Worker */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold text-[#292925] flex items-center gap-1.5">
+                  <History className="w-3.5 h-3.5 text-[#4F5D4B]" />
+                  <span>Logged Exposure Scans for {inspectorWorker.name}</span>
+                </h4>
+                
+                <div className="border border-gray-200 rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-[#FAF8F5] text-gray-600 font-mono border-b border-gray-200">
+                      <tr>
+                        <th className="py-2 px-3 font-medium">Timestamp</th>
+                        <th className="py-2 px-3 font-medium">Location</th>
+                        <th className="py-2 px-3 font-medium">Dose</th>
+                        <th className="py-2 px-3 font-medium">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 text-[11px]">
+                      {readings
+                        .filter(r => r.workerId === inspectorWorker.workerId || r.workerName === inspectorWorker.name)
+                        .slice(0, 5)
+                        .map(r => (
+                          <tr key={r.id} className="hover:bg-gray-50">
+                            <td className="py-2 px-3 font-mono text-gray-600">{r.timeAgo || r.timestamp}</td>
+                            <td className="py-2 px-3">{r.location}</td>
+                            <td className="py-2 px-3 font-mono font-bold text-gray-900">{r.dosePpmH.toFixed(2)} ppm·h</td>
+                            <td className="py-2 px-3">
+                              <StatusBadge status={r.status} size="sm" />
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Modal Footer Controls */}
+            <div className="p-4 bg-[#FAF8F5] border-t border-[#D8D0C2] flex items-center justify-between">
+              <button
+                onClick={() => {
+                  showToast(`Individual HSE record exported for ${inspectorWorker.name}.`);
+                }}
+                className="px-3 py-2 rounded-xl border border-[#D8D0C2] bg-white text-xs font-semibold text-[#292925] hover:bg-gray-50 flex items-center gap-1.5 cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Export Worker Record</span>
+              </button>
+              <button
+                onClick={() => setInspectorWorker(null)}
+                className="px-4 py-2 rounded-xl bg-[#292925] text-white hover:bg-black text-xs font-semibold cursor-pointer"
+              >
+                Close Inspector
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );

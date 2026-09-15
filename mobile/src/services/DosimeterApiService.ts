@@ -163,12 +163,46 @@ export class DosimeterApiService {
         );
       }
 
-      // Network unreachable / CORS / Connection refused
-      throw new DosimeterApiError(
-        'NETWORK_UNAVAILABLE',
-        `Unable to connect to backend server at ${baseUrl}. Please ensure the backend is running.`,
-        err
-      );
+      // If backend is unreachable or timed out, seamlessly execute Direct Gemini Vision + On-Device Calibration
+      console.warn(`Backend at ${baseUrl} unreachable (${err.message || 'offline'}). Executing Direct Gemini Vision on phone...`);
+      return await this.analyzeViaDirectGemini(params);
     }
+  }
+
+  /**
+   * Direct Phone Pipeline: Executes Google Gemini Vision directly from Android + On-Device Calibration
+   */
+  public static async analyzeViaDirectGemini(params: AnalyzeWristbandParams): Promise<BackendAnalyzeResponse> {
+    const { GeminiVisionDirect } = await import('./GeminiVisionDirect');
+    const { CalibrationEngine } = await import('./CalibrationEngine');
+
+    // 1. Run Direct Gemini Vision Optical Audit & Localization
+    const geminiAudit = await GeminiVisionDirect.analyzeImage(params.imageUri);
+
+    // 2. Run Calibrated Cu-PAN Chelation Engine
+    const calibrationResult = await CalibrationEngine.analyzeRawImageAsync(
+      params.imageUri,
+      params.temperature ?? 25.0,
+      params.humidity ?? 50.0,
+      params.shelfAgeDays ?? 15.0
+    );
+
+    // 3. Synthesize unified BackendAnalyzeResponse with Gemini metadata
+    return {
+      ...calibrationResult,
+      vision_engine: geminiAudit.provider,
+      band_detected: geminiAudit.wristband_detected,
+      image_quality: {
+        verdict: geminiAudit.image_quality.quality_verdict,
+        score: geminiAudit.image_quality.quality_score,
+        is_too_dark: geminiAudit.image_quality.is_too_dark,
+        is_overexposed: geminiAudit.image_quality.is_overexposed,
+        is_blurry: geminiAudit.image_quality.is_blurry,
+        strip_not_visible: geminiAudit.image_quality.strip_not_visible,
+        reference_scale_missing: geminiAudit.image_quality.reference_scale_missing,
+        notes: geminiAudit.image_quality.quality_notes
+      },
+      prototype: true
+    };
   }
 }

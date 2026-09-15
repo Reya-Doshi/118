@@ -17,14 +17,17 @@ import { ProfileView } from './views/ProfileView';
 import { WorkersListView } from './views/WorkersListView';
 import { AlertsListView } from './views/AlertsListView';
 import { BandsManagementView } from './views/BandsManagementView';
+import { KioskModeView } from './views/KioskModeView';
+import { GeminiConfigModal } from './components/GeminiConfigModal';
 
-import { Home, Camera, Clock, User, ShieldAlert, Users, Radio, LogOut } from 'lucide-react';
+import { Home, Camera, Clock, User, ShieldAlert, Users, Radio, LogOut, Sparkles, Scan } from 'lucide-react';
 
 const MainAppContent: React.FC = () => {
   const { currentUser, role, isAuthenticated, logout } = useMobileAuth();
 
   const [showSplash, setShowSplash] = useState(true);
-  const [activeTab, setActiveTab] = useState<'HOME' | 'SCAN' | 'HISTORY' | 'PROFILE' | 'WORKERS' | 'ALERTS' | 'BANDS'>('HOME');
+  const [activeTab, setActiveTab] = useState<'HOME' | 'SCAN' | 'HISTORY' | 'PROFILE' | 'WORKERS' | 'ALERTS' | 'BANDS' | 'KIOSK'>('HOME');
+  const [isGeminiModalOpen, setIsGeminiModalOpen] = useState(false);
 
   // Live repository states
   const [workers, setWorkers] = useState<Worker[]>(repository.getWorkers());
@@ -214,6 +217,15 @@ const MainAppContent: React.FC = () => {
       );
     }
 
+    if (activeTab === 'KIOSK') {
+      return (
+        <KioskModeView
+          onBack={() => setActiveTab('HOME')}
+          onOpenScanModal={() => setIsCameraOpen(true)}
+        />
+      );
+    }
+
     // Role-Based Home Dashboards
     switch (role) {
       case 'WORKER':
@@ -285,17 +297,35 @@ const MainAppContent: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-            {workerLanguage === 'hi' ? 'लाइव' : 'LIVE'}
-          </span>
+          <button
+            onClick={() => setActiveTab('KIOSK')}
+            className={`p-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center gap-1 active:scale-95 transition-all shadow-2xs ${
+              activeTab === 'KIOSK'
+                ? 'bg-black text-white ring-1 ring-black'
+                : 'bg-[#292925] hover:bg-black text-white'
+            }`}
+            title="Interactive Kiosk Flow (Start -> Scan -> Dose -> Close)"
+          >
+            <Scan className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Kiosk</span>
+          </button>
+
+          <button
+            onClick={() => setIsGeminiModalOpen(true)}
+            className="p-1.5 px-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-bold flex items-center gap-1 active:scale-95 transition-all shadow-2xs cursor-pointer"
+            title="Gemini Vision Direct Mode Config"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Gemini</span>
+          </button>
+
           <button
             onClick={logout}
             className="p-1.5 px-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[10px] font-semibold flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
             title={workerLanguage === 'hi' ? 'लॉग आउट' : 'Sign Out'}
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-bold">{workerLanguage === 'hi' ? 'लॉग आउट' : 'Sign Out'}</span>
+            <span className="text-[10px] font-bold">{workerLanguage === 'hi' ? 'लॉग आउट' : 'Exit'}</span>
           </button>
         </div>
       </header>
@@ -443,6 +473,12 @@ const MainAppContent: React.FC = () => {
           onRetake={handleRetake}
         />
       )}
+
+      {/* Gemini Vision API Direct Config Modal */}
+      <GeminiConfigModal
+        isOpen={isGeminiModalOpen}
+        onClose={() => setIsGeminiModalOpen(false)}
+      />
     </div>
   );
 };

@@ -132,13 +132,24 @@ export const ExplanationModal: React.FC = () => {
           </p>
         </div>
 
-        {/* Action Button */}
-        <div className="flex justify-end pt-2 border-t border-[#D8D0C2]">
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-[#D8D0C2]">
+          <button
+            onClick={() => {
+              closeExplanation();
+              setActivePage('explainability');
+            }}
+            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#292925] text-white text-xs font-semibold hover:bg-black transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <Camera className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Watch ML Pipeline Video (ml.mp4) &amp; Architecture →</span>
+          </button>
+
           <button
             onClick={closeExplanation}
-            className="px-5 py-2 rounded-lg bg-[#4F5D4B] text-[#F6F1E7] text-xs font-semibold tracking-wide hover:bg-[#3D493A] transition-colors"
+            className="w-full sm:w-auto px-5 py-2 rounded-lg bg-[#4F5D4B] text-[#F6F1E7] text-xs font-semibold tracking-wide hover:bg-[#3D493A] transition-colors cursor-pointer"
           >
-            Got it
+            Close
           </button>
         </div>
 

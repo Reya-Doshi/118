@@ -12,7 +12,8 @@ import {
   LogOut,
   Users,
   User,
-  Clock
+  Clock,
+  Sparkles
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -290,10 +291,48 @@ export const Navbar: React.FC = () => {
 
           {/* Right: Desktop Controls + Mobile Hamburger */}
           <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Interactive Kiosk Prototype Nav Button */}
+            <button
+              onClick={() => handleNavClick('kiosk')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95 ${
+                activePage === 'kiosk'
+                  ? 'bg-[#292925] text-white border-[#292925]'
+                  : isTransparentOnHero
+                  ? 'border-emerald-400/40 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-900/60'
+                  : 'border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+              }`}
+              title="Open Interactive Kiosk Flow (Start Shift -> Scan -> Dose -> Close)"
+            >
+              <Scan className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Kiosk Prototype</span>
+              <span className="text-[9px] font-mono bg-emerald-600 text-white px-1.5 py-0.2 rounded font-bold uppercase">
+                Flow
+              </span>
+            </button>
+
+            {/* ML Explainability Video Nav Button */}
+            <button
+              onClick={() => handleNavClick('explainability')}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer shadow-xs active:scale-95 ${
+                activePage === 'explainability'
+                  ? 'bg-[#4F5D4B] text-white border-[#4F5D4B]'
+                  : isTransparentOnHero
+                  ? 'border-white/30 bg-white/10 text-[#F6F1E7] hover:bg-white/20'
+                  : 'border-[#D8D0C2] bg-white text-[#292925] hover:bg-[#EDE5D6]'
+              }`}
+              title="View Color-to-Dose ML Pipeline Diagram & ml.mp4 Video"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span className="hidden lg:inline">ML Pipeline</span>
+              <span className="text-[9px] font-mono bg-amber-100 text-amber-900 px-1 py-0.2 rounded font-bold">
+                ml.mp4
+              </span>
+            </button>
+
             {!currentUser && (
               <button
                 onClick={openExplanation}
-                className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded border text-xs font-medium transition-colors cursor-pointer ${
+                className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium transition-colors cursor-pointer ${
                   isTransparentOnHero
                     ? 'border-white/30 bg-white/10 text-[#F6F1E7] hover:bg-white/20'
                     : 'border-[#D8D0C2] bg-[#EDE5D6] text-[#292925] hover:bg-[#E5DDCB]'
@@ -373,6 +412,24 @@ export const Navbar: React.FC = () => {
         <div className="md:hidden bg-[#F6F1E7] border-b border-[#D8D0C2] shadow-xl text-[#292925] animate-in slide-in-from-top duration-200">
           <div className="max-w-7xl mx-auto px-4 py-4 space-y-3">
             
+            {/* Interactive Prototypes Mobile Quick Actions */}
+            <div className="grid grid-cols-2 gap-2 pb-2 border-b border-[#D8D0C2]">
+              <button
+                onClick={() => handleNavClick('kiosk')}
+                className="p-2.5 rounded-xl bg-[#292925] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm"
+              >
+                <Scan className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Kiosk Prototype</span>
+              </button>
+              <button
+                onClick={() => handleNavClick('explainability')}
+                className="p-2.5 rounded-xl bg-[#4F5D4B] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <span>ML Pipeline</span>
+              </button>
+            </div>
+
             {/* Primary Navigation Links */}
             <div className="space-y-1">
               {!currentUser ? (

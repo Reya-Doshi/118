@@ -1,7 +1,23 @@
 import React, { useState } from 'react';
 import type { Worker, Wristband, Reading, Alert } from '../types/mobile';
 import { repository } from '../services/DosimeterRepository';
-import { Users, Radio, AlertTriangle, Activity, UserPlus, Check, X, ChevronRight, BarChart3, ShieldAlert } from 'lucide-react';
+import { 
+  Users, 
+  Radio, 
+  AlertTriangle, 
+  Activity, 
+  UserPlus, 
+  Check, 
+  X, 
+  ChevronRight, 
+  BarChart3, 
+  ShieldAlert,
+  Download,
+  Search,
+  History,
+  FileSpreadsheet,
+  FileCheck2
+} from 'lucide-react';
 
 interface AdminDashboardProps {
   workers: Worker[];
@@ -26,6 +42,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [selectedBandId, setSelectedBandId] = useState('');
   const [selectedWorkerId, setSelectedWorkerId] = useState('');
   const [assignSuccess, setAssignSuccess] = useState(false);
+
+  // Deliverable 3 State: Exposure Logs & Worker History
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'NORMAL' | 'MONITOR' | 'REVIEW'>('ALL');
+  const [inspectorWorker, setInspectorWorker] = useState<Worker | null>(null);
 
   // Stats calculation
   const totalWorkers = workers.length;
@@ -52,6 +73,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         setSelectedWorkerId('');
       }, 1000);
     }
+  };
+
+  const handleExportCSV = () => {
+    const headers = ['Timestamp', 'Worker Name', 'Worker ID', 'Badge ID', 'Shift', 'Dose (ppm·h)', 'Status', 'Location'];
+    const rows = readings.map(r => [
+      r.timestamp,
+      `"${r.workerName}"`,
+      r.workerId,
+      r.bandId,
+      `"${r.shiftId}"`,
+      r.estimatedDose.toFixed(2),
+      r.status,
+      `"${r.inspectionLocation || 'Refinery Plant'}"`
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `SARVAS_Mobile_Exposure_Logs_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -173,22 +216,116 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       </div>
 
-      {/* Quick Actions Bar */}
-      <div className="grid grid-cols-2 gap-2.5">
+      {/* Quick Actions Bar with Export Suite */}
+      <div className="grid grid-cols-3 gap-2">
         <button
           onClick={() => setShowAssignModal(true)}
-          className="p-3 bg-gray-950 hover:bg-black text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-md border border-gray-800"
+          className="p-2.5 bg-gray-950 hover:bg-black text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all shadow-md border border-gray-800"
         >
-          <UserPlus className="w-4 h-4 text-emerald-400" />
-          Assign Wristband
+          <UserPlus className="w-3.5 h-3.5 text-emerald-400" />
+          <span>Assign</span>
         </button>
         <button
           onClick={onViewBands}
-          className="card-glow p-3 text-gray-900 text-xs font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-all hover:border-emerald-500/40"
+          className="card-glow p-2.5 text-gray-900 text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
         >
-          <Radio className="w-4 h-4 text-emerald-700" />
-          Band Inventory ({wristbands.length})
+          <Radio className="w-3.5 h-3.5 text-emerald-700" />
+          <span>Bands ({wristbands.length})</span>
         </button>
+        <button
+          onClick={handleExportCSV}
+          className="card-glow p-2.5 bg-emerald-50 text-emerald-900 border-emerald-300 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
+        >
+          <Download className="w-3.5 h-3.5 text-emerald-700" />
+          <span>Export CSV</span>
+        </button>
+      </div>
+
+      {/* SHIFT EXPOSURE LOGS & WORKER HISTORY SECTION (Deliverable 3) */}
+      <div className="card-glow p-4 space-y-3">
+        <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-emerald-50 flex items-center justify-center text-emerald-700 border border-emerald-200">
+              <FileSpreadsheet className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-xs font-serif font-bold text-gray-900 leading-tight">Shift Exposure Logs</h3>
+              <span className="text-[9px] font-mono text-gray-500">Tap worker to inspect history</span>
+            </div>
+          </div>
+          <span className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-gray-200 font-bold text-gray-700">
+            {readings.length} Scans
+          </span>
+        </div>
+
+        {/* Search & Filter Bar */}
+        <div className="space-y-2">
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search worker or badge ID..."
+              className="w-full pl-8 pr-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200 text-xs text-gray-900 focus:outline-none focus:border-emerald-700"
+            />
+          </div>
+
+          <div className="grid grid-cols-4 gap-1 text-[10px] font-mono font-bold text-center">
+            {(['ALL', 'NORMAL', 'MONITOR', 'REVIEW'] as const).map(st => (
+              <button
+                key={st}
+                onClick={() => setStatusFilter(st)}
+                className={`py-1 rounded-md transition-all ${
+                  statusFilter === st ? 'bg-[#292925] text-white shadow-2xs' : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                {st}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Readings List */}
+        <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+          {readings
+            .filter(r => {
+              const matchesSearch = r.workerName.toLowerCase().includes(searchTerm.toLowerCase()) || r.bandId.toLowerCase().includes(searchTerm.toLowerCase());
+              const matchesStatus = statusFilter === 'ALL' || r.status === statusFilter;
+              return matchesSearch && matchesStatus;
+            })
+            .slice(0, 10)
+            .map(r => {
+              const matchedWorker = workers.find(w => w.workerId === r.workerId) || workers[0];
+              return (
+                <div
+                  key={r.readingId}
+                  onClick={() => setInspectorWorker(matchedWorker)}
+                  className="p-2.5 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200 flex items-center justify-between text-xs cursor-pointer transition-all active:scale-[0.99]"
+                >
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="w-3.5 h-3.5 rounded-full border border-gray-300 shadow-2xs shrink-0"
+                      style={{ backgroundColor: r.rgb?.hex || '#B8728A' }}
+                    />
+                    <div>
+                      <div className="font-bold text-gray-900 leading-tight">{r.workerName}</div>
+                      <div className="text-[9px] font-mono text-gray-500">Badge #{r.bandId} · {r.inspectionLocation || 'Refinery Sector'}</div>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <div className="font-mono font-bold text-gray-900">{r.estimatedDose.toFixed(2)} ppm·h</div>
+                    <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-bold ${
+                      r.status === 'NORMAL' ? 'bg-emerald-100 text-emerald-800' : r.status === 'MONITOR' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'
+                    }`}>
+                      {r.status}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+        </div>
       </div>
 
       {/* Admin Precautionary Directives & Safety Escalations */}
@@ -372,6 +509,83 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* WORKER HISTORY INSPECTOR MODAL (Deliverable 3) */}
+      {inspectorWorker && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-[#F6F1E7] w-full max-w-sm rounded-2xl border border-[#D8D0C2] shadow-2xl overflow-hidden max-h-[85vh] flex flex-col animate-in zoom-in-95">
+            <div className="p-4 bg-[#EDE5D6] border-b border-[#D8D0C2] flex items-center justify-between">
+              <div>
+                <h3 className="font-serif font-bold text-sm text-[#292925]">{inspectorWorker.name}</h3>
+                <span className="text-[10px] font-mono text-gray-600">
+                  {inspectorWorker.workerId} · Badge #{inspectorWorker.assignedBandId}
+                </span>
+              </div>
+              <button
+                onClick={() => setInspectorWorker(null)}
+                className="w-7 h-7 rounded-full bg-white border border-[#D8D0C2] flex items-center justify-center text-gray-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-2 text-center">
+                <div className="p-2.5 bg-white rounded-xl border border-gray-200">
+                  <div className="text-[9px] font-mono text-gray-500 uppercase">Current Dose</div>
+                  <div className="font-mono font-bold text-base text-gray-900">{inspectorWorker.currentDose.toFixed(2)} ppm·h</div>
+                </div>
+                <div className="p-2.5 bg-white rounded-xl border border-gray-200">
+                  <div className="text-[9px] font-mono text-gray-500 uppercase">Status</div>
+                  <div className={`font-mono font-bold text-xs mt-1 ${
+                    inspectorWorker.status === 'NORMAL' ? 'text-emerald-700' : inspectorWorker.status === 'MONITOR' ? 'text-amber-700' : 'text-red-700'
+                  }`}>
+                    {inspectorWorker.status}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="font-bold text-[#292925] mb-1.5 flex items-center gap-1">
+                  <History className="w-3.5 h-3.5 text-[#4F5D4B]" />
+                  <span>Recent Scans ({inspectorWorker.name})</span>
+                </div>
+                <div className="space-y-1.5">
+                  {readings
+                    .filter(r => r.workerId === inspectorWorker.workerId || r.workerName === inspectorWorker.name)
+                    .slice(0, 5)
+                    .map(r => (
+                      <div key={r.readingId} className="p-2 bg-white rounded-lg border border-gray-200 flex items-center justify-between text-[11px]">
+                        <div>
+                          <div className="font-mono text-gray-500 text-[10px]">{r.timestamp}</div>
+                          <div className="font-medium text-gray-800">{r.inspectionLocation || 'Refinery Sector'}</div>
+                        </div>
+                        <div className="text-right font-mono font-bold text-gray-900">
+                          {r.estimatedDose.toFixed(2)} ppm·h
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-white rounded-xl border border-gray-200 text-[10px] text-gray-600 space-y-0.5">
+                <div><strong>Department:</strong> {inspectorWorker.department}</div>
+                <div><strong>Current Shift:</strong> {inspectorWorker.shift}</div>
+                <div><strong>OSHA Limit:</strong> 1.00 ppm·h (8-hr TWA)</div>
+              </div>
+            </div>
+
+            <div className="p-3 bg-[#EDE5D6] border-t border-[#D8D0C2]">
+              <button
+                onClick={() => setInspectorWorker(null)}
+                className="w-full py-2 bg-[#292925] text-white rounded-xl font-bold text-xs"
+              >
+                Close Inspector
+              </button>
+            </div>
           </div>
         </div>
       )}
