@@ -1,165 +1,28 @@
 @import "tailwindcss";
 
 @layer base {
-  :root, .dark {
-    /* Modern Refinery Obsidian & Ice-Cyan / Safety Amber Color System */
-    --canvas-bg: #080A0E;
-    --canvas-grid: rgba(255, 255, 255, 0.025);
-    --card-surface: rgba(18, 22, 28, 0.65);
-    --card-surface-subtle: rgba(14, 18, 24, 0.75);
-    --card-border: rgba(255, 255, 255, 0.08);
-    --card-border-active: rgba(245, 158, 11, 0.35);
-    --card-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
-    --card-glow-top: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
-
-    --accent-primary: #F59E0B; /* High-Visibility Safety Amber / Gold */
-    --accent-primary-hover: #D97706;
-    --accent-secondary: #0284C7;
-    --accent-telemetry: #38BDF8; /* Clean Ice-Cyan */
-    --accent-nominal: #10B981; /* Pure Safe Emerald */
-    --accent-hazard: #EF4444; /* Clean Hazard Red */
-
-    --text-primary: #F3F4F6; /* Crisp White / Light Gray */
-    --text-secondary: #9CA3AF; /* Refined Slate */
-    --text-muted: #6B7280;
-    --text-inverse: #080A0E;
-
-    --reticle-color: #38BDF8;
-    --mouse-glow: rgba(245, 158, 11, 0.08);
-  }
-
-  .light {
-    /* Ultra-Clean Bright High-Contrast Light Mode */
-    --canvas-bg: #F8FAFC;
-    --canvas-grid: rgba(15, 23, 42, 0.04);
-    --card-surface: rgba(255, 255, 255, 0.90);
-    --card-surface-subtle: rgba(241, 245, 249, 0.95);
-    --card-border: rgba(15, 23, 42, 0.12);
-    --card-border-active: rgba(217, 119, 6, 0.5);
-    --card-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
-    --card-glow-top: inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
-
-    --accent-primary: #D97706; /* Crisp Deep Amber */
-    --accent-primary-hover: #B45309;
-    --accent-secondary: #0284C7; /* Bold Sky Blue */
-    --accent-telemetry: #0284C7;
-    --accent-nominal: #059669; /* Emerald */
-    --accent-hazard: #DC2626; /* Deep Red */
-
-    --text-primary: #0F172A; /* Slate 900 */
-    --text-secondary: #475569; /* Slate 600 */
-    --text-muted: #94A3B8;
-    --text-inverse: #FFFFFF;
-
-    --reticle-color: #0284C7;
-    --mouse-glow: rgba(217, 119, 6, 0.1);
-  }
-
-  * {
-    border-color: var(--card-border);
+  :root {
+    --bg-ivory: #F6F1E7;
+    --bg-cream: #EDE5D6;
+    --text-charcoal: #292925;
+    --text-secondary: #5D5B53;
+    --text-muted: #878377;
+    
+    --accent-sage: #71806B;
+    --accent-olive: #4F5D4B;
+    --border-warm: #D8D0C2;
+    
+    --state-amber: #B08A55;
+    --state-brick: #9A6258;
   }
 
   body {
-    background-color: var(--canvas-bg);
-    color: var(--text-primary);
-    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #F6F1E7;
+    color: #292925;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.25s ease, color 0.25s ease;
   }
-
-  h1, h2, h3, h4, h5, h6, .font-heading {
-    font-family: 'Space Grotesk', sans-serif;
-    letter-spacing: -0.02em;
-  }
-
-  code, pre, .font-mono {
-    font-family: 'JetBrains Mono', monospace;
-  }
-}
-
-/* 48px Refinery / Lab Grid Background */
-.bg-grid-refinery {
-  background-color: var(--canvas-bg);
-  background-size: 48px 48px;
-  background-image: 
-    linear-gradient(to right, var(--canvas-grid) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--canvas-grid) 1px, transparent 1px);
-}
-
-/* Command Center Card Surface */
-.command-card {
-  background-color: var(--card-surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--card-border);
-  box-shadow: var(--card-shadow), var(--card-glow-top);
-  position: relative;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
-}
-
-/* Interactive Mouse-Following Card Glow */
-.mouse-glow-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.mouse-glow-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  background: radial-gradient(
-    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    var(--mouse-glow),
-    transparent 40%
-  );
-  z-index: 1;
-}
-
-.mouse-glow-card:hover::before {
-  opacity: 1;
-}
-
-/* Pulse Reticle */
-@keyframes pingSlow {
-  0% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.18); opacity: 0.3; }
-  100% { transform: scale(1); opacity: 0.9; }
-}
-
-.animate-ping-slow {
-  animation: pingSlow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-/* Flowing SVG Beam */
-@keyframes beamFlow {
-  0% { stroke-dashoffset: 200; }
-  100% { stroke-dashoffset: 0; }
-}
-
-.animate-beam {
-  stroke-dasharray: 12 8;
-  animation: beamFlow 1.6s linear infinite;
-}
-
-/* Staggered Fade-Up */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Custom Scrollbars */
@@ -168,117 +31,12 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--canvas-bg);
+  background: #EDE5D6;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--card-border);
+  background: #D8D0C2;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-secondary);
+  background: #B8B0A2;
 }
-
-/* =========================================================================
-   THEME CONSISTENCY OVERRIDES FOR WORKER & SAFETY DASHBOARDS
-   Eliminates khaki/brown color bleed after logging in and ensures
-   ultra-clean, bright, modern appearance across dark and light modes.
-   ========================================================================= */
-
-/* Dark Mode Dashboard Overrides */
-.dark .bg-\[\#EDE5D6\],
-.dark .bg-\[\#EDE5D6\]\/30,
-.dark .bg-\[\#EDE5D6\]\/60,
-.dark .bg-\[\#F6F1E7\],
-.dark .bg-\[\#E5EADF\] {
-  background-color: var(--card-surface-subtle) !important;
-  border-color: var(--card-border) !important;
-  color: var(--text-primary) !important;
-}
-
-.dark .border-\[\#D8D0C2\],
-.dark .border-\[\#C5CEC0\],
-.dark .border-\[\#3d3d37\] {
-  border-color: var(--card-border) !important;
-}
-
-.dark .text-\[\#292925\],
-.dark .text-\[\#191c1a\] {
-  color: var(--text-primary) !important;
-}
-
-.dark .text-\[\#5D5B53\],
-.dark .text-\[\#878377\],
-.dark .text-\[\#575e59\] {
-  color: var(--text-secondary) !important;
-}
-
-.dark .bg-\[\#292925\],
-.dark .bg-\[\#1e1e1b\] {
-  background-color: rgba(14, 18, 24, 0.9) !important;
-  border-color: var(--card-border) !important;
-}
-
-/* Light Mode Dashboard Overrides */
-.light .bg-\[\#EDE5D6\],
-.light .bg-\[\#EDE5D6\]\/30,
-.light .bg-\[\#EDE5D6\]\/60,
-.light .bg-\[\#F6F1E7\],
-.light .bg-\[\#E5EADF\] {
-  background-color: #FFFFFF !important;
-  border-color: rgba(15, 23, 42, 0.12) !important;
-  color: #0F172A !important;
-}
-
-.light .border-\[\#D8D0C2\],
-.light .border-\[\#C5CEC0\],
-.light .border-\[\#3d3d37\] {
-  border-color: rgba(15, 23, 42, 0.12) !important;
-}
-
-.light .text-\[\#292925\],
-.light .text-\[\#191c1a\] {
-  color: #0F172A !important;
-}
-
-.light .text-\[\#5D5B53\],
-.light .text-\[\#878377\],
-.light .text-\[\#575e59\] {
-  color: #475569 !important;
-}
-
-.light .bg-\[\#292925\],
-.light .bg-\[\#1e1e1b\] {
-  background-color: #FFFFFF !important;
-  border-color: rgba(15, 23, 42, 0.15) !important;
-  color: #0F172A !important;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08) !important;
-}
-
-.light .bg-\[\#292925\] .text-\[\#F6F1E7\],
-.light .bg-\[\#292925\] .text-\[\#EDE5D6\],
-.light .bg-\[\#292925\] strong {
-  color: #0F172A !important;
-}
-
-.light .bg-\[\#292925\] .border-white\/10,
-.light .bg-\[\#292925\] .border-white\/15,
-.light .bg-\[\#292925\] .border-white\/20 {
-  border-color: rgba(15, 23, 42, 0.12) !important;
-}
-
-.light .bg-\[\#4F5D4B\] {
-  background-color: #D97706 !important;
-  color: #FFFFFF !important;
-}
-
-.light .text-\[\#4F5D4B\],
-.light .text-\[\#71806B\] {
-  color: #D97706 !important;
-}
-
-.light .bg-\[\#4F5D4B\]\/15,
-.light .bg-\[\#71806B\]\/15 {
-  background-color: rgba(217, 119, 6, 0.12) !important;
-  color: #D97706 !important;
-}
-

@@ -12,55 +12,57 @@ export const ExplanationModal: React.FC = () => {
       num: '01',
       title: 'WEAR',
       desc: 'Worker wears the passive wristband during the shift.',
-      icon: ShieldCheck
+      icon: ShieldCheck,
+      color: 'text-[#4F5D4B] bg-[#E5EADF]'
     },
     {
       num: '02',
       title: 'RESPOND',
       desc: 'The chemical strip changes color progressively with cumulative H₂S exposure.',
-      icon: Activity
+      icon: Activity,
+      color: 'text-[#826235] bg-[#F3EDE2]'
     },
     {
       num: '03',
       title: 'SCAN',
       desc: 'Safety officer photographs the strip beside its reference scale.',
-      icon: Camera
+      icon: Camera,
+      color: 'text-[#292925] bg-[#EDE5D6]'
     },
     {
       num: '04',
       title: 'QUANTIFY',
-      desc: 'SARVAS extracts CIE L*a*b*, calculates ΔE, applies environmental compensation, and records dosage.',
-      icon: BarChart3
+      desc: '118 extracts CIE L*a*b*, calculates ΔE, applies environmental compensation, and records dosage.',
+      icon: BarChart3,
+      color: 'text-[#4F5D4B] bg-[#E5EADF]'
     }
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="command-card text-[var(--text-primary)] rounded-2xl max-w-2xl w-full p-6 md:p-8 shadow-2xl border border-[var(--card-border)] relative overflow-hidden max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="bg-[#F6F1E7] text-[#292925] rounded-xl max-w-2xl w-full p-6 md:p-8 shadow-xl border border-[#D8D0C2] relative overflow-hidden max-h-[90vh] overflow-y-auto">
         
         {/* Close Button */}
         <button
           onClick={closeExplanation}
-          className="absolute top-4 right-4 p-2 rounded-full border border-[var(--card-border)] text-[var(--text-secondary)] hover:bg-[var(--card-surface-subtle)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+          className="absolute top-4 right-4 p-2 rounded text-[#5D5B53] hover:bg-[#EDE5D6] hover:text-[#292925] transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Modal Header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#DFFF00] to-[#FF9500] p-0.5 shadow-md flex items-center justify-center">
-            <div className="w-full h-full bg-[#080A0C] rounded-[10px] flex items-center justify-center text-[#DFFF00]">
-              <HelpCircle className="w-5 h-5" />
-            </div>
+          <div className="w-9 h-9 rounded bg-[#292925] text-[#EDE5D6] flex items-center justify-center">
+            <HelpCircle className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold font-heading tracking-tight text-[var(--text-primary)]">How does 118 work?</h2>
-              <span className="px-2 py-0.5 rounded-full bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/40 text-[var(--accent-primary)] text-[10px] font-mono font-bold">
+              <h2 className="text-xl font-bold tracking-tight text-[#292925]">How does 118 work?</h2>
+              <span className="px-2 py-0.5 rounded bg-[#F3EDE2] text-[#826235] text-[10px] font-mono font-bold">
                 Prototype / Simulated Data
               </span>
             </div>
-            <p className="text-xs text-[var(--text-secondary)] font-mono">4-step occupational safety dosimetry workflow</p>
+            <p className="text-xs text-[#5D5B53]">4-step occupational safety dosimetry workflow</p>
           </div>
         </div>
 
@@ -69,16 +71,16 @@ export const ExplanationModal: React.FC = () => {
           {steps.map(step => {
             const Icon = step.icon;
             return (
-              <div key={step.num} className="command-card p-4 rounded-xl border border-[var(--card-border)] flex items-start gap-3 bg-[var(--card-surface-subtle)]">
-                <div className="p-2 rounded-lg font-mono font-bold text-xs shrink-0 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] border border-[var(--accent-primary)]/30">
+              <div key={step.num} className="bg-[#EDE5D6] p-4 rounded-lg border border-[#D8D0C2] flex items-start gap-3">
+                <div className={`p-2 rounded font-mono font-bold text-xs shrink-0 ${step.color}`}>
                   <Icon className="w-4 h-4" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-[var(--accent-secondary)] font-bold">{step.num}</span>
-                    <span className="text-xs font-bold tracking-wider uppercase text-[var(--text-primary)] font-mono">{step.title}</span>
+                    <span className="text-[10px] font-mono text-[#878377] font-bold">{step.num}</span>
+                    <span className="text-xs font-bold tracking-wider uppercase text-[#292925] font-mono">{step.title}</span>
                   </div>
-                  <p className="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">{step.desc}</p>
+                  <p className="text-xs text-[#5D5B53] mt-1 leading-relaxed">{step.desc}</p>
                 </div>
               </div>
             );
@@ -86,26 +88,26 @@ export const ExplanationModal: React.FC = () => {
         </div>
 
         {/* Why Not Normal Gas Detector */}
-        <div className="command-card p-4 rounded-xl border border-[var(--card-border)] mb-4 bg-[var(--card-surface-subtle)]">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] mb-1.5 flex items-center gap-2 font-mono">
-            <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)] animate-pulse" />
+        <div className="bg-[#EDE5D6] p-4 rounded-lg border border-[#D8D0C2] mb-4">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[#292925] mb-1.5 flex items-center gap-2 font-mono">
+            <span className="w-2 h-2 rounded-full bg-[#4F5D4B]" />
             Why not a normal gas detector?
           </h4>
-          <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+          <p className="text-xs text-[#5D5B53] leading-relaxed">
             Electronic detectors are excellent for detecting immediate peaks. 118 is designed to visualize 
-            <strong className="text-[var(--text-primary)] font-semibold"> cumulative exposure over time</strong> across shift operations, helping identify low-level chronic risks that real-time alarms miss.
+            <strong className="text-[#292925] font-semibold"> cumulative exposure over time</strong> across shift operations, helping identify low-level chronic risks that real-time alarms miss.
           </p>
         </div>
 
-        {/* 260-Row Cu-PAN Prototype Calibration Dataset Note */}
-        <div className="command-card p-4 rounded-xl border border-[var(--accent-primary)]/40 mb-4 text-[var(--text-primary)] flex items-start justify-between gap-4 bg-[var(--accent-primary)]/5">
+        {/* 120-Row Simulated Calibration Dataset Note */}
+        <div className="bg-[#E5EADF] p-4 rounded-lg border border-[#C5CEC0] mb-4 text-[#4F5D4B] flex items-start justify-between gap-4">
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5 font-mono text-[var(--accent-primary)]">
+            <h4 className="text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5 font-mono">
               <Database className="w-3.5 h-3.5" />
-              Cu-PAN Prototype Calibration Dataset (260 Records)
+              Simulated Calibration Dataset (120 Samples)
             </h4>
-            <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
-              SARVAS is calibrated against a 260-record Cu-PAN displacement dataset mapping target doses (0–44 ppm·h), gas concentrations, CIE L*a*b* coordinates, and reference ΔEab* values across Stages 1–5 with temperature and humidity compensation factors.
+            <p className="text-xs leading-relaxed text-[#374234]">
+              118 is wired to a 120-row synthetic dataset mapping target doses (0–160 ppm·h), gas concentrations, CIE L*a*b* coordinates, and reference target ΔEab* values with temperature and humidity compensation factors.
             </p>
           </div>
           <button
@@ -113,28 +115,28 @@ export const ExplanationModal: React.FC = () => {
               closeExplanation();
               setActivePage('calibration');
             }}
-            className="px-3 py-1.5 rounded-full bg-[var(--accent-primary)] text-black text-[10px] font-mono font-bold shrink-0 hover:bg-[#D97706] cursor-pointer shadow-xs"
+            className="px-3 py-1.5 rounded bg-[#4F5D4B] text-[#F6F1E7] text-[10px] font-bold shrink-0 hover:bg-[#3D493A]"
           >
             View Dataset
           </button>
         </div>
 
         {/* Important Disclaimer Notice */}
-        <div className="command-card p-4 rounded-xl border border-[#FF9500]/40 mb-6 text-[#FF9500] bg-[#FF9500]/5">
+        <div className="bg-[#F3EDE2] p-4 rounded-lg border border-[#E0D4C0] mb-6 text-[#826235]">
           <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider mb-1 font-mono">
-            <AlertTriangle className="w-4 h-4 text-[#FF9500]" />
+            <AlertTriangle className="w-4 h-4 text-[#B08A55]" />
             Important Notice
           </div>
-          <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
+          <p className="text-xs leading-relaxed text-[#664D28]">
             Readings shown by this prototype are <strong>simulated estimates</strong> derived from the prototype calibration dataset. <strong>Requires laboratory validation before deployment</strong> in a controlled environmental chamber with chemical sensor calibration.
           </p>
         </div>
 
         {/* Action Button */}
-        <div className="flex justify-end pt-3 border-t border-[var(--card-border)]">
+        <div className="flex justify-end pt-2 border-t border-[#D8D0C2]">
           <button
             onClick={closeExplanation}
-            className="px-6 py-2 rounded-full bg-gradient-to-r from-[#FF9500] to-[#F59E0B] text-black text-xs font-mono font-bold tracking-wide hover:shadow-[0_0_15px_rgba(255,149,0,0.5)] transition-all cursor-pointer"
+            className="px-5 py-2 rounded-lg bg-[#4F5D4B] text-[#F6F1E7] text-xs font-semibold tracking-wide hover:bg-[#3D493A] transition-colors"
           >
             Got it
           </button>
