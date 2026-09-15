@@ -275,19 +275,12 @@ def health_check():
 
 
 @app.post("/api/analyze-wristband")
-async def analyze_wristband_endpoint(
-    request: Request,
-    file: Optional[UploadFile] = File(None),
-    image: Optional[UploadFile] = File(None),
-    temperature: Optional[float] = Form(25.0),
-    humidity: Optional[float] = Form(50.0),
-    shelf_age_days: Optional[float] = Form(15.0)
-):
+async def analyze_wristband_endpoint(request: Request):
     """
     POST /api/analyze-wristband
     Accepts:
+      - application/json with 'image_base64' + optional parameters (temperature, humidity, shelf_age_days)
       - multipart/form-data with 'file' or 'image' field + optional parameters
-      - application/json with 'image_base64' + optional parameters
     """
     content_type = request.headers.get("content-type", "")
 
@@ -318,21 +311,33 @@ async def analyze_wristband_endpoint(
         return process_wristband_analysis(img_bgr, temperature=t, humidity=h, shelf_age_days=age)
 
     # Handle multipart/form-data upload
-    uploaded = file or image
-    if not uploaded:
+    try:
+        form = await request.form()
+        uploaded = form.get("file") or form.get("image")
+        if not uploaded:
+            raise HTTPException(
+                status_code=400,
+                detail="Missing image upload. Please provide 'file' or 'image' in form data, or 'image_base64' in JSON."
+            )
+
+        if hasattr(uploaded, "read"):
+            file_bytes = await uploaded.read()
+        else:
+            file_bytes = bytes(uploaded)
+
+        img_bgr = decode_image(file_bytes)
+        t = float(form.get("temperature", 25.0))
+        h = float(form.get("humidity", 50.0))
+        age = float(form.get("shelf_age_days", 15.0))
+        return process_wristband_analysis(img_bgr, temperature=t, humidity=h, shelf_age_days=age)
+    except HTTPException:
+        raise
+    except Exception as e:
+        # Fallback if form parsing fails or python-multipart is not present
         raise HTTPException(
             status_code=400,
-            detail="Missing image upload. Please provide 'file' or 'image' field in form data, or 'image_base64' in JSON."
+            detail=f"Form processing error: {str(e)}. Tip: You can also post JSON with 'image_base64'."
         )
-
-    file_bytes = await uploaded.read()
-    img_bgr = decode_image(file_bytes)
-    return process_wristband_analysis(
-        img_bgr,
-        temperature=temperature or 25.0,
-        humidity=humidity or 50.0,
-        shelf_age_days=shelf_age_days or 15.0
-    )
 
 
 if __name__ == "__main__":

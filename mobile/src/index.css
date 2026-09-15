@@ -31,7 +31,18 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     touch-action: manipulation;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+}
+
+/* Mobile Safe Area Insets for Android Status Bar / Notch */
+.safe-top {
+  padding-top: max(env(safe-area-inset-top, 0px), 28px) !important;
+}
+
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px) !important;
 }
 
 /* 10x Brighter Luminous Palette Overrides */

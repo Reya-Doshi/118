@@ -52,7 +52,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
   const workerId = resolvedWorker?.workerId || 'EMP-9021';
   const workerName = resolvedWorker?.name || 'Worker';
 
-  const isExpired = Boolean(apiResult.shelf_age_days > 90 || (apiResult.status === 'REVIEW' && apiResult.action_guideline?.includes('expired')));
+  const isExpired = Boolean(apiResult.shelf_age_days > 60 || (apiResult.status === 'REVIEW' && apiResult.action_guideline?.includes('expired')));
 
   const handleSave = () => {
     const saved = repository.saveReading({
@@ -77,7 +77,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
       lab: apiResult.lab,
       deltaE: apiResult.delta_e,
       visionEngine: apiResult.vision_engine,
-      expiryWarning: isExpired ? 'Band exceeded 90-day chemical shelf-life limit.' : undefined,
+      expiryWarning: isExpired ? 'Band exceeded 60-day chemical shelf-life limit.' : undefined,
       actionRecommendation: apiResult.action_guideline
     });
 
@@ -117,9 +117,12 @@ export const ResultModal: React.FC<ResultModalProps> = ({
   const timestampDisplay = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#F6F1E7] overflow-y-auto flex flex-col justify-between p-4 max-w-md mx-auto text-[#292925]">
+    <div 
+      className="fixed inset-0 z-50 bg-[#F6F1E7] overflow-y-auto flex flex-col justify-between p-4 max-w-md mx-auto text-[#292925]"
+      style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 28px)' }}
+    >
       {/* Header */}
-      <div className="pt-2 pb-2 border-b border-[#D8D0C2]">
+      <div className="pt-1 pb-2 border-b border-[#D8D0C2]">
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#71806B] font-bold">
             {isWorkerRole ? 'Personal Dosimeter Result' : 'Field Audit Inspection Result'}

@@ -32,6 +32,9 @@ const MainAppContent: React.FC = () => {
   const [alerts, setAlerts] = useState<Alert[]>(repository.getAlerts());
   const [wristbands, setWristbands] = useState<Wristband[]>(repository.getWristbands());
 
+  // Worker language preference (Hindi default for field operators)
+  const [workerLanguage, setWorkerLanguage] = useState<'hi' | 'en'>('hi');
+
   // Camera & Analysis Modal States
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -218,6 +221,8 @@ const MainAppContent: React.FC = () => {
           <WorkerDashboard
             worker={activeWorker}
             recentReadings={workerReadings}
+            workerLanguage={workerLanguage}
+            onToggleLanguage={(lang) => setWorkerLanguage(lang)}
             onOpenScan={() => setIsCameraOpen(true)}
             onViewHistory={() => setActiveTab('HISTORY')}
             onViewProfile={() => setActiveTab('PROFILE')}
@@ -242,12 +247,12 @@ const MainAppContent: React.FC = () => {
         return (
           <AdminDashboard
             workers={workers}
-            wristbands={wristbands}
             readings={readings}
             alerts={alerts}
+            wristbands={wristbands}
             onViewWorkers={() => setActiveTab('WORKERS')}
-            onViewBands={() => setActiveTab('BANDS')}
             onViewAlerts={() => setActiveTab('ALERTS')}
+            onViewBands={() => setActiveTab('BANDS')}
           />
         );
 
@@ -257,7 +262,10 @@ const MainAppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F1E7] text-[#292925] flex flex-col max-w-md mx-auto relative px-4 pt-2 pb-8">
+    <div 
+      className="min-h-screen bg-[#F6F1E7] text-[#292925] flex flex-col max-w-md mx-auto relative px-4 pb-8"
+      style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 28px)' }}
+    >
       {/* Top Branding Bar with 2nd Image Logo & PS-118 */}
       <header className="flex items-center justify-between py-2 px-1 mb-2 border-b border-[#D8D0C2]/80">
         <div className="flex items-center gap-2.5">

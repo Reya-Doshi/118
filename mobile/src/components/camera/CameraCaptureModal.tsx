@@ -135,9 +135,12 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/90 flex flex-col justify-between p-4 max-w-md mx-auto text-[#F6F1E7] overflow-y-auto">
+    <div 
+      className="fixed inset-0 z-50 bg-black/90 flex flex-col justify-between p-4 max-w-md mx-auto text-[#F6F1E7] overflow-y-auto"
+      style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 28px)' }}
+    >
       {/* Top Header */}
-      <div className="pt-2 pb-3 border-b border-white/15">
+      <div className="pt-1 pb-3 border-b border-white/15">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-1.5">
