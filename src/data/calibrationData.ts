@@ -239,7 +239,7 @@ export interface EnvironmentalCompensationResult {
 export function computeEnvironmentalCompensation(sample: CalibrationSample): EnvironmentalCompensationResult {
   const tempCompensationFactor = 1 + (sample.tempC - 25) * 0.008;
   const humidityCompensationFactor = 1 + (sample.rh - 50) * 0.003;
-  const shelfLifeDegradationFactor = sample.shelfAge > 90 ? Math.min(1.25, 1 + (sample.shelfAge - 90) * 0.005) : 1.0;
+  const shelfLifeDegradationFactor = sample.shelfAge > 60 ? Math.min(1.25, 1 + (sample.shelfAge - 60) * 0.005) : 1.0;
 
   const totalFactor = tempCompensationFactor * humidityCompensationFactor * shelfLifeDegradationFactor;
   const compensatedDeltaE = Number((sample.deltaE / Math.max(0.7, totalFactor)).toFixed(2));
@@ -248,7 +248,7 @@ export function computeEnvironmentalCompensation(sample: CalibrationSample): Env
   let confidence = 96;
   if (sample.tempC > 38 || sample.tempC < 18) confidence -= 5;
   if (sample.rh > 80 || sample.rh < 35) confidence -= 4;
-  if (sample.shelfAge > 85) confidence -= 7;
+  if (sample.shelfAge > 55) confidence -= 7;
   if (sample.expiryStatus === 'EXPIRED') confidence -= 18;
 
   return {

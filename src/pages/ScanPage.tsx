@@ -19,7 +19,8 @@ import {
 } from 'lucide-react';
 
 export const ScanPage: React.FC = () => {
-  const { selectedSample, setLatestReading, setActivePage, workers, currentUser, selectedWorker } = useApp();
+  const { selectedSample, setLatestReading, setActivePage, workers, currentUser, selectedWorker, workerLanguage } = useApp();
+  const isHindiWorker = currentUser?.role === 'WORKER' && workerLanguage === 'hi';
   
   const [activeSampleId, setActiveSampleId] = useState<string>(selectedSample.id || 'DS-006');
   const activeCalibration = CALIBRATION_DATASET.find(s => s.sampleId === activeSampleId) || CALIBRATION_DATASET[5];
@@ -304,7 +305,10 @@ export const ScanPage: React.FC = () => {
             let status: ExposureStatus = 'NORMAL';
             let actionFlag = 'Clean / Safe (< 0.5 ppm·h)';
 
-            if (calculatedDose >= 5.0) {
+            if (activeCalibration.shelfAge > 60) {
+              status = 'REVIEW';
+              actionFlag = 'EXPIRED / REJECT (Shelf age > 60 days)';
+            } else if (calculatedDose >= 5.0) {
               status = 'REVIEW';
               actionFlag = 'Critical (Severe Overexposure)';
             } else if (calculatedDose >= 1.5) {
@@ -624,11 +628,15 @@ export const ScanPage: React.FC = () => {
       <div className="text-center space-y-2">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#B08A55]/15 border border-[#B08A55]/35 text-[#292925] text-xs font-mono font-semibold">
           <Sparkles className="w-3.5 h-3.5 text-[#B08A55]" />
-          <span>Simulated Calibration Data · AI-Assisted Estimate</span>
+          <span>{isHindiWorker ? 'एआई-सहायता प्राप्त वास्तविक रिस्टबैंड स्कैन' : 'Simulated Calibration Data · AI-Assisted Estimate'}</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#292925]">Read Wristband</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#292925]">
+          {isHindiWorker ? 'रिस्टबैंड स्कैन करें' : 'Read Wristband'}
+        </h1>
         <p className="text-xs text-[#292925]/70 max-w-xl mx-auto">
-          Capture or upload an optical reading of the 118 dosimeter wristband. Extract CIE L*a*b* values, compute ΔE, and quantify cumulative H₂S exposure.
+          {isHindiWorker 
+            ? 'कैमरे से 118 रिस्टबैंड की फोटो लें ताकि वास्तविक रंग निकाला जा सके और गैस का सटीक स्तर पता चले।'
+            : 'Capture or upload an optical reading of the 118 dosimeter wristband. Extract CIE L*a*b* values, compute ΔE, and quantify cumulative H₂S exposure.'}
         </p>
       </div>
 
@@ -644,7 +652,7 @@ export const ScanPage: React.FC = () => {
             }`}
           >
             <Camera className="w-4 h-4" />
-            <span>Live Camera & Photo Scan</span>
+            <span>{isHindiWorker ? 'कैमरा व फोटो स्कैन' : 'Live Camera & Photo Scan'}</span>
           </button>
           <button
             onClick={() => { setActiveTab('presets'); stopCamera(); }}
@@ -655,7 +663,7 @@ export const ScanPage: React.FC = () => {
             }`}
           >
             <Sliders className="w-4 h-4" />
-            <span>Preset Standards (120 Samples)</span>
+            <span>{isHindiWorker ? 'कैलिब्रेशन मानक (120 सैंपल)' : 'Preset Standards (120 Samples)'}</span>
           </button>
         </div>
       </div>

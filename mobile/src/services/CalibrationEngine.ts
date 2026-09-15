@@ -28,13 +28,13 @@ const B0_STAR = -22.0;
 export class CalibrationEngine {
   /**
    * Evaluates shelf life and expiry logic.
-   * Discard threshold: Shelf age > 90 days.
+   * Discard threshold: Shelf age > 60 days.
    */
   public static evaluateExpiry(shelfAgeDays: number): { isExpired: boolean; warning?: string } {
-    if (shelfAgeDays > 90) {
+    if (shelfAgeDays > 60) {
       return {
         isExpired: true,
-        warning: 'BADGE EXPIRED: Reading rejected because the sensing chemistry may have degraded (Shelf age > 90 days).'
+        warning: 'BADGE EXPIRED: Reading rejected because the sensing chemistry may have degraded (Shelf age > 60 days).'
       };
     }
     return { isExpired: false };
@@ -96,7 +96,7 @@ export class CalibrationEngine {
     // Relative humidity swelling factor
     const rhFactor = 1.0 + 0.004 * (rh - 50.0);
     // Shelf degradation penalty
-    const ageFactor = 1.0 + 0.0015 * Math.min(90, shelfAge);
+    const ageFactor = 1.0 + 0.0015 * Math.min(60, shelfAge);
 
     dose = dose / (tempFactor * rhFactor * ageFactor);
     return Math.max(0.0, Math.round(dose * 100) / 100);
@@ -108,7 +108,7 @@ export class CalibrationEngine {
   public static getPrecautions(status: ExposureStatus, dose: number, isExpired: boolean): string[] {
     if (isExpired) {
       return [
-        "QUARANTINE BADGE: Exceeded 90-day matrix stability ceiling.",
+        "QUARANTINE BADGE: Exceeded 60-day matrix stability ceiling.",
         "Immediately decommission and log serial in Admin Registry.",
         "Issue fresh batch-certified Cu-PAN dosimeter before next shift entry."
       ];

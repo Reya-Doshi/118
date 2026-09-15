@@ -445,7 +445,7 @@ export const DashboardPage: React.FC = () => {
                 </li>
                 <li className="flex items-start gap-1.5">
                   <span className="text-[#9A6258] font-bold">•</span>
-                  <span><strong>Batch Recall:</strong> Quarantine & recall dosimeters exceeding 90-day matrix stability.</span>
+                  <span><strong>Batch Recall:</strong> Quarantine & recall dosimeters exceeding 60-day matrix stability.</span>
                 </li>
                 <li className="flex items-start gap-1.5">
                   <span className="text-[#9A6258] font-bold">•</span>

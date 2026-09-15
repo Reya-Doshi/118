@@ -41,7 +41,7 @@ B0_STAR = -22.0
 
 DOSE_NORMAL_MAX = 0.50
 DOSE_MONITOR_MAX = 1.00
-SHELF_LIFE_MAX_DAYS = 90.0
+SHELF_LIFE_MAX_DAYS = 60.0
 
 # Pre-load calibrated Random Forest model on server start
 print(f"Loading Cu-PAN Random Forest model from: {MODEL_PATH}...")
@@ -157,7 +157,7 @@ def process_wristband_analysis(
 
         if is_expired:
             status = "EXPIRED / REJECT"
-            action_note = "Dosimeter exceeds 90-day chemical shelf-life. Strip invalidated; reissue wristband."
+            action_note = "Dosimeter exceeds 60-day chemical shelf-life. Strip invalidated; reissue wristband."
         elif estimated_dose < DOSE_NORMAL_MAX:
             status = "NORMAL"
             action_note = f"Safe working baseline (<{DOSE_NORMAL_MAX:.2f} ppm·h). Continue routine shift protocol."

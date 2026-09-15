@@ -28,6 +28,8 @@ interface AppContextType {
   showToast: (msg: string) => void;
   resetDemoData: () => void;
   logout: () => void;
+  workerLanguage: 'en' | 'hi';
+  setWorkerLanguage: (lang: 'en' | 'hi') => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -92,6 +94,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [latestReading, setLatestReading] = useState<ExposureReading | null>(readings[0] || null);
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [workerLanguage, setWorkerLanguageState] = useState<'en' | 'hi'>('hi');
+
+  const setWorkerLanguage = (lang: 'en' | 'hi') => {
+    setWorkerLanguageState(lang);
+    try {
+      localStorage.setItem('118_worker_lang', lang);
+    } catch {}
+  };
 
   // Sync to local storage
   useEffect(() => {
@@ -234,7 +244,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         toastMessage,
         showToast,
         resetDemoData,
-        logout
+        logout,
+        workerLanguage,
+        setWorkerLanguage
       }}
     >
       {children}
