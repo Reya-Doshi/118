@@ -7,7 +7,7 @@
 [![SIH](https://img.shields.io/badge/Smart_India_Hackathon-2026-orange?style=for-the-badge)](https://sih.gov.in/)
 
 > **Project Identity:** RageB8 (SIH Problem Statement 118)  
-> **Engineering Team:** RAGEBYTERS  
+> **Engineering Team:** RageB8  
 > **Platform / Competition:** Smart India Hackathon (SIH) 2026  
 > **Industry Demonstration:** Petroleum Refining & Petrochemical Plants (Mangalore Refinery and Petrochemicals Limited – MRPL)  
 > **Core Motto:** *"Because not all danger announces itself."*
