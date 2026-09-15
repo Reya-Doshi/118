@@ -84,27 +84,22 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
   return (
     <div className="space-y-4 pb-24">
       
-      {/* 1. TOP GREETING & LANGUAGE SWITCHER */}
-      <div className="bg-white rounded-2xl p-4 border border-[#E5DFD7] shadow-xs flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <img 
-            src="/sarvas_logo_v2.png" 
-            alt="SARVAS by RageB8 Logo" 
-            className="w-12 h-12 rounded-2xl object-contain bg-[#FAF8F5] p-1 border border-[#E5DFD7] shadow-2xs shrink-0"
-          />
-          <div>
-            <div className="flex items-center gap-1.5 mb-0.5">
+      {/* 1. TOP GREETING & SPACIOUS LANGUAGE SWITCHER */}
+      <div className="bg-white rounded-2xl p-4 border border-[#E5DFD7] shadow-xs">
+        <div className="flex items-center justify-between gap-3">
+          <div className="space-y-0.5 min-w-0">
+            <div className="flex items-center gap-1.5">
               <span className="text-[10px] font-mono bg-[#2F6B38]/15 text-[#2F6B38] px-2 py-0.5 rounded font-bold uppercase">
-                {isHindi ? 'कर्मचारी सुरक्षा साथी' : 'Worker Portal'}
+                {isHindi ? 'कर्मचारी सुरक्षा' : 'Worker Portal'}
               </span>
               <span className="text-[10px] font-mono text-gray-500">
-                {isHindi ? 'एमआरपीएल' : 'MRPL'}
+                {worker.assignedBandId}
               </span>
             </div>
-            <h1 className="text-xl font-serif font-bold text-[#111827] tracking-tight">
+            <h1 className="text-xl font-serif font-bold text-gray-950 tracking-tight truncate">
               {isHindi ? `नमस्ते, ${worker.name}` : `Hello, ${worker.name}`}
             </h1>
-            <p className="text-xs text-gray-600 mt-0.5">
+            <p className="text-xs text-gray-600 truncate">
               <span className="font-semibold text-gray-900">
                 {isHindi ? 'संयंत्र संचालक' : worker.designation}
               </span>
@@ -112,32 +107,30 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
               <span>{isHindi ? 'इकाई २ (डेक बी)' : worker.department}</span>
             </p>
           </div>
-        </div>
 
-        {/* Language Switcher Button */}
-        <div className="inline-flex p-0.5 bg-gray-100 rounded-xl border border-gray-200 shadow-2xs items-center">
-          <button
-            onClick={() => handleLangChange('hi')}
-            className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              isHindi
-                ? 'bg-emerald-800 text-white shadow-xs'
-                : 'text-gray-600 hover:text-black'
-            }`}
-            title="संपूर्ण हिंदी"
-          >
-            हिंदी
-          </button>
-          <button
-            onClick={() => handleLangChange('en')}
-            className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              !isHindi
-                ? 'bg-emerald-800 text-white shadow-xs'
-                : 'text-gray-600 hover:text-black'
-            }`}
-            title="English"
-          >
-            EN
-          </button>
+          {/* Clean, Roomy Language Switcher Pill */}
+          <div className="inline-flex p-1 bg-[#FAF8F5] rounded-xl border border-gray-200 shadow-2xs shrink-0">
+            <button
+              onClick={() => handleLangChange('hi')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                isHindi
+                  ? 'bg-emerald-800 text-white shadow-xs'
+                  : 'text-gray-600 hover:text-black'
+              }`}
+            >
+              हिंदी
+            </button>
+            <button
+              onClick={() => handleLangChange('en')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                !isHindi
+                  ? 'bg-emerald-800 text-white shadow-xs'
+                  : 'text-gray-600 hover:text-black'
+              }`}
+            >
+              English
+            </button>
+          </div>
         </div>
       </div>
 
@@ -154,16 +147,16 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
         <div className="flex items-center justify-between pb-2 border-b border-black/5">
           <div className="space-y-0.5">
             <span className="text-[11px] font-mono uppercase tracking-wider text-gray-600 font-bold block">
-              {isHindi ? 'वर्तमान शिफ्ट में गैस का स्तर' : 'Shift H₂S Cumulative Dose'}
+              {isHindi ? 'वर्तमान पाली में गैस स्तर (H₂S)' : 'Shift Cumulative Dose (H₂S)'}
             </span>
             <span className="text-[10px] text-gray-500 font-mono block">
-              {isHindi ? `रिस्टबैंड कोड: ${worker.assignedBandId} (६० दिन वैध)` : `Band: ${worker.assignedBandId} (60d Valid)`}
+              {isHindi ? '६० दिन वैध रासायनिक पट्टी' : '60-day chemical validity'}
             </span>
           </div>
           {getStatusBadge(worker.status)}
         </div>
 
-        {/* Big Number Output */}
+        {/* Big Number Output Display */}
         <div className="flex items-baseline justify-between pt-1">
           <div className="flex items-baseline gap-2.5">
             <span className="text-4xl sm:text-5xl font-mono font-bold text-gray-950 tracking-tight">
@@ -171,10 +164,10 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
             </span>
             <div>
               <span className="text-sm font-serif font-bold text-gray-900 block">
-                {isHindi ? 'ppm·h (पीपीएम·घंटा)' : 'ppm·h'}
+                ppm·h
               </span>
               <span className="text-[10px] text-gray-600 font-mono block">
-                {isHindi ? 'अधिकतम सुरक्षित सीमा: १.००' : 'Limit: 1.00 ppm·h'}
+                {isHindi ? 'सुरक्षित सीमा: १.००' : 'Limit: 1.00 ppm·h'}
               </span>
             </div>
           </div>
@@ -182,7 +175,7 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
           <div className="text-right">
             <span className="text-2xl font-mono font-bold text-gray-900">{dosePercent}%</span>
             <span className="text-[9px] text-gray-500 block font-mono uppercase font-semibold">
-              {isHindi ? 'सीमा का उपयोग' : 'OF SHIFT LIMIT'}
+              {isHindi ? 'सीमा उपयोग' : 'LIMIT'}
             </span>
           </div>
         </div>
@@ -241,8 +234,8 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
         </div>
       </div>
 
-      {/* 3. PRIMARY ACTION: SCAN WRISTBAND BUTTON (Unmissable, Clear) */}
-      <div>
+      {/* 3. PRIMARY ACTION: SCAN WRISTBAND BUTTON (Punchy, Clean, Non-Congested) */}
+      <div className="space-y-1.5">
         <button
           onClick={onOpenScan}
           className="w-full py-4 px-4 bg-gray-950 hover:bg-black text-white rounded-2xl font-serif text-base font-bold flex items-center justify-center gap-3 shadow-lg active:scale-[0.98] transition-all border border-gray-800 cursor-pointer"
@@ -251,11 +244,11 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
             <Camera className="w-4 h-4" />
           </div>
           <span className="tracking-wide">
-            {isHindi ? `कलाई का पट्टा अभी स्कैन करें (${worker.assignedBandId})` : `SCAN MY WRISTBAND (${worker.assignedBandId})`}
+            {isHindi ? 'कलाई का पट्टा स्कैन करें' : 'SCAN WRISTBAND'}
           </span>
         </button>
-        <p className="text-center text-[11px] text-gray-500 font-mono mt-1.5 font-medium">
-          {isHindi ? 'रासायनिक रंग विश्लेषण · स्वचालित प्रकाश सुधार' : 'Automatic Colorimetry & Illumination Calibration'}
+        <p className="text-center text-[11px] text-gray-500 font-mono font-medium">
+          {isHindi ? `रिस्टबैंड कोड: ${worker.assignedBandId} · स्वचालित प्रकाश सुधार` : `Dosimeter ${worker.assignedBandId} · Optical Correction`}
         </p>
       </div>
 
