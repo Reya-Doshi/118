@@ -5,15 +5,17 @@ import {
   Clock, 
   Tag, 
   ChevronRight, 
+  ChevronDown,
   ShieldCheck, 
   AlertTriangle, 
   MapPin, 
   Activity, 
   HelpCircle, 
-  Flame,
   CheckCircle2,
   Eye,
-  Footprints
+  Footprints,
+  Sparkles,
+  RotateCcw
 } from 'lucide-react';
 
 interface WorkerDashboardProps {
@@ -37,6 +39,8 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
 }) => {
   const [internalLang, setInternalLang] = useState<'hi' | 'en'>(workerLanguage);
   const [showColorScaleGuide, setShowColorScaleGuide] = useState(false);
+  const [showWeeklyTrend, setShowWeeklyTrend] = useState(false);
+  const [showRecentLogs, setShowRecentLogs] = useState(false);
 
   const activeLang = onToggleLanguage ? workerLanguage : internalLang;
   const isHindi = activeLang === 'hi';
@@ -52,20 +56,20 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
     switch (status) {
       case 'NORMAL':
         return (
-          <span className="subtle-badge badge-normal">
-            {isHindi ? 'सुरक्षित (SAFE)' : 'NORMAL'}
+          <span className="subtle-badge badge-normal font-bold">
+            {isHindi ? 'सुरक्षित' : 'NORMAL (SAFE)'}
           </span>
         );
       case 'MONITOR':
         return (
-          <span className="subtle-badge badge-monitor">
-            {isHindi ? 'सावधानी (CAUTION)' : 'MONITOR'}
+          <span className="subtle-badge badge-monitor font-bold">
+            {isHindi ? 'सतर्क रहें' : 'MONITOR (CAUTION)'}
           </span>
         );
       case 'REVIEW':
         return (
-          <span className="subtle-badge badge-review">
-            {isHindi ? 'खतरा (DANGER)' : 'REVIEW'}
+          <span className="subtle-badge badge-review font-bold">
+            {isHindi ? 'खतरा / बाहर निकलें' : 'REVIEW (DANGER)'}
           </span>
         );
       default:
@@ -79,316 +83,274 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
 
   return (
     <div className="space-y-4 pb-24">
-      {/* Top Header Card with Hindi / English Language Switcher */}
-      <div className="flex items-center justify-between pt-1">
+      
+      {/* 1. TOP GREETING & LANGUAGE SWITCHER */}
+      <div className="bg-white rounded-2xl p-4 border border-[#E5DFD7] shadow-xs flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img 
             src="/sarvas_logo_v2.png" 
-            alt="RageB8 Official Logo" 
-            className="w-11 h-11 rounded-2xl object-contain bg-white p-1 border border-gray-200 shadow-xs shrink-0"
+            alt="SARVAS by RageB8 Logo" 
+            className="w-12 h-12 rounded-2xl object-contain bg-[#FAF8F5] p-1 border border-[#E5DFD7] shadow-2xs shrink-0"
           />
           <div>
             <div className="flex items-center gap-1.5 mb-0.5">
-              <span className="text-[10px] font-mono bg-[#4F5D4B]/20 text-[#2F6B38] px-2 py-0.5 rounded font-bold uppercase tracking-wider">
-                {isHindi ? 'कर्मचारी सुरक्षा साथी' : 'Active Worker Session'}
+              <span className="text-[10px] font-mono bg-[#2F6B38]/15 text-[#2F6B38] px-2 py-0.5 rounded font-bold uppercase">
+                {isHindi ? 'कर्मचारी सुरक्षा साथी' : 'Worker Portal'}
               </span>
               <span className="text-[10px] font-mono text-gray-500">
-                {isHindi ? 'रिफाइनरी प्रभाग' : 'MRPL Sector'}
+                {isHindi ? 'एमआरपीएल' : 'MRPL'}
               </span>
             </div>
-            <h1 className="text-xl font-serif font-bold text-gray-950 tracking-tight">
+            <h1 className="text-xl font-serif font-bold text-[#111827] tracking-tight">
               {isHindi ? `नमस्ते, ${worker.name}` : `Hello, ${worker.name}`}
             </h1>
-            <p className="text-xs text-gray-600 flex items-center gap-1.5 mt-0.5">
+            <p className="text-xs text-gray-600 mt-0.5">
               <span className="font-semibold text-gray-900">
-                {isHindi ? 'प्रक्रिया संचालक' : worker.designation}
+                {isHindi ? 'संयंत्र संचालक' : worker.designation}
               </span>
-              <span>·</span>
-              <span>{worker.department}</span>
+              <span> · </span>
+              <span>{isHindi ? 'इकाई २ (डेक बी)' : worker.department}</span>
             </p>
           </div>
         </div>
 
-        {/* Language Switcher & Profile Initials */}
-        <div className="flex items-center gap-2">
-          <div className="inline-flex p-0.5 bg-gray-200/80 rounded-xl border border-gray-300 shadow-2xs items-center">
-            <button
-              onClick={() => handleLangChange('hi')}
-              className={`px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                isHindi
-                  ? 'bg-emerald-800 text-white shadow-xs'
-                  : 'text-gray-700 hover:text-black'
-              }`}
-              title="हिंदी"
-            >
-              🇮🇳 हिं
-            </button>
-            <button
-              onClick={() => handleLangChange('en')}
-              className={`px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                !isHindi
-                  ? 'bg-emerald-800 text-white shadow-xs'
-                  : 'text-gray-700 hover:text-black'
-              }`}
-              title="English"
-            >
-              EN
-            </button>
-          </div>
-
+        {/* Language Switcher Button */}
+        <div className="inline-flex p-0.5 bg-gray-100 rounded-xl border border-gray-200 shadow-2xs items-center">
           <button
-            onClick={onViewProfile}
-            className="w-10 h-10 rounded-2xl bg-gray-950 text-white border border-gray-800 flex items-center justify-center text-xs font-serif font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
-            title="Profile"
+            onClick={() => handleLangChange('hi')}
+            className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              isHindi
+                ? 'bg-emerald-800 text-white shadow-xs'
+                : 'text-gray-600 hover:text-black'
+            }`}
+            title="संपूर्ण हिंदी"
           >
-            {worker.name.slice(0, 2).toUpperCase()}
+            हिंदी
+          </button>
+          <button
+            onClick={() => handleLangChange('en')}
+            className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              !isHindi
+                ? 'bg-emerald-800 text-white shadow-xs'
+                : 'text-gray-600 hover:text-black'
+            }`}
+            title="English"
+          >
+            EN
           </button>
         </div>
       </div>
 
-      {/* Workplace Location & Hazard Zone Banner */}
-      <div className="card-glow p-3.5 space-y-2">
-        <div className="flex items-start gap-2">
-          <MapPin className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-          <div className="text-xs leading-tight">
-            <span className="text-[10px] font-mono uppercase text-gray-500 block font-semibold">
-              {isHindi ? 'तैनात कार्य क्षेत्र' : 'Assigned Work Area'}
-            </span>
-            <span className="font-bold text-gray-900 block mt-0.5">{worker.workLocation}</span>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between pt-1.5 border-t border-gray-100 text-[11px]">
-          <div className="flex items-center gap-1.5 text-gray-600">
-            <Flame className="w-3.5 h-3.5 text-amber-600" />
-            <span className="truncate max-w-[210px] font-medium">{worker.hazardZone}</span>
-          </div>
-          <span className={`font-mono font-bold text-[10px] px-2 py-0.5 rounded-md ${
-            worker.riskLevel === 'HIGH' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-          }`}>
-            {isHindi ? (worker.riskLevel === 'HIGH' ? 'उच्च जोखिम' : 'सामान्य') : `${worker.riskLevel} RISK`}
-          </span>
-        </div>
-      </div>
-
-      {/* Shift Progress & Assigned Band ID Strip (60-DAY SHELF LIFE) */}
-      <div className="grid grid-cols-2 gap-2.5 text-xs">
-        <div className="card-glow p-3 flex items-center gap-2.5">
-          <Clock className="w-4 h-4 text-emerald-700 shrink-0" />
-          <div>
-            <span className="text-[10px] text-gray-500 block font-mono uppercase font-semibold">
-              {isHindi ? 'शिफ्ट समय' : 'Shift Time'}
-            </span>
-            <span className="font-bold text-gray-900">{worker.shift.split('·')[1]?.trim() || worker.shift}</span>
-          </div>
-        </div>
-
-        <div className="card-glow p-3 flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] text-gray-500 block font-mono uppercase font-semibold">
-                {isHindi ? 'रिस्टबैंड' : 'Band ID'}
-              </span>
-              <span className="text-[9px] font-mono text-emerald-700 font-bold bg-emerald-50 px-1 rounded">
-                {isHindi ? '६० दिन वैध' : '60d Valid'}
-              </span>
-            </div>
-            <span className="font-mono font-bold text-gray-900">{worker.assignedBandId}</span>
-          </div>
-          <Tag className="w-4 h-4 text-emerald-700" />
-        </div>
-      </div>
-
-      {/* Current Shift Cumulative Exposure Card */}
-      <div className={`rounded-2xl p-5 relative overflow-hidden ${
+      {/* 2. MAIN EXPOSURE & SAFETY STATUS CARD (Spacious & Clean) */}
+      <div className={`rounded-2xl p-5 border shadow-sm space-y-4 ${
         worker.status === 'REVIEW'
-          ? 'card-glow-review'
+          ? 'bg-red-50/70 border-red-200'
           : worker.status === 'MONITOR'
-          ? 'card-glow-monitor'
-          : 'card-glow-safe'
+          ? 'bg-amber-50/70 border-amber-200'
+          : 'bg-emerald-50/60 border-emerald-200'
       }`}>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[11px] font-mono uppercase tracking-wider text-gray-600 font-bold">
-            {isHindi ? 'शिफ्ट में गैस स्तर (H₂S कुल संचयी)' : 'Shift Cumulative Exposure (ppm·h)'}
-          </span>
+        
+        {/* Status Header */}
+        <div className="flex items-center justify-between pb-2 border-b border-black/5">
+          <div className="space-y-0.5">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-gray-600 font-bold block">
+              {isHindi ? 'वर्तमान शिफ्ट में गैस का स्तर' : 'Shift H₂S Cumulative Dose'}
+            </span>
+            <span className="text-[10px] text-gray-500 font-mono block">
+              {isHindi ? `रिस्टबैंड कोड: ${worker.assignedBandId} (६० दिन वैध)` : `Band: ${worker.assignedBandId} (60d Valid)`}
+            </span>
+          </div>
           {getStatusBadge(worker.status)}
         </div>
 
-        <div className="flex items-baseline gap-2 mb-3">
-          <span className="text-4xl font-mono font-bold text-gray-900 tracking-tight">
-            {worker.currentDose.toFixed(2)}
-          </span>
-          <span className="text-sm font-serif text-gray-600 font-medium">
-            ppm·h
-          </span>
-          <span className="text-[11px] text-gray-500 ml-auto font-mono">
-            {isHindi ? 'सुरक्षित सीमा: 1.00 ppm·h' : 'Limit: 1.00 ppm·h'}
-          </span>
+        {/* Big Number Output */}
+        <div className="flex items-baseline justify-between pt-1">
+          <div className="flex items-baseline gap-2.5">
+            <span className="text-4xl sm:text-5xl font-mono font-bold text-gray-950 tracking-tight">
+              {worker.currentDose.toFixed(2)}
+            </span>
+            <div>
+              <span className="text-sm font-serif font-bold text-gray-900 block">
+                {isHindi ? 'ppm·h (पीपीएम·घंटा)' : 'ppm·h'}
+              </span>
+              <span className="text-[10px] text-gray-600 font-mono block">
+                {isHindi ? 'अधिकतम सुरक्षित सीमा: १.००' : 'Limit: 1.00 ppm·h'}
+              </span>
+            </div>
+          </div>
+
+          <div className="text-right">
+            <span className="text-2xl font-mono font-bold text-gray-900">{dosePercent}%</span>
+            <span className="text-[9px] text-gray-500 block font-mono uppercase font-semibold">
+              {isHindi ? 'सीमा का उपयोग' : 'OF SHIFT LIMIT'}
+            </span>
+          </div>
         </div>
 
-        {/* Progress Bar towards Shift Target Limit */}
-        <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden mb-2 border border-gray-200/60">
-          <div
-            className={`h-full rounded-full transition-all duration-500 ${
-              worker.status === 'REVIEW'
-                ? 'bg-red-600'
-                : worker.status === 'MONITOR'
-                ? 'bg-amber-600'
-                : 'bg-emerald-600'
-            }`}
-            style={{ width: `${dosePercent}%` }}
-          />
+        {/* Progress Bar */}
+        <div className="space-y-1 pt-1">
+          <div className="w-full bg-white/80 h-3 rounded-full overflow-hidden p-0.5 border border-black/10">
+            <div
+              className={`h-full rounded-full transition-all duration-700 ${
+                worker.status === 'REVIEW'
+                  ? 'bg-red-600'
+                  : worker.status === 'MONITOR'
+                  ? 'bg-amber-600'
+                  : 'bg-emerald-600'
+              }`}
+              style={{ width: `${dosePercent}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between text-[10px] text-gray-600 font-mono font-medium">
+            <span>{isHindi ? '०.०० सुरक्षित' : '0.00 Safe'}</span>
+            <span>{isHindi ? '०.५० सतर्क' : '0.50 Caution'}</span>
+            <span>{isHindi ? '१.००+ खतरा' : '1.00+ Danger'}</span>
+          </div>
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-gray-600 pt-1 font-medium">
-          <span>{dosePercent}% {isHindi ? 'सीमा का उपयोग' : 'of Action Level'}</span>
-          <span className="font-semibold text-gray-900">
-            {isHindi ? `अंतिम स्कैन: ${worker.lastReadingTime || '11:37'}` : `Last scan: ${worker.lastReadingTime || '11:37 AM'}`}
-          </span>
-        </div>
-
-        {/* Safety Recommendation Banner based on dose */}
-        <div className="mt-3 pt-2.5 border-t border-gray-100 text-xs leading-relaxed">
+        {/* Plain Language Action Advice */}
+        <div className="pt-2 border-t border-black/5 text-xs leading-relaxed">
           {worker.status === 'REVIEW' ? (
-            <div className="flex items-start gap-1.5 text-red-700 font-semibold">
-              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-red-600" />
+            <div className="flex items-start gap-2 text-red-900 font-semibold bg-red-100/80 p-3 rounded-xl border border-red-300">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-red-700" />
               <span>
                 {isHindi 
-                  ? '🚨 तुरंत बाहर निकलें! गैस स्तर सुरक्षित सीमा (1.00 ppm·h) से अधिक है। सुरक्षा अधिकारी को सूचित करें।'
-                  : 'Shift dose threshold exceeded. Report to safety officer Meera Patel and step out of catalytic area.'}
+                  ? '🚨 तुरंत बाहर निकलें! गैस स्तर सुरक्षित सीमा से अधिक है। खुले क्षेत्र में ताजी हवा लें और सुरक्षा अधिकारी को सूचित करें।'
+                  : 'Action Required: Shift dose threshold exceeded. Evacuate to clean air and notify safety officer.'}
               </span>
             </div>
           ) : worker.status === 'MONITOR' ? (
-            <div className="flex items-start gap-1.5 text-amber-800 font-medium">
-              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
+            <div className="flex items-start gap-2 text-amber-900 font-medium bg-amber-100/80 p-3 rounded-xl border border-amber-300">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-700" />
               <span>
                 {isHindi
-                  ? '⚠️ चेतावनी: गैस का प्रभाव दर्ज हुआ। डेक बी या हाइड्रोक्रैकर पर काम करते समय श्वास सुरक्षा मास्क (PPE) पहनें।'
-                  : 'Elevated exposure. Wear breathing protection if servicing high-elevation flanges on Deck B.'}
+                  ? '⚠️ सतर्क रहें: गैस का प्रभाव दर्ज हुआ है। कार्य क्षेत्र में मास्क (PPE) अनिवार्य रूप से पहनें।'
+                  : 'Advisory: Moderate exposure detected. Wear personal breathing protection equipment.'}
               </span>
             </div>
           ) : (
-            <div className="flex items-start gap-1.5 text-emerald-800 font-medium">
-              <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
+            <div className="flex items-start gap-2 text-emerald-950 font-medium bg-emerald-100/70 p-3 rounded-xl border border-emerald-300">
+              <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-emerald-700" />
               <span>
                 {isHindi
-                  ? '✅ आप सुरक्षित हैं। रिस्टबैंड का रंग सामान्य है। अपना कार्य सामान्य रूप से जारी रखें।'
-                  : 'Within safe 8-hour shift limits. Continue routine monitoring protocol.'}
+                  ? '✅ आप पूरी तरह सुरक्षित हैं। रिस्टबैंड का रंग सामान्य है। अपना कार्य सामान्य रूप से जारी रखें।'
+                  : 'Normal operating range. Sensor shows minimal chemical response. Safe to continue shift.'}
               </span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Prominent High-Contrast Tactile SCAN WRISTBAND CTA */}
+      {/* 3. PRIMARY ACTION: SCAN WRISTBAND BUTTON (Unmissable, Clear) */}
       <div>
         <button
           onClick={onOpenScan}
-          className="w-full py-4 bg-gray-950 hover:bg-black text-white rounded-2xl font-serif text-base font-bold flex items-center justify-center gap-3 shadow-xl active:scale-[0.98] transition-all border border-gray-800 cursor-pointer"
+          className="w-full py-4 px-4 bg-gray-950 hover:bg-black text-white rounded-2xl font-serif text-base font-bold flex items-center justify-center gap-3 shadow-lg active:scale-[0.98] transition-all border border-gray-800 cursor-pointer"
         >
-          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white shadow-sm">
+          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white shadow-sm shrink-0">
             <Camera className="w-4 h-4" />
           </div>
           <span className="tracking-wide">
-            {isHindi ? `रिस्टबैंड स्कैन करें (${worker.assignedBandId})` : `SCAN MY WRISTBAND (${worker.assignedBandId})`}
+            {isHindi ? `कलाई का पट्टा अभी स्कैन करें (${worker.assignedBandId})` : `SCAN MY WRISTBAND (${worker.assignedBandId})`}
           </span>
         </button>
-        <p className="text-center text-[10px] text-gray-500 font-mono mt-1.5 font-medium">
-          {isHindi ? 'रासायनिक रंग विश्लेषण · प्रकाश सुधार तकनीक' : 'Reads chemical color response · AI-assisted illumination correction'}
+        <p className="text-center text-[11px] text-gray-500 font-mono mt-1.5 font-medium">
+          {isHindi ? 'रासायनिक रंग विश्लेषण · स्वचालित प्रकाश सुधार' : 'Automatic Colorimetry & Illumination Calibration'}
         </p>
       </div>
 
-      {/* 3 Simple Action Safety Steps (Worker SOP in Hindi/English) */}
-      <div className="card-glow p-4 space-y-2.5">
-        <h3 className="text-xs font-serif font-bold text-gray-900 flex items-center gap-2">
+      {/* 4. THREE SIMPLE SAFETY RULES (Clear, Visual Cards in Full Hindi) */}
+      <div className="bg-white rounded-2xl p-4 border border-[#E5DFD7] shadow-xs space-y-3">
+        <h3 className="text-xs font-bold text-gray-900 flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-          <span>{isHindi ? 'कर्मचारी सुरक्षा के ३ आसान नियम' : 'Worker Safety Instructions (3 Steps)'}</span>
+          <span>{isHindi ? 'कर्मचारी सुरक्षा के ३ सरल नियम' : 'Worker Safety Instructions (3 Steps)'}</span>
         </h3>
 
         <div className="grid grid-cols-3 gap-2 text-center pt-1">
-          {/* Step 1 */}
-          <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 flex flex-col items-center">
+          {/* Rule 1 */}
+          <div className="bg-[#FAF8F5] p-2.5 rounded-xl border border-gray-200 flex flex-col items-center">
             <div className="w-6 h-6 rounded-md bg-emerald-100 text-emerald-800 font-mono font-bold flex items-center justify-center text-xs mb-1">
-              1
+              १
             </div>
             <span className="font-bold text-[10px] text-gray-900 block leading-tight">
-              {isHindi ? 'कलाई पर पहनें' : 'Wear Outer Wrist'}
+              {isHindi ? 'कलाई पर पहनें' : 'Outer Wrist'}
             </span>
-            <span className="text-[9px] text-gray-500 mt-0.5 block leading-tight">
-              {isHindi ? 'कपड़ों से न ढकें' : 'Never cover with sleeve'}
+            <span className="text-[9px] text-gray-600 mt-0.5 block leading-tight">
+              {isHindi ? 'कपड़ों से न ढकें' : 'Never cover'}
             </span>
           </div>
 
-          {/* Step 2 */}
-          <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 flex flex-col items-center">
+          {/* Rule 2 */}
+          <div className="bg-[#FAF8F5] p-2.5 rounded-xl border border-gray-200 flex flex-col items-center">
             <div className="w-6 h-6 rounded-md bg-emerald-100 text-emerald-800 font-mono font-bold flex items-center justify-center text-xs mb-1">
               <Eye className="w-3.5 h-3.5" />
             </div>
             <span className="font-bold text-[10px] text-gray-900 block leading-tight">
-              {isHindi ? 'हर घंटे रंग देखें' : 'Check Hourly'}
+              {isHindi ? 'हर घंटे देखें' : 'Hourly Check'}
             </span>
-            <span className="text-[9px] text-gray-500 mt-0.5 block leading-tight">
+            <span className="text-[9px] text-gray-600 mt-0.5 block leading-tight">
               {isHindi ? 'बैंगनी = सुरक्षित' : 'Violet = Safe'}
             </span>
           </div>
 
-          {/* Step 3 */}
-          <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 flex flex-col items-center">
+          {/* Rule 3 */}
+          <div className="bg-[#FAF8F5] p-2.5 rounded-xl border border-gray-200 flex flex-col items-center">
             <div className="w-6 h-6 rounded-md bg-red-100 text-red-800 font-mono font-bold flex items-center justify-center text-xs mb-1">
               <Footprints className="w-3.5 h-3.5" />
             </div>
             <span className="font-bold text-[10px] text-gray-900 block leading-tight">
-              {isHindi ? 'तुरंत निकलें' : 'Retreat if Dark'}
+              {isHindi ? 'तुरंत निकलें' : 'Evacuate'}
             </span>
-            <span className="text-[9px] text-gray-500 mt-0.5 block leading-tight">
-              {isHindi ? 'रंग बदलने पर' : 'Go to fresh air'}
+            <span className="text-[9px] text-gray-600 mt-0.5 block leading-tight">
+              {isHindi ? 'रंग बदलने पर' : 'If strip darkens'}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Color Scale Strip Reference Accordion */}
-      <div className="card-glow p-4 space-y-2">
+      {/* 5. EXPANDABLE SECTION: COLOR SCALE GUIDE (Keeps Screen Uncongested) */}
+      <div className="bg-white rounded-2xl p-4 border border-[#E5DFD7] shadow-xs space-y-2">
         <div
           onClick={() => setShowColorScaleGuide(!showColorScaleGuide)}
           className="flex items-center justify-between cursor-pointer select-none"
         >
-          <span className="text-xs font-serif font-bold text-gray-900 flex items-center gap-1.5">
+          <span className="text-xs font-bold text-gray-900 flex items-center gap-2">
             <HelpCircle className="w-4 h-4 text-emerald-700" />
-            {isHindi ? 'रंग पैमाना और खुराक स्तर' : 'Colorimetric Strip Threshold Guide'}
+            {isHindi ? 'रासायनिक पट्टी का रंग पैमाना व अर्थ' : 'Colorimetric Strip Threshold Guide'}
           </span>
-          <span className="text-[11px] text-emerald-700 font-bold hover:underline">
-            {showColorScaleGuide ? (isHindi ? 'छिपाएं' : 'Hide') : (isHindi ? 'पैमाना देखें' : 'View Scale')}
+          <span className="text-[11px] text-emerald-800 font-bold flex items-center gap-1 hover:underline">
+            <span>{showColorScaleGuide ? (isHindi ? 'छिपाएं' : 'Hide') : (isHindi ? 'देखें' : 'View')}</span>
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showColorScaleGuide ? 'rotate-180' : ''}`} />
           </span>
         </div>
 
         {showColorScaleGuide && (
-          <div className="pt-2 border-t border-gray-100 space-y-2 text-xs">
-            <p className="text-[11px] text-gray-600 leading-relaxed font-medium">
+          <div className="pt-2 border-t border-gray-100 space-y-2.5 text-xs animate-in fade-in duration-200">
+            <p className="text-[11px] text-gray-600 leading-relaxed">
               {isHindi 
-                ? 'H₂S गैस के संपर्क में आने पर रिस्टबैंड की पट्टी बैंगनी से भूरी/काली हो जाती है:'
+                ? 'H₂S गैस के संपर्क में आने पर रिस्टबैंड की रासायनिक पट्टी बैंगनी से भूरी/काली हो जाती है:'
                 : 'The sensing strip changes color from purple to brown/dark as H₂S reacts with Cu-PAN:'}
             </p>
             <div className="grid grid-cols-3 gap-2 text-center pt-1">
               <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200">
                 <div className="w-full h-4 rounded bg-[#d4c5a9] mb-1.5 border border-black/10 shadow-xs"></div>
-                <span className="font-mono font-bold text-[11px] text-emerald-800">0.0 – 0.50</span>
-                <span className="block text-[10px] text-gray-600 font-bold uppercase mt-0.5">
-                  {isHindi ? 'सुरक्षित (Safe)' : 'NORMAL'}
+                <span className="font-mono font-bold text-[11px] text-emerald-800">०.० – ०.५०</span>
+                <span className="block text-[10px] text-gray-700 font-bold uppercase mt-0.5">
+                  {isHindi ? 'सुरक्षित' : 'SAFE'}
                 </span>
               </div>
               <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200">
                 <div className="w-full h-4 rounded bg-[#8c6d48] mb-1.5 border border-black/10 shadow-xs"></div>
-                <span className="font-mono font-bold text-[11px] text-amber-800">0.50 – 1.00</span>
-                <span className="block text-[10px] text-gray-600 font-bold uppercase mt-0.5">
-                  {isHindi ? 'सावधानी (Warn)' : 'MONITOR'}
+                <span className="font-mono font-bold text-[11px] text-amber-800">०.५० – १.००</span>
+                <span className="block text-[10px] text-gray-700 font-bold uppercase mt-0.5">
+                  {isHindi ? 'सतर्क रहें' : 'CAUTION'}
                 </span>
               </div>
               <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200">
                 <div className="w-full h-4 rounded bg-[#3a2e2b] mb-1.5 border border-black/10 shadow-xs"></div>
-                <span className="font-mono font-bold text-[11px] text-red-800">&gt; 1.00 ppm·h</span>
-                <span className="block text-[10px] text-gray-600 font-bold uppercase mt-0.5">
-                  {isHindi ? 'खतरा (Danger)' : 'REVIEW'}
+                <span className="font-mono font-bold text-[11px] text-red-800">&gt; १.००</span>
+                <span className="block text-[10px] text-gray-700 font-bold uppercase mt-0.5">
+                  {isHindi ? 'खतरा' : 'DANGER'}
                 </span>
               </div>
             </div>
@@ -396,77 +358,101 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
         )}
       </div>
 
-      {/* 7-Day Exposure Trend Chart Preview */}
-      <div className="card-glow p-4 space-y-2.5">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-serif font-bold text-gray-900 flex items-center gap-1.5">
+      {/* 6. EXPANDABLE SECTION: 7-DAY TREND (Keeps Screen Uncongested) */}
+      <div className="bg-white rounded-2xl p-4 border border-[#E5DFD7] shadow-xs space-y-2">
+        <div
+          onClick={() => setShowWeeklyTrend(!showWeeklyTrend)}
+          className="flex items-center justify-between cursor-pointer select-none"
+        >
+          <span className="text-xs font-bold text-gray-900 flex items-center gap-2">
             <Activity className="w-4 h-4 text-emerald-700" />
-            {isHindi ? '७-दिवसीय व्यक्तिगत रुझान' : '7-Day Personal Exposure Trend'}
+            {isHindi ? 'साप्ताहिक गैस संपर्क स्तर (७ दिन)' : '7-Day Exposure Trend'}
           </span>
-          <span className="text-[10px] font-mono text-gray-500 font-semibold">
-            {isHindi ? 'साप्ताहिक' : 'Weekly Log'}
+          <span className="text-[11px] text-emerald-800 font-bold flex items-center gap-1 hover:underline">
+            <span>{showWeeklyTrend ? (isHindi ? 'छिपाएं' : 'Hide') : (isHindi ? 'देखें' : 'View')}</span>
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showWeeklyTrend ? 'rotate-180' : ''}`} />
           </span>
         </div>
 
-        <div className="flex items-end justify-between gap-2 h-20 pt-2 px-1">
-          {worker.trend7Day.map((item) => {
-            const barHeight = Math.max(12, Math.round((item.dose / 1.5) * 64));
+        {showWeeklyTrend && (
+          <div className="pt-2 border-t border-gray-100 space-y-2 animate-in fade-in duration-200">
+            <div className="flex items-end justify-between gap-2 h-24 pt-3 px-1">
+              {worker.trend7Day.map((item) => {
+                const barHeight = Math.max(14, Math.round((item.dose / 1.5) * 68));
+                const dayHindiMap: Record<string, string> = {
+                  'Mon': 'सोम',
+                  'Tue': 'मंगल',
+                  'Wed': 'बुध',
+                  'Thu': 'गुरु',
+                  'Fri': 'शुक्र',
+                  'Sat': 'शनि',
+                  'Sun': 'रवि'
+                };
+                const dayLabel = isHindi ? (dayHindiMap[item.day] || item.day) : item.day;
 
-            return (
-              <div key={item.day} className="flex-1 flex flex-col items-center gap-1">
-                <span className="text-[9px] font-mono text-gray-600 font-medium">
-                  {item.dose.toFixed(2)}
-                </span>
-                <div
-                  className={`w-full rounded-t-md transition-all ${
-                    item.dose >= 1.0
-                      ? 'bg-red-500'
-                      : item.dose >= 0.5
-                      ? 'bg-amber-500'
-                      : 'bg-emerald-600'
-                  }`}
-                  style={{ height: `${barHeight}px` }}
-                />
-                <span className="text-[9px] font-mono font-bold text-gray-700">{item.day}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Recent Scans List */}
-      <div className="space-y-2 pt-1">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xs font-mono uppercase tracking-wider text-gray-600 font-bold">
-            {isHindi ? 'आज के हालिया स्कैन' : 'Recent Scans Today'}
-          </h3>
-          <button
-            onClick={onViewHistory}
-            className="text-xs text-emerald-700 font-bold flex items-center gap-0.5 active:underline cursor-pointer"
-          >
-            {isHindi ? 'सभी देखें' : 'All Logs'} <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        <div className="space-y-2">
-          {recentReadings.slice(0, 3).map((reading) => (
-            <div
-              key={reading.readingId}
-              className="bg-white border border-gray-200 rounded-xl p-3 flex items-center justify-between text-xs shadow-xs"
-            >
-              <div className="space-y-0.5">
-                <div className="font-mono font-semibold text-gray-900">
-                  {reading.estimatedDose.toFixed(2)} ppm·h
-                </div>
-                <div className="text-[11px] text-gray-500 font-mono">
-                  {reading.timestamp} · {reading.scanType === 'OFFICER_FIELD_AUDIT' ? (isHindi ? 'अधिकारी ऑडिट' : 'Inspector Audit') : (isHindi ? 'स्वयं स्कैन' : 'Self Scan')}
-                </div>
-              </div>
-              <div>{getStatusBadge(reading.status)}</div>
+                return (
+                  <div key={item.day} className="flex-1 flex flex-col items-center gap-1">
+                    <span className="text-[9px] font-mono text-gray-600 font-medium">
+                      {item.dose.toFixed(2)}
+                    </span>
+                    <div
+                      className={`w-full rounded-t-md transition-all ${
+                        item.dose >= 1.0
+                          ? 'bg-red-500'
+                          : item.dose >= 0.5
+                          ? 'bg-amber-500'
+                          : 'bg-emerald-600'
+                      }`}
+                      style={{ height: `${barHeight}px` }}
+                    />
+                    <span className="text-[9px] font-mono font-bold text-gray-700">{dayLabel}</span>
+                  </div>
+                );
+              })}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
+
+      {/* 7. EXPANDABLE SECTION: RECENT SCANS LOG */}
+      <div className="bg-white rounded-2xl p-4 border border-[#E5DFD7] shadow-xs space-y-2">
+        <div
+          onClick={() => setShowRecentLogs(!showRecentLogs)}
+          className="flex items-center justify-between cursor-pointer select-none"
+        >
+          <span className="text-xs font-bold text-gray-900 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-emerald-700" />
+            {isHindi ? 'आज के पिछले जांच परिणाम' : 'Recent Scans Today'}
+          </span>
+          <span className="text-[11px] text-emerald-800 font-bold flex items-center gap-1 hover:underline">
+            <span>{showRecentLogs ? (isHindi ? 'छिपाएं' : 'Hide') : (isHindi ? 'देखें' : 'View')}</span>
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showRecentLogs ? 'rotate-180' : ''}`} />
+          </span>
+        </div>
+
+        {showRecentLogs && (
+          <div className="pt-2 border-t border-gray-100 space-y-2 animate-in fade-in duration-200">
+            {recentReadings.slice(0, 3).map((reading) => (
+              <div
+                key={reading.readingId}
+                className="bg-[#FAF8F5] border border-gray-200 rounded-xl p-3 flex items-center justify-between text-xs"
+              >
+                <div className="space-y-0.5">
+                  <div className="font-mono font-bold text-gray-900">
+                    {reading.estimatedDose.toFixed(2)} ppm·h
+                  </div>
+                  <div className="text-[10px] text-gray-500 font-mono">
+                    {reading.timestamp} · {reading.scanType === 'OFFICER_FIELD_AUDIT' ? (isHindi ? 'अधिकारी जांच' : 'Inspector Audit') : (isHindi ? 'स्वयं जांच' : 'Self Scan')}
+                  </div>
+                </div>
+                <div>{getStatusBadge(reading.status)}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
     </div>
   );
 };
+

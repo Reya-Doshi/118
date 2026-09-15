@@ -263,36 +263,39 @@ const MainAppContent: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen bg-[#F6F1E7] text-[#292925] flex flex-col max-w-md mx-auto relative px-4 pb-8"
-      style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 28px)' }}
+      className="min-h-screen bg-[#F6F1E7] text-[#292925] flex flex-col max-w-md mx-auto relative px-3.5 pb-8"
+      style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 12px)' }}
     >
-      {/* Top Branding Bar with 2nd Image Logo & PS-118 */}
-      <header className="flex items-center justify-between py-2 px-1 mb-2 border-b border-[#D8D0C2]/80">
+      {/* Top Sleek Header Bar — SARVAS by RageB8 */}
+      <header className="flex items-center justify-between py-2 px-3 mb-3 bg-white rounded-2xl border border-[#D8D0C2] shadow-xs">
         <div className="flex items-center gap-2.5">
           <img 
             src="/sarvas_logo_v2.png" 
-            alt="RageB8 Logo" 
-            className="w-9 h-9 rounded-xl object-contain bg-white p-0.5 border border-[#D8D0C2] shadow-xs"
+            alt="SARVAS by RageB8 Logo" 
+            className="w-9 h-9 rounded-xl object-contain bg-[#FAF8F5] p-0.5 border border-[#D8D0C2] shadow-2xs"
           />
           <div>
             <div className="flex items-center gap-1.5 leading-none">
-              <span className="font-serif font-bold text-base text-[#292925] tracking-tight">RageB8</span>
-              <span className="text-[9px] font-mono bg-[#71806B]/20 text-[#4F5D4B] px-1.5 py-0.5 rounded font-semibold">PS-118</span>
+              <span className="font-serif font-bold text-base text-[#292925] tracking-tight">SARVAS</span>
+              <span className="text-[9px] font-mono bg-[#4F5D4B]/15 text-[#2F6B38] px-1.5 py-0.5 rounded font-bold">by RageB8</span>
             </div>
-            <span className="text-[9px] font-mono text-[#878377] block mt-0.5">SIH 2026 · Dosimeter</span>
+            <span className="text-[9px] font-mono text-[#878377] block mt-0.5">
+              {workerLanguage === 'hi' ? 'स्मार्ट रिस्टबैंड डॉसिमीटर' : 'SIH 2026 · PS-118 Dosimeter'}
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] font-mono font-medium text-[#4B5563] bg-white px-2 py-0.5 rounded-lg border border-[#E5DFD7]">
-            {role ? role.replace('_', ' ') : 'OPERATOR'}
+          <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+            {workerLanguage === 'hi' ? 'लाइव' : 'LIVE'}
           </span>
           <button
             onClick={logout}
-            className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[10px] font-semibold flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
-            title="Sign Out"
+            className="p-1.5 px-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[10px] font-semibold flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
+            title={workerLanguage === 'hi' ? 'लॉग आउट' : 'Sign Out'}
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-bold">Sign Out</span>
+            <span className="text-[10px] font-bold">{workerLanguage === 'hi' ? 'लॉग आउट' : 'Sign Out'}</span>
           </button>
         </div>
       </header>
@@ -311,7 +314,7 @@ const MainAppContent: React.FC = () => {
           }`}
         >
           <Home className="w-5 h-5" />
-          <span>Home</span>
+          <span>{workerLanguage === 'hi' ? 'मुख्य' : 'Home'}</span>
         </button>
 
         {role === 'WORKER' && (
@@ -322,7 +325,7 @@ const MainAppContent: React.FC = () => {
             <div className="w-11 h-11 -mt-5 rounded-full bg-[#292925] text-[#F6F1E7] flex items-center justify-center shadow-lg border-2 border-[#F6F1E7]">
               <Camera className="w-5 h-5 text-[#EDE5D6]" />
             </div>
-            <span className="font-bold">Scan Band</span>
+            <span className="font-bold">{workerLanguage === 'hi' ? 'स्कैन करें' : 'Scan Band'}</span>
           </button>
         )}
 
@@ -394,7 +397,7 @@ const MainAppContent: React.FC = () => {
           }`}
         >
           <Clock className="w-5 h-5" />
-          <span>History</span>
+          <span>{workerLanguage === 'hi' ? 'इतिहास' : 'History'}</span>
         </button>
 
         <button
@@ -404,7 +407,7 @@ const MainAppContent: React.FC = () => {
           }`}
         >
           <User className="w-5 h-5" />
-          <span>Profile</span>
+          <span>{workerLanguage === 'hi' ? 'प्रोफाइल' : 'Profile'}</span>
         </button>
       </nav>
 
@@ -413,6 +416,7 @@ const MainAppContent: React.FC = () => {
         isOpen={isCameraOpen}
         userRole={role || 'WORKER'}
         currentWorker={activeWorker}
+        workerLanguage={workerLanguage}
         onClose={() => setIsCameraOpen(false)}
         onPhotoSelected={handlePhotoSelected}
       />

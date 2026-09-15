@@ -85,13 +85,18 @@ export const Navbar: React.FC = () => {
             >
               <img
                 src="/sarvas_logo_v2.png"
-                alt="RageB8 Emblem"
+                alt="SARVAS by RageB8 Emblem"
                 className="w-8 h-8 rounded-lg object-contain bg-white p-0.5 border border-[#D8D0C2] shadow-2xs group-hover:scale-105 transition-transform"
               />
               <div>
-                <span className="text-xl font-bold tracking-tight block font-mono leading-none">
-                  RageB8
-                </span>
+                <div className="flex items-center gap-1.5 leading-none">
+                  <span className="text-xl font-bold tracking-tight block font-mono leading-none">
+                    SARVAS
+                  </span>
+                  <span className="text-[9px] font-mono bg-[#4F5D4B]/20 text-[#4F5D4B] px-1.5 py-0.5 rounded font-bold">
+                    by RageB8
+                  </span>
+                </div>
                 <span className={`text-[9px] font-mono tracking-wider mt-0.5 block ${
                   isTransparentOnHero ? 'text-[#EDE5D6]/80' : 'text-[#878377]'
                 }`}>

@@ -13,10 +13,10 @@ export const Footer: React.FC = () => {
             <div className="flex items-center gap-2.5">
               <img 
                 src="/sarvas_logo_v2.png" 
-                alt="RageB8 Logo" 
+                alt="SARVAS by RageB8 Logo" 
                 className="w-7 h-7 rounded-lg object-contain bg-white p-0.5 border border-white/20 shadow-xs"
               />
-              <span className="text-base font-bold font-mono tracking-wider text-white">RageB8</span>
+              <span className="text-base font-bold font-mono tracking-wider text-white">SARVAS <span className="text-xs text-[#C2CBBF]">by RageB8</span></span>
             </div>
             <p className="text-xs text-[#B8B2A4]">Passive exposure intelligence for safer shifts in petroleum operations.</p>
           </div>
@@ -24,10 +24,10 @@ export const Footer: React.FC = () => {
           {/* RAGEBYTERS SIH 2026 Section */}
           <div className="flex flex-col md:items-end space-y-1">
             <div className="text-sm font-bold font-mono tracking-widest text-white">
-              RAGEBYTERS
+              RageB8 · SIH 2026
             </div>
             <div className="text-xs text-[#C2CBBF] font-mono">
-              SIH 2026 · Hardware × AI × Safety
+              Hardware × AI × Worker Safety
             </div>
             <div className="text-[11px] text-[#8E897E]">
               Built for safer industrial workplaces.
@@ -43,7 +43,7 @@ export const Footer: React.FC = () => {
             <span>Prototype calibration dataset & readings are simulated estimates. Chemical validation required in a certified laboratory.</span>
           </div>
           <div className="font-mono text-[#B8B2A4]">
-            © 2026 118 by RAGEBYTERS · SIH 2026
+            © 2026 SARVAS by RageB8 · SIH 2026
           </div>
         </div>
 

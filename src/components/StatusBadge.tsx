@@ -1,12 +1,19 @@
 import React from 'react';
 import type { ExposureStatus } from '../types';
 
-interface StatusBadgeProps {
+export interface StatusBadgeProps {
   status: ExposureStatus;
   size?: 'sm' | 'md' | 'lg';
+  language?: 'hi' | 'en';
+  customLabel?: string;
 }
 
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' }) => {
+export const StatusBadge: React.FC<StatusBadgeProps> = ({ 
+  status, 
+  size = 'md',
+  language = 'en',
+  customLabel
+}) => {
   let bg = '';
   let border = '';
   let text = '';
@@ -37,17 +44,26 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' })
   }
 
   const sizeClasses = {
-    sm: 'px-2 py-0.5 text-[11px] gap-1.5',
+    sm: 'px-2 py-0.5 text-[11px] gap-1.5 font-medium',
     md: 'px-2.5 py-1 text-xs gap-1.5 font-medium',
-    lg: 'px-3.5 py-1.5 text-xs gap-2 font-semibold tracking-wide'
+    lg: 'px-3.5 py-1.5 text-xs gap-2 font-bold tracking-wide'
   }[size];
+
+  let displayLabel = customLabel;
+  if (!displayLabel) {
+    if (language === 'hi') {
+      displayLabel = status === 'NORMAL' ? 'सुरक्षित' : status === 'MONITOR' ? 'सतर्क रहें' : 'खतरा / बाहर निकलें';
+    } else {
+      displayLabel = status;
+    }
+  }
 
   return (
     <span
       className={`inline-flex items-center rounded-md border ${bg} ${border} ${text} ${sizeClasses} transition-all duration-200`}
     >
       <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
-      {status}
+      {displayLabel}
     </span>
   );
 };

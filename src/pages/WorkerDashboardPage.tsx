@@ -70,32 +70,37 @@ export const WorkerDashboardPage: React.FC = () => {
         <div className="flex items-center gap-3.5">
           <img 
             src="/sarvas_logo_v2.png" 
-            alt="RageB8 Logo" 
+            alt="SARVAS by RageB8 Logo" 
             className="w-12 h-12 rounded-2xl object-contain bg-white p-1 border border-[#D8D0C2] shadow-xs shrink-0"
           />
           <div>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span className="text-[10px] font-mono bg-[#4F5D4B]/15 text-[#4F5D4B] px-2.5 py-0.5 rounded font-bold uppercase tracking-wider border border-[#4F5D4B]/20">
-                {isHindi ? 'कर्मचारी सुरक्षा पोर्टल' : 'Worker Safety Portal'}
+                SARVAS · {isHindi ? 'कर्मचारी सुरक्षा साथी' : 'Worker Safety Portal'}
+              </span>
+              <span className="text-[10px] font-mono bg-[#B08A55]/15 text-[#826235] px-1.5 py-0.5 rounded font-bold">
+                by RageB8
               </span>
               <span className="text-[10px] font-mono text-[#878377]">
-                MRPL Refinery
+                {isHindi ? 'एमआरपीएल' : 'MRPL Refinery'}
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#292925] tracking-tight">
               {isHindi ? `नमस्ते, ${activeWorker.name}` : `Hello, ${activeWorker.name}`}
             </h1>
             <p className="text-xs text-[#5D5B53] flex flex-wrap items-center gap-2 mt-0.5">
-            <span className="font-semibold text-[#292925]">
-              {isHindi ? 'ऑपरेटर (प्रक्रिया संचालक)' : (activeWorker.role || 'Process Operator')}
-            </span>
-            <span>·</span>
-            <span>{activeWorker.department}</span>
-            <span>·</span>
-            <span className="font-mono text-[11px] text-[#71806B] font-bold">ID: {activeWorker.workerId}</span>
-          </p>
+              <span className="font-semibold text-[#292925]">
+                {isHindi ? 'संयंत्र संचालक' : (activeWorker.role || 'Process Operator')}
+              </span>
+              <span>·</span>
+              <span>{isHindi ? 'इकाई २ (डेक बी)' : activeWorker.department}</span>
+              <span>·</span>
+              <span className="font-mono text-[11px] text-[#71806B] font-bold">
+                {isHindi ? 'पहचान संख्या: ' : 'ID: '}{activeWorker.workerId}
+              </span>
+            </p>
+          </div>
         </div>
-      </div>
 
         {/* Action Controls: Hindi Language Toggle + Switch Profile */}
         <div className="flex items-center gap-2.5 self-stretch sm:self-auto justify-between sm:justify-end">
@@ -147,9 +152,11 @@ export const WorkerDashboardPage: React.FC = () => {
             <span className="text-[10px] font-mono uppercase text-[#878377] block font-semibold">
               {isHindi ? 'कार्य क्षेत्र' : 'Assigned Unit'}
             </span>
-            <span className="font-bold text-[#292925] mt-0.5 block">{activeWorker.department}</span>
+            <span className="font-bold text-[#292925] mt-0.5 block">
+              {isHindi ? 'कैटेलिटिक क्रैकिंग इकाई' : activeWorker.department}
+            </span>
             <span className="text-[10px] text-[#5D5B53] mt-0.5 block font-serif">
-              {isHindi ? 'डेक बी · ज़ोन 1' : 'Deck B · Zone 1'}
+              {isHindi ? 'डेक बी · ज़ोन १' : 'Deck B · Zone 1'}
             </span>
           </div>
         </div>
@@ -159,11 +166,13 @@ export const WorkerDashboardPage: React.FC = () => {
           <Clock className="w-4 h-4 text-[#71806B] shrink-0 mt-0.5" />
           <div className="text-xs leading-tight">
             <span className="text-[10px] font-mono uppercase text-[#878377] block font-semibold">
-              {isHindi ? 'कार्य शिफ्ट' : 'Active Shift'}
+              {isHindi ? 'कार्य पाली' : 'Active Shift'}
             </span>
-            <span className="font-bold text-[#292925] mt-0.5 block">{activeWorker.shift}</span>
+            <span className="font-bold text-[#292925] mt-0.5 block">
+              {isHindi ? 'सुबह की पाली (०६:०० – १४:००)' : activeWorker.shift}
+            </span>
             <span className="text-[10px] text-[#5D5B53] mt-0.5 block font-serif">
-              {isHindi ? `पिछला स्कैन: ${activeWorker.lastReadingTime || '11:37'}` : `Last read: ${activeWorker.lastReadingTime || '11:37'}`}
+              {isHindi ? `पिछली जांच: ${activeWorker.lastReadingTime || '११:३७'}` : `Last read: ${activeWorker.lastReadingTime || '11:37'}`}
             </span>
           </div>
         </div>
@@ -174,10 +183,10 @@ export const WorkerDashboardPage: React.FC = () => {
           <div className="text-xs leading-tight flex-1">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-mono uppercase text-[#878377] block font-semibold">
-                {isHindi ? 'रिस्टबैंड आईडी' : 'Dosimeter Band'}
+                {isHindi ? 'रिस्टबैंड कोड' : 'Dosimeter Band'}
               </span>
               <span className="text-[10px] font-mono text-[#4F5D4B] font-bold">
-                {isHindi ? '60 दिन वैध' : '60d valid'}
+                {isHindi ? '६० दिन वैध' : '60d valid'}
               </span>
             </div>
             <span className="font-mono font-bold text-sm text-[#292925] mt-0.5 block">{activeWorker.badgeId}</span>
@@ -198,10 +207,10 @@ export const WorkerDashboardPage: React.FC = () => {
               {isHindi ? 'वर्तमान शिफ्ट में गैस का स्तर (H₂S)' : 'Shift Cumulative H₂S Exposure'}
             </span>
             <p className="text-[11px] text-[#878377] font-serif mt-0.5">
-              {isHindi ? 'रिस्टबैंड के रंग पर आधारित सुरक्षा स्थिति' : 'Integrated real-time dosage based on colorimetric strip analysis'}
+              {isHindi ? 'रिस्टबैंड के रासायनिक रंग पर आधारित सुरक्षा स्थिति' : 'Integrated real-time dosage based on colorimetric strip analysis'}
             </p>
           </div>
-          <StatusBadge status={activeWorker.status} size="lg" />
+          <StatusBadge status={activeWorker.status} size="lg" language={workerLanguage} />
         </div>
 
         {/* Big Dose Output Display */}
@@ -212,18 +221,18 @@ export const WorkerDashboardPage: React.FC = () => {
             </span>
             <div>
               <span className="text-base font-serif font-bold text-[#292925] block">
-                ppm·h
+                {isHindi ? 'ppm·h (पीपीएम·घंटा)' : 'ppm·h'}
               </span>
               <span className="text-[11px] text-[#878377] font-mono block">
-                {isHindi ? 'सुरक्षित सीमा: 1.00 ppm·h' : 'Shift Threshold: 1.00 ppm·h'}
+                {isHindi ? 'सुरक्षित सीमा: १.०० ppm·h' : 'Shift Threshold: 1.00 ppm·h'}
               </span>
             </div>
           </div>
 
           <div className="text-right">
             <span className="text-2xl font-mono font-bold text-[#292925]">{dosePercent}%</span>
-            <span className="text-[10px] text-[#878377] block font-mono uppercase">
-              {isHindi ? 'सीमा का प्रतिशत' : 'OF SHIFT LIMIT'}
+            <span className="text-[10px] text-[#878377] block font-mono uppercase font-semibold">
+              {isHindi ? 'सुरक्षित सीमा का उपयोग' : 'OF SHIFT LIMIT'}
             </span>
           </div>
         </div>
@@ -242,10 +251,10 @@ export const WorkerDashboardPage: React.FC = () => {
               style={{ width: `${dosePercent}%` }}
             />
           </div>
-          <div className="flex items-center justify-between text-[11px] text-[#5D5B53] font-mono pt-0.5">
-            <span>{isHindi ? '0.00 सुरक्षित (Safe)' : '0.00 Safe'}</span>
-            <span>{isHindi ? '0.50 सावधानी (Monitor)' : '0.50 Monitor'}</span>
-            <span>{isHindi ? '1.00+ खतरा (Review)' : '1.00+ Review'}</span>
+          <div className="flex items-center justify-between text-[11px] text-[#5D5B53] font-mono pt-0.5 font-medium">
+            <span>{isHindi ? '०.०० सुरक्षित' : '0.00 Safe'}</span>
+            <span>{isHindi ? '०.५० सतर्क' : '0.50 Caution'}</span>
+            <span>{isHindi ? '१.००+ खतरा' : '1.00+ Danger'}</span>
           </div>
         </div>
 
@@ -260,7 +269,7 @@ export const WorkerDashboardPage: React.FC = () => {
                 </span>
                 <p className="text-xs font-serif mt-1 text-[#7A342B] leading-relaxed">
                   {isHindi 
-                    ? 'आपका गैस स्तर 1.00 ppm·h से ऊपर है! तुरंत कार्य क्षेत्र से बाहर सुरक्षित ताजी हवा में निकलें और सुरक्षा अधिकारी (मीरा पटेल) को सूचित करें।'
+                    ? 'गैस स्तर १.०० ppm·h से अधिक हो गया है! तुरंत कार्य क्षेत्र से बाहर सुरक्षित ताजी हवा में निकलें और सुरक्षा अधिकारी को सूचित करें।'
                     : 'Your cumulative exposure has exceeded 1.00 ppm·h. Report immediately to HSE Safety Officer (Mira Patel) and step out of catalytic area to clean air zone.'}
                 </p>
               </div>
@@ -270,11 +279,11 @@ export const WorkerDashboardPage: React.FC = () => {
               <AlertTriangle className="w-5 h-5 shrink-0 text-[#B08A55] mt-0.5" />
               <div>
                 <span className="text-sm font-bold block">
-                  {isHindi ? '⚠️ सावधानी: गैस का प्रभाव दर्ज किया गया' : 'Advisory: Moderate Exposure Detected'}
+                  {isHindi ? '⚠️ सतर्क रहें: गैस का प्रभाव दर्ज किया गया' : 'Advisory: Moderate Exposure Detected'}
                 </span>
                 <p className="text-xs font-serif mt-1 text-[#795726] leading-relaxed">
                   {isHindi
-                    ? 'गैस का स्तर बढ़ रहा है। डेक बी या हाइड्रोक्रैकर क्षेत्र में काम करते समय श्वास सुरक्षा मास्क (PPE) अवश्य पहनें।'
+                    ? 'गैस का स्तर बढ़ रहा है। कार्य करते समय श्वास सुरक्षा मास्क (PPE) अनिवार्य रूप से पहनें।'
                     : 'Cumulative shift dose is approaching the 1.00 ppm·h threshold. Wear personal breathing protection when servicing high-elevation flanges on Deck B.'}
                 </p>
               </div>
@@ -305,15 +314,15 @@ export const WorkerDashboardPage: React.FC = () => {
               {isHindi ? 'स्कैन के लिए तैयार' : 'Ready to Scan'}
             </span>
             <span className="text-[11px] font-mono text-[#D8D0C2]">
-              {activeWorker.badgeId} · 60d
+              {activeWorker.badgeId} · {isHindi ? '६० दिन वैध' : '60d'}
             </span>
           </div>
           <h2 className="text-xl sm:text-2xl font-serif font-bold tracking-tight">
-            {isHindi ? 'अपना रिस्टबैंड अभी स्कैन करें' : 'Read My Wristband Now'}
+            {isHindi ? 'कलाई का पट्टा अभी स्कैन करें' : 'Read My Wristband Now'}
           </h2>
           <p className="text-xs text-[#D8D0C2]/80 max-w-md font-serif">
             {isHindi 
-              ? 'कैमरे से अपने रिस्टबैंड की फोटो लें ताकि वास्तविक रंग और गैस स्तर तुरंत पता चल सके।'
+              ? 'कैमरे से अपने रिस्टबैंड की फोटो लें ताकि रासायनिक रंग और गैस स्तर तुरंत पता चल सके।'
               : 'Capture a clear photo of your wristband to extract optical strip absorbance and update your live dose.'}
           </p>
         </div>
@@ -323,7 +332,7 @@ export const WorkerDashboardPage: React.FC = () => {
           className="w-full sm:w-auto px-7 py-4 bg-[#71806B] hover:bg-[#5E6D58] text-[#F6F1E7] rounded-xl font-mono text-sm font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all cursor-pointer whitespace-nowrap"
         >
           <Camera className="w-5 h-5" />
-          <span>{isHindi ? 'रिस्टबैंड स्कैन करें' : 'SCAN WRISTBAND'}</span>
+          <span>{isHindi ? 'कलाई का पट्टा स्कैन करें' : 'SCAN WRISTBAND'}</span>
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>
@@ -332,21 +341,21 @@ export const WorkerDashboardPage: React.FC = () => {
       <div className="bg-[#EDE5D6]/50 border border-[#D8D0C2] rounded-2xl p-5 shadow-xs space-y-3">
         <h3 className="text-sm font-bold text-[#292925] flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-[#4F5D4B]" />
-          <span>{isHindi ? 'कर्मचारी सुरक्षा नियम (३ आसान नियम)' : 'Worker Safety Instructions (3 Simple Steps)'}</span>
+          <span>{isHindi ? 'कर्मचारी सुरक्षा के ३ सरल नियम' : 'Worker Safety Instructions (3 Simple Steps)'}</span>
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
           {/* Step 1 */}
           <div className="p-3.5 rounded-xl bg-[#F6F1E7] border border-[#D8D0C2] space-y-1.5">
             <div className="w-7 h-7 rounded-lg bg-[#4F5D4B]/15 text-[#4F5D4B] font-mono font-bold flex items-center justify-center text-xs">
-              1
+              {isHindi ? '१' : '1'}
             </div>
             <div className="text-xs font-bold text-[#292925]">
               {isHindi ? 'कलाई पर बाहर पहनें' : 'Wear on Outer Wrist'}
             </div>
             <p className="text-[11px] text-[#5D5B53] leading-relaxed">
               {isHindi 
-                ? 'पट्टे को आस्तीन या दस्ताने के नीचे न दबाएं; रासायनिक पट्टी खुली हवा में रखें।'
+                ? 'पट्टे को आस्तीन या दस्ताने से न ढकें; रासायनिक पट्टी को खुली हवा में रखें।'
                 : 'Keep band exposed to ambient air on outer wrist; never cover with sleeves or gloves.'}
             </p>
           </div>
@@ -361,7 +370,7 @@ export const WorkerDashboardPage: React.FC = () => {
             </div>
             <p className="text-[11px] text-[#5D5B53] leading-relaxed">
               {isHindi 
-                ? 'बैंगनी = सुरक्षित | भूरा/नारंगी = सावधान | पीला/काला = खतरा।'
+                ? 'बैंगनी = सुरक्षित · नारंगी = सतर्क रहें · गहरा = खतरा।'
                 : 'Violet = Safe | Amber/Orange = Caution | Yellow/Dark = Danger.'}
             </p>
           </div>
@@ -372,11 +381,11 @@ export const WorkerDashboardPage: React.FC = () => {
               <Footprints className="w-3.5 h-3.5" />
             </div>
             <div className="text-xs font-bold text-[#292925]">
-              {isHindi ? 'रंग बदलने पर तुरंत हटें' : 'Retreat if Color Changes'}
+              {isHindi ? 'रंग बदलने पर तुरंत निकलें' : 'Retreat if Color Changes'}
             </div>
             <p className="text-[11px] text-[#5D5B53] leading-relaxed">
               {isHindi 
-                ? 'सड़े अंडे जैसी गंध या गहरा रंग होने पर तुरंत ताजी हवा में बाहर निकलें।'
+                ? 'सड़े अंडे जैसी गंध आने या रंग बदलने पर तुरंत सुरक्षित खुली हवा में जाएं।'
                 : 'Exit to clean air immediately if sulfur odor is smelled or strip turns dark.'}
             </p>
           </div>
@@ -393,21 +402,38 @@ export const WorkerDashboardPage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-[#71806B]" />
                 <h3 className="text-sm font-bold text-[#292925]">
-                  {isHindi ? '७-दिन का गैस रिकॉर्ड' : '7-Day Exposure Trend'}
+                  {isHindi ? 'साप्ताहिक गैस संपर्क स्तर (७ दिन)' : '7-Day Exposure Trend'}
                 </h3>
               </div>
               <span className="text-[10px] font-mono text-[#878377]">
-                {isHindi ? 'सीमा: 1.00 ppm·h' : 'Limit: 1.00 ppm·h'}
+                {isHindi ? 'सुरक्षित सीमा: १.०० ppm·h' : 'Limit: 1.00 ppm·h'}
               </span>
             </div>
             <p className="text-xs text-[#5D5B53] font-serif mb-3">
-              {isHindi ? 'पिछली ७ कार्य शिफ्टों का दैनिक गैस स्तर' : 'Daily cumulative H₂S exposure across your last 7 work shifts'}
+              {isHindi ? 'पिछली ७ कार्य पालियों का दैनिक गैस संपर्क रिकॉर्ड' : 'Daily cumulative H₂S exposure across your last 7 work shifts'}
             </p>
           </div>
 
           <div className="h-44 w-full mt-1">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={activeWorker.trend7Day} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <BarChart 
+                data={activeWorker.trend7Day.map(t => {
+                  const dayHindiMap: Record<string, string> = {
+                    'Mon': 'सोम',
+                    'Tue': 'मंगल',
+                    'Wed': 'बुध',
+                    'Thu': 'गुरु',
+                    'Fri': 'शुक्र',
+                    'Sat': 'शनि',
+                    'Sun': 'रवि'
+                  };
+                  return {
+                    ...t,
+                    day: isHindi ? (dayHindiMap[t.day] || t.day) : t.day
+                  };
+                })} 
+                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" stroke="#D8D0C2" opacity={0.6} />
                 <XAxis dataKey="day" stroke="#878377" fontSize={11} tickLine={false} />
                 <YAxis stroke="#878377" fontSize={11} tickLine={false} domain={[0, 1.5]} />
@@ -422,7 +448,7 @@ export const WorkerDashboardPage: React.FC = () => {
                   }}
                   itemStyle={{ color: '#F6F1E7' }}
                 />
-                <ReferenceLine y={1.00} stroke="#9A6258" strokeDasharray="3 3" label={{ value: 'Limit', fill: '#9A6258', fontSize: 10 }} />
+                <ReferenceLine y={1.00} stroke="#9A6258" strokeDasharray="3 3" label={{ value: isHindi ? 'सीमा' : 'Limit', fill: '#9A6258', fontSize: 10 }} />
                 <Bar 
                   dataKey="dose" 
                   fill="#71806B" 
@@ -446,10 +472,10 @@ export const WorkerDashboardPage: React.FC = () => {
               <History className="w-4 h-4 text-[#71806B]" />
               <div>
                 <h3 className="text-sm font-bold text-[#292925]">
-                  {isHindi ? 'मेरे स्कैन का इतिहास' : 'Personal Scan Log'}
+                  {isHindi ? 'जांच का इतिहास' : 'Personal Scan Log'}
                 </h3>
                 <p className="text-[11px] text-[#5D5B53] font-serif">
-                  {isHindi ? `बैंड ${activeWorker.badgeId} का रिकॉर्ड` : `Verified readings for ${activeWorker.badgeId}`}
+                  {isHindi ? `रिस्टबैंड ${activeWorker.badgeId} का सत्यापित रिकॉर्ड` : `Verified readings for ${activeWorker.badgeId}`}
                 </p>
               </div>
             </div>
@@ -477,7 +503,7 @@ export const WorkerDashboardPage: React.FC = () => {
                         <span className="text-xs font-mono font-bold text-[#292925]">
                           {reading.dosePpmH.toFixed(2)} ppm·h
                         </span>
-                        <StatusBadge status={reading.status} size="sm" />
+                        <StatusBadge status={reading.status} size="sm" language={workerLanguage} />
                       </div>
                       <span className="text-[10px] text-[#5D5B53] font-mono block mt-0.5">
                         {reading.timestamp} · {reading.tempC}°C
@@ -498,19 +524,19 @@ export const WorkerDashboardPage: React.FC = () => {
             ) : (
               <div className="p-5 text-center text-xs text-[#5D5B53] font-serif">
                 {isHindi 
-                  ? 'इस शिफ्ट में अभी कोई स्कैन नहीं हुआ है। "स्कैन करें" बटन दबाकर पहला स्कैन करें।'
+                  ? 'इस पाली में अभी कोई स्कैन नहीं हुआ है। "कलाई का पट्टा स्कैन करें" बटन दबाकर पहली जांच करें।'
                   : 'No scans recorded yet this shift. Click "Scan Wristband" to take your initial reading.'}
               </div>
             )}
           </div>
 
           <div className="p-3 border-t border-[#D8D0C2] bg-[#EDE5D6]/80 text-[11px] font-mono text-[#878377] flex items-center justify-between">
-            <span>{isHindi ? `कुल रिकॉर्ड: ${personalReadings.length}` : `Logged: ${personalReadings.length}`}</span>
+            <span>{isHindi ? `कुल दर्ज: ${personalReadings.length}` : `Logged: ${personalReadings.length}`}</span>
             <button
               onClick={handleOpenScan}
               className="text-[#4F5D4B] font-bold hover:underline cursor-pointer text-xs"
             >
-              {isHindi ? '+ नया स्कैन' : '+ New Reading'}
+              {isHindi ? '+ नई जांच' : '+ New Reading'}
             </button>
           </div>
         </div>
@@ -526,7 +552,7 @@ export const WorkerDashboardPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <HelpCircle className="w-4 h-4 text-[#71806B]" />
             <span className="text-xs font-serif font-bold text-[#292925]">
-              {isHindi ? 'रिस्टबैंड रासायनिक रंग पहचान गाइड' : 'Cu-PAN Chemical Dosimeter Color Reference Guide'}
+              {isHindi ? 'रासायनिक पट्टी का रंग पैमाना व अर्थ' : 'Cu-PAN Chemical Dosimeter Color Reference Guide'}
             </span>
           </div>
           <span className="text-xs font-mono text-[#4F5D4B] font-bold">
@@ -540,43 +566,43 @@ export const WorkerDashboardPage: React.FC = () => {
           <div className="mt-3 pt-3 border-t border-[#D8D0C2] space-y-2.5">
             <p className="text-xs text-[#5D5B53] font-serif">
               {isHindi
-                ? 'रिस्टबैंड में Cu-PAN रसायन होता है। H₂S गैस के संपर्क में आने पर यह गहरे बैंगनी से गुलाबी, फिर भूरे और अंत में पीले रंग में बदलता है।'
-                : 'The 118 wristband contains a copper-1-(2-pyridylazo)-2-naphthol (Cu-PAN) complex. Exposure to airborne H₂S breaks the complex, causing a visible shift from deep violet to yellow.'}
+                ? 'रिस्टबैंड में Cu-PAN रसायन होता है। H₂S गैस के संपर्क में आने पर यह गहरे बैंगनी से गुलाबी, फिर भूरे और अंत में पीले रंग में बदलता है:'
+                : 'The 118 wristband contains a copper-1-(2-pyridylazo)-2-naphthol (Cu-PAN) complex. Exposure to airborne H₂S breaks the complex, causing a visible shift from deep violet to yellow:'}
             </p>
             
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               <div className="p-2.5 rounded-lg border border-[#D8D0C2] bg-[#F6F1E7]">
                 <div className="h-6 rounded-md bg-[#3B284C] mb-1.5 shadow-xs" />
-                <span className="text-[10px] font-mono font-bold text-[#292925] block">1. {isHindi ? 'शुरुआत' : 'Baseline'}</span>
-                <span className="text-[9px] text-[#5D5B53] block">{isHindi ? 'गहरा बैंगनी (0.0 ppm·h)' : 'Deep Violet (0.0 ppm·h)'}</span>
+                <span className="text-[10px] font-mono font-bold text-[#292925] block">1. {isHindi ? 'सामान्य' : 'Baseline'}</span>
+                <span className="text-[9px] text-[#5D5B53] block">{isHindi ? 'गहरा बैंगनी (०.० ppm·h)' : 'Deep Violet (0.0 ppm·h)'}</span>
                 <span className="text-[9px] text-[#4F5D4B] font-bold font-mono">{isHindi ? 'सुरक्षित' : 'NORMAL'}</span>
               </div>
 
               <div className="p-2.5 rounded-lg border border-[#D8D0C2] bg-[#F6F1E7]">
                 <div className="h-6 rounded-md bg-[#5A2D52] mb-1.5 shadow-xs" />
                 <span className="text-[10px] font-mono font-bold text-[#292925] block">2. {isHindi ? 'हल्की गैस' : 'Low Dose'}</span>
-                <span className="text-[9px] text-[#5D5B53] block">{isHindi ? 'बैंगनी-गुलाबी (0.2 ppm·h)' : 'Violet-Purple (0.2 ppm·h)'}</span>
+                <span className="text-[9px] text-[#5D5B53] block">{isHindi ? 'बैंगनी-गुलाबी (०.२ ppm·h)' : 'Violet-Purple (0.2 ppm·h)'}</span>
                 <span className="text-[9px] text-[#4F5D4B] font-bold font-mono">{isHindi ? 'सुरक्षित' : 'NORMAL'}</span>
               </div>
 
               <div className="p-2.5 rounded-lg border border-[#D8D0C2] bg-[#F6F1E7]">
                 <div className="h-6 rounded-md bg-[#843644] mb-1.5 shadow-xs" />
-                <span className="text-[10px] font-mono font-bold text-[#292925] block">3. {isHindi ? 'सावधानी' : 'Elevated'}</span>
-                <span className="text-[9px] text-[#5D5B53] block">{isHindi ? 'लाल-गुलाबी (0.7 ppm·h)' : 'Reddish-Pink (0.7 ppm·h)'}</span>
-                <span className="text-[9px] text-[#B08A55] font-bold font-mono">{isHindi ? 'सावधान' : 'MONITOR'}</span>
+                <span className="text-[10px] font-mono font-bold text-[#292925] block">3. {isHindi ? 'सतर्कता स्तर' : 'Elevated'}</span>
+                <span className="text-[9px] text-[#5D5B53] block">{isHindi ? 'लाल-गुलाबी (०.७ ppm·h)' : 'Reddish-Pink (0.7 ppm·h)'}</span>
+                <span className="text-[9px] text-[#B08A55] font-bold font-mono">{isHindi ? 'सतर्क' : 'MONITOR'}</span>
               </div>
 
               <div className="p-2.5 rounded-lg border border-[#D8D0C2] bg-[#F6F1E7]">
                 <div className="h-6 rounded-md bg-[#B45A28] mb-1.5 shadow-xs" />
-                <span className="text-[10px] font-mono font-bold text-[#292925] block">4. {isHindi ? 'खतरा' : 'High Dose'}</span>
-                <span className="text-[9px] text-[#5D5B53] block">{isHindi ? 'भूरा-नारंगी (1.2 ppm·h)' : 'Amber-Orange (1.2 ppm·h)'}</span>
+                <span className="text-[10px] font-mono font-bold text-[#292925] block">4. {isHindi ? 'खतरा स्तर' : 'High Dose'}</span>
+                <span className="text-[9px] text-[#5D5B53] block">{isHindi ? 'भूरा-नारंगी (१.२ ppm·h)' : 'Amber-Orange (1.2 ppm·h)'}</span>
                 <span className="text-[9px] text-[#9A6258] font-bold font-mono">{isHindi ? 'खतरा' : 'REVIEW'}</span>
               </div>
 
               <div className="p-2.5 rounded-lg border border-[#D8D0C2] bg-[#F6F1E7]">
                 <div className="h-6 rounded-md bg-[#D48818] mb-1.5 shadow-xs" />
-                <span className="text-[10px] font-mono font-bold text-[#292925] block">5. {isHindi ? 'गंभीर' : 'Critical'}</span>
-                <span className="text-[9px] text-[#5D5B53] block">{isHindi ? 'पीला (&gt;2.0 ppm·h)' : 'Yellow (&gt;2.0 ppm·h)'}</span>
+                <span className="text-[10px] font-mono font-bold text-[#292925] block">5. {isHindi ? 'गंभीर खतरा' : 'Critical'}</span>
+                <span className="text-[9px] text-[#5D5B53] block">{isHindi ? 'पीला (> २.० ppm·h)' : 'Yellow (>2.0 ppm·h)'}</span>
                 <span className="text-[9px] text-[#9A6258] font-bold font-mono">{isHindi ? 'खतरा' : 'REVIEW'}</span>
               </div>
             </div>

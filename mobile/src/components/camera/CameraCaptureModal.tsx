@@ -8,6 +8,7 @@ interface CameraCaptureModalProps {
   isOpen: boolean;
   userRole: UserRole;
   currentWorker?: Worker | null;
+  workerLanguage?: 'hi' | 'en';
   onClose: () => void;
   onPhotoSelected: (data: {
     imageUri?: string;
@@ -22,9 +23,11 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   isOpen,
   userRole,
   currentWorker,
+  workerLanguage = 'hi',
   onClose,
   onPhotoSelected
 }) => {
+  const isHindi = workerLanguage === 'hi';
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [selectedDemoSample, setSelectedDemoSample] = useState<DemoSampleBadge | null>(null);
   const [permissionError, setPermissionError] = useState<string | null>(null);
@@ -147,11 +150,11 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
               <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
                 isWorkerRole ? 'bg-[#5A7456]/40 text-[#BACDB2]' : 'bg-[#B08A55]/40 text-[#EDE5D6]'
               }`}>
-                {isWorkerRole ? 'PERSONAL DOSIMETER SCAN' : 'OFFICER FIELD AUDIT'}
+                {isWorkerRole ? (isHindi ? 'कलाई का पट्टा स्कैन' : 'PERSONAL DOSIMETER SCAN') : 'OFFICER FIELD AUDIT'}
               </span>
             </div>
             <h2 className="text-base font-serif font-bold text-white tracking-wide mt-1">
-              {isWorkerRole ? 'Scan My Wristband' : 'Field Worker Inspection'}
+              {isWorkerRole ? (isHindi ? 'अपना रिस्टबैंड स्कैन करें' : 'Scan My Wristband') : 'Field Worker Inspection'}
             </h2>
           </div>
 
@@ -159,7 +162,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
             <button
               onClick={() => setShowGuide(!showGuide)}
               className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 active:bg-white/20"
-              title="How to scan"
+              title={isHindi ? 'स्कैन करने की विधि' : 'How to scan'}
             >
               <HelpCircle className="w-4 h-4" />
             </button>
@@ -181,7 +184,9 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
               </div>
               <div>
                 <span className="font-semibold text-white block">{targetWorker.name}</span>
-                <span className="text-[10px] text-[#C9BFAE] font-mono">Assigned Band: {targetWorker.assignedBandId}</span>
+                <span className="text-[10px] text-[#C9BFAE] font-mono">
+                  {isHindi ? 'रिस्टबैंड कोड: ' : 'Assigned Band: '}{targetWorker.assignedBandId} {isHindi ? '(६० दिन वैध)' : ''}
+                </span>
               </div>
             </div>
             <span className="text-[10px] font-mono bg-black/40 px-2 py-0.5 rounded text-[#EDE5D6]">
@@ -307,18 +312,18 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
             </div>
 
             <p className="text-sm font-semibold text-white mb-0.5">
-              {isWorkerRole ? 'Position your wristband in frame' : `Frame ${targetWorker.name}'s wristband`}
+              {isWorkerRole ? (isHindi ? 'रिस्टबैंड को कैमरे के चौखट में रखें' : 'Position your wristband in frame') : `Frame ${targetWorker.name}'s wristband`}
             </p>
             <p className="text-[11px] text-[#C9BFAE] max-w-xs leading-relaxed">
-              Align the sensing strip and printed reference scale within the borders.
+              {isHindi ? 'रासायनिक पट्टी और रंग पैमाने को चौखट के अंदर सीधा रखें।' : 'Align the sensing strip and printed reference scale within the borders.'}
             </p>
 
             {permissionError && (
               <div className="mt-3 bg-[#9A6258]/30 border border-[#9A6258]/70 rounded-lg p-2 text-xs text-[#F6E2DF] flex items-start gap-1.5 text-left">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-semibold block">Camera Access Issue</span>
-                  {permissionError}. You can upload an image or choose a demo sample.
+                  <span className="font-semibold block">{isHindi ? 'कैमरा अनुमति त्रुटि' : 'Camera Access Issue'}</span>
+                  {permissionError}
                 </div>
               </div>
             )}
@@ -343,14 +348,14 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
               className="flex-1 py-3 bg-white/15 hover:bg-white/20 border border-white/20 rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all text-white"
             >
               <RotateCcw className="w-4 h-4" />
-              Retake
+              {isHindi ? 'दोबारा फोटो लें' : 'Retake'}
             </button>
             <button
               onClick={handleUsePhoto}
               className="flex-1 py-3 bg-[#5A7456] hover:bg-[#4F5D4B] text-white rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-md"
             >
               <Check className="w-4 h-4" />
-              {isWorkerRole ? 'Analyze My Exposure' : 'Confirm & Audit Scan'}
+              {isWorkerRole ? (isHindi ? 'गैस स्तर की जांच करें' : 'Analyze My Exposure') : 'Confirm & Audit Scan'}
             </button>
           </div>
         ) : (
@@ -361,7 +366,9 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
               className="w-full py-3.5 bg-[#EDE5D6] hover:bg-white text-[#292925] rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all"
             >
               <Camera className="w-5 h-5 text-[#292925]" />
-              {isCapturing ? 'Opening Camera...' : (isWorkerRole ? 'Open Camera for My Band' : 'Open Camera for Inspection')}
+              {isCapturing 
+                ? (isHindi ? 'कैमरा खुल रहा है...' : 'Opening Camera...') 
+                : (isWorkerRole ? (isHindi ? 'कैमरा चालू करें' : 'Open Camera for My Band') : 'Open Camera for Inspection')}
             </button>
 
             <div className="flex gap-2">
@@ -370,7 +377,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                 className="flex-1 py-2 bg-white/10 hover:bg-white/15 border border-white/20 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 text-white/90 active:scale-95 transition-all"
               >
                 <ImageIcon className="w-3.5 h-3.5" />
-                Upload Photo
+                {isHindi ? 'फोटो अपलोड करें' : 'Upload Photo'}
               </button>
 
               <button
@@ -378,7 +385,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                 className="flex-1 py-2 bg-[#71806B]/30 hover:bg-[#71806B]/40 border border-[#71806B]/50 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 text-[#EDE5D6] active:scale-95 transition-all"
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#C9BFAE]" />
-                Calibrated Samples
+                {isHindi ? 'परीक्षण नमूने' : 'Calibrated Samples'}
                 <ChevronDown className={`w-3 h-3 transition-transform ${showDemoPicker ? 'rotate-180' : ''}`} />
               </button>
             </div>
