@@ -41,6 +41,7 @@ const MainAppContent: React.FC = () => {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isResultOpen, setIsResultOpen] = useState(false);
+  const [pendingSampleResponse, setPendingSampleResponse] = useState<BackendAnalyzeResponse | null>(null);
 
   // Calibration pipeline data
   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
@@ -133,11 +134,13 @@ const MainAppContent: React.FC = () => {
         prototype: true,
         vision_engine: 'Calibrated Dual-Zone Physical Reference Sample'
       };
-      setCurrentApiResponse(sampleResp);
-      setIsAnalyzing(false);
-      setIsResultOpen(true);
+
+      // Store pending sample response and trigger the 5-step AI thinking sequence
+      setPendingSampleResponse(sampleResp);
+      setIsAnalyzing(true);
     } else if (data.imageUri) {
       // Real captured photo -> Start analysis sequence & backend API call
+      setPendingSampleResponse(null);
       setIsAnalyzing(true);
     }
   };
@@ -145,6 +148,7 @@ const MainAppContent: React.FC = () => {
   // Handler: When backend API responds successfully
   const handleAnalysisSuccess = (response: BackendAnalyzeResponse) => {
     setCurrentApiResponse(response);
+    setPendingSampleResponse(null);
     setIsAnalyzing(false);
     setIsResultOpen(true);
   };
@@ -152,6 +156,7 @@ const MainAppContent: React.FC = () => {
   // Handler: When user cancels during analysis
   const handleAnalysisCancel = () => {
     setIsAnalyzing(false);
+    setPendingSampleResponse(null);
     setIsCameraOpen(true);
   };
 
@@ -471,6 +476,8 @@ const MainAppContent: React.FC = () => {
       <AnalysisSequenceModal
         isOpen={isAnalyzing}
         imageUri={selectedImageUri}
+        precomputedResponse={pendingSampleResponse}
+        workerLanguage={workerLanguage}
         onAnalysisSuccess={handleAnalysisSuccess}
         onClose={handleAnalysisCancel}
       />

@@ -20,6 +20,8 @@ interface AnalysisSequenceModalProps {
   ambientTemp?: number;
   ambientRh?: number;
   shelfAgeDays?: number;
+  precomputedResponse?: BackendAnalyzeResponse | null;
+  workerLanguage?: 'en' | 'hi';
   onAnalysisSuccess: (response: BackendAnalyzeResponse) => void;
   onClose: () => void;
 }
@@ -32,17 +34,28 @@ const ANALYSIS_STEPS = [
   { id: 5, label: 'Estimating exposure' }
 ];
 
+const STEP_LABELS_HI = [
+  'रिस्टबैंड का पता लगाना',
+  'संदर्भ स्केल का पता लगाना',
+  'सेंसर स्ट्रिप रंग का नमूना लेना',
+  'प्रकाश सुधार और अंशांकन',
+  'गैस स्तर और जोखिम का अनुमान'
+];
+
 export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
   isOpen,
   imageUri,
   ambientTemp = 25.0,
   ambientRh = 50.0,
   shelfAgeDays = 15.0,
+  precomputedResponse,
+  workerLanguage = 'en',
   onAnalysisSuccess,
   onClose
 }) => {
+  const isHindi = workerLanguage === 'hi';
   const [currentStep, setCurrentStep] = useState(1);
-  const [progressPercent, setProgressPercent] = useState(15);
+  const [progressPercent, setProgressPercent] = useState(20);
   const [errorState, setErrorState] = useState<string | null>(null);
   const [errorKind, setErrorKind] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -50,10 +63,25 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
   const [customServerUrl, setCustomServerUrl] = useState(DosimeterApiService.getBaseUrl());
 
   const isMounted = useRef(true);
+  const activeTimerRef = useRef<any>(null);
+  const activeTimeoutRef = useRef<any>(null);
+
+  const clearTimers = () => {
+    if (activeTimerRef.current) {
+      clearInterval(activeTimerRef.current);
+      activeTimerRef.current = null;
+    }
+    if (activeTimeoutRef.current) {
+      clearTimeout(activeTimeoutRef.current);
+      activeTimeoutRef.current = null;
+    }
+  };
 
   const startAnalysis = async () => {
-    if (!imageUri) {
-      setErrorState('No wristband image data provided. Please capture or select a photo.');
+    clearTimers();
+
+    if (!imageUri && !precomputedResponse) {
+      setErrorState(isHindi ? 'कोई छवि डेटा नहीं मिला।' : 'No wristband image data provided. Please capture or select a photo.');
       setErrorKind('INVALID_IMAGE');
       return;
     }
@@ -64,8 +92,35 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
     setCurrentStep(1);
     setProgressPercent(20);
 
-    // Visual step progression timer
-    const stepTimer = setInterval(() => {
+    // If precomputed response is provided (e.g. Calibrated Demo Sample):
+    // Execute the complete 5-step AI thinking sequence with visible step transitions
+    if (precomputedResponse) {
+      let step = 1;
+      activeTimerRef.current = setInterval(() => {
+        if (!isMounted.current) {
+          clearTimers();
+          return;
+        }
+        step += 1;
+        if (step <= 5) {
+          setCurrentStep(step);
+          setProgressPercent(Math.round((step / 5) * 100));
+        }
+        if (step >= 5) {
+          clearTimers();
+          activeTimeoutRef.current = setTimeout(() => {
+            if (isMounted.current) {
+              setIsProcessing(false);
+              onAnalysisSuccess(precomputedResponse);
+            }
+          }, 600);
+        }
+      }, 650);
+      return;
+    }
+
+    // Visual step progression timer for live backend or local processing
+    activeTimerRef.current = setInterval(() => {
       setCurrentStep((prev) => {
         if (prev < 4) {
           const next = prev + 1;
@@ -79,13 +134,13 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
     try {
       // Execute live backend API call: POST /api/analyze-wristband
       const apiResponse = await DosimeterApiService.analyzeWristband({
-        imageUri,
+        imageUri: imageUri!,
         temperature: ambientTemp,
         humidity: ambientRh,
         shelfAgeDays
       });
 
-      clearInterval(stepTimer);
+      clearTimers();
 
       if (!isMounted.current) return;
 
@@ -94,8 +149,9 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
       setProgressPercent(100);
 
       // Brief pause to allow user to see 100% completion
-      setTimeout(() => {
+      activeTimeoutRef.current = setTimeout(() => {
         if (isMounted.current) {
+          setIsProcessing(false);
           onAnalysisSuccess(apiResponse);
         }
       }, 500);
@@ -104,28 +160,29 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
       console.warn('DosimeterApiService caught error. Automatically executing On-Device AI Engine (Offline Safe):', err);
       try {
         const onDeviceResult = await CalibrationEngine.analyzeRawImageAsync(
-          imageUri,
+          imageUri!,
           ambientTemp,
           ambientRh,
           shelfAgeDays
         );
-        clearInterval(stepTimer);
+        clearTimers();
         if (!isMounted.current) return;
         setCurrentStep(5);
         setProgressPercent(100);
-        setTimeout(() => {
+        activeTimeoutRef.current = setTimeout(() => {
           if (isMounted.current) {
+            setIsProcessing(false);
             onAnalysisSuccess(onDeviceResult);
           }
         }, 500);
       } catch (fallbackErr: any) {
-        clearInterval(stepTimer);
+        clearTimers();
         if (!isMounted.current) return;
         setErrorState(fallbackErr?.message || 'Unable to analyze image.');
         setErrorKind('INVALID_IMAGE');
       }
     } finally {
-      if (isMounted.current) {
+      if (isMounted.current && !precomputedResponse) {
         setIsProcessing(false);
       }
     }
@@ -133,13 +190,14 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
 
   useEffect(() => {
     isMounted.current = true;
-    if (isOpen && imageUri) {
+    if (isOpen && (imageUri || precomputedResponse)) {
       startAnalysis();
     }
     return () => {
       isMounted.current = false;
+      clearTimers();
     };
-  }, [isOpen, imageUri]);
+  }, [isOpen, imageUri, precomputedResponse]);
 
   const runOnDeviceFallback = async () => {
     if (!imageUri) return;
@@ -189,15 +247,17 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
         <div className="text-center space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-[11px] font-mono mb-1">
             <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            AI Analytical Pipeline · PS-118
+            {isHindi ? 'एआई विश्लेषणात्मक पाइपलाइन · PS-118' : 'AI Analytical Pipeline · PS-118'}
           </div>
           <h3 className="text-xl font-serif font-bold text-white">
-            {errorState ? 'Backend Analysis Disrupted' : 'Analyzing Wristband'}
+            {errorState 
+              ? (isHindi ? 'बैकएंड विश्लेषण बाधित' : 'Backend Analysis Disrupted') 
+              : (isHindi ? 'रिस्टबैंड का विश्लेषण हो रहा है' : 'Analyzing Wristband')}
           </h3>
           <p className="text-xs text-gray-400">
             {errorState 
-              ? 'Server unreachable or offline. On-device fallback available.' 
-              : 'Gemini Vision QA → OpenCV Colorimetric Engine → ML Regressor'}
+              ? (isHindi ? 'सर्वर ऑफ़लाइन है। ऑन-डिवाइस एआई इंजन उपलब्ध।' : 'Server unreachable or offline. On-device fallback available.') 
+              : (isHindi ? 'जेमिनी विजन क्यूए → ओपनसीवी रंगमिति → एमएल रीग्रेसर' : 'Gemini Vision QA → OpenCV Colorimetric Engine → ML Regressor')}
           </p>
         </div>
 
@@ -315,65 +375,120 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
         ) : (
           /* Normal Progress State */
           <>
-            {/* Scanner Radar Graphic */}
-            <div className="relative w-28 h-28 mx-auto flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full border border-[#D8D0C2]/20 animate-ping opacity-30"></div>
-              <div className="absolute inset-2 rounded-full border border-[#71806B]/40"></div>
-              <div className="absolute inset-5 rounded-full border border-dashed border-[#D8D0C2]/30 animate-spin"></div>
-              
-              <div className="relative z-10 flex flex-col items-center justify-center">
-                <span className="text-2xl font-mono font-bold text-white">
-                  {progressPercent}%
-                </span>
-                <span className="text-[9px] font-mono text-[#C9BFAE] uppercase">
-                  Analyzing
-                </span>
+            {/* Scanner Visual: Target Badge + Laser Sweep + Radar */}
+            <div className="flex items-center justify-center gap-4 py-2">
+              {/* Badge Thumbnail with laser scan line if imageUri exists */}
+              {imageUri && (
+                <div className="relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-emerald-500/50 bg-black/70 shadow-xl shrink-0 flex items-center justify-center">
+                  <img
+                    src={imageUri}
+                    alt="Target Wristband"
+                    className="w-full h-full object-contain p-1"
+                  />
+                  {/* Laser Scan beam moving down proportionally */}
+                  <div
+                    className="absolute inset-x-0 h-1 bg-gradient-to-r from-emerald-500 via-emerald-200 to-emerald-500 shadow-[0_0_12px_#34d399] transition-all duration-300 pointer-events-none"
+                    style={{ top: `${Math.min(92, Math.max(8, progressPercent))}%` }}
+                  />
+                  <div className="absolute top-1 left-1.5 text-[8px] font-mono font-bold text-emerald-400 bg-black/80 px-1 rounded border border-emerald-500/30">
+                    FOV 1.0x
+                  </div>
+                </div>
+              )}
+
+              {/* Scanner Radar Graphic */}
+              <div className="relative w-24 h-24 flex items-center justify-center shrink-0">
+                <div className="absolute inset-0 rounded-full border border-emerald-500/20 animate-ping opacity-40"></div>
+                <div className="absolute inset-1.5 rounded-full border border-emerald-500/30"></div>
+                <div className="absolute inset-4 rounded-full border border-dashed border-emerald-400/50 animate-spin"></div>
+                
+                <div className="relative z-10 flex flex-col items-center justify-center">
+                  <span className="text-2xl font-mono font-bold text-white tracking-tight">
+                    {progressPercent}%
+                  </span>
+                  <span className="text-[8px] font-mono text-emerald-400 uppercase font-bold tracking-wider">
+                    {isHindi ? 'प्रगति' : 'Progress'}
+                  </span>
+                </div>
               </div>
             </div>
 
             {/* Step-by-Step Breakdown matching exact user requirements */}
-            <div className="space-y-2.5 pt-1">
+            <div className="space-y-2 pt-1">
               {ANALYSIS_STEPS.map((step) => {
                 const isDone = currentStep > step.id;
                 const isCurrent = currentStep === step.id;
+                const label = isHindi ? STEP_LABELS_HI[step.id - 1] : step.label;
 
                 return (
                   <div
                     key={step.id}
-                    className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${
-                      isCurrent ? 'bg-white/10' : 'opacity-85'
+                    className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 ${
+                      isCurrent
+                        ? 'bg-emerald-950/60 border border-emerald-500/40 shadow-sm'
+                        : isDone
+                        ? 'bg-white/5 border border-white/10'
+                        : 'opacity-55 border border-transparent'
                     }`}
                   >
                     <div className="w-5 h-5 flex items-center justify-center shrink-0">
                       {isDone ? (
-                        <CheckCircle2 className="w-5 h-5 text-[#5A7456]" />
+                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                       ) : isCurrent ? (
-                        <Loader2 className="w-4 h-4 text-[#C9BFAE] animate-spin" />
+                        <Loader2 className="w-4 h-4 text-emerald-300 animate-spin" />
                       ) : (
-                        <div className="w-3 h-3 rounded-full border border-[#878377]" />
+                        <div className="w-3 h-3 rounded-full border border-gray-500" />
                       )}
                     </div>
 
-                    <span
-                      className={`text-xs ${
-                        isCurrent
-                          ? 'text-white font-semibold'
-                          : isDone
-                          ? 'text-[#C9BFAE]'
-                          : 'text-[#878377]'
-                      }`}
-                    >
-                      {step.id}. {step.label}
-                    </span>
+                    <div className="flex-1 flex items-center justify-between">
+                      <span
+                        className={`text-xs ${
+                          isCurrent
+                            ? 'text-white font-semibold'
+                            : isDone
+                            ? 'text-[#C9BFAE]'
+                            : 'text-[#878377]'
+                        }`}
+                      >
+                        {step.id}. {label}
+                      </span>
+                      {isDone && (
+                        <span className="text-[9px] font-mono text-emerald-400 font-bold uppercase tracking-wider bg-emerald-950/60 border border-emerald-500/30 px-1.5 py-0.5 rounded">
+                          {isHindi ? 'सफल' : 'OK'}
+                        </span>
+                      )}
+                      {isCurrent && (
+                        <span className="text-[9px] font-mono text-emerald-300 font-bold uppercase tracking-wider bg-emerald-900/60 px-1.5 py-0.5 rounded animate-pulse">
+                          {isHindi ? 'विश्लेषण जारी...' : 'ACTIVE...'}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 );
               })}
             </div>
 
+            {/* Cancel Button during scanning */}
+            <div className="pt-1 flex justify-center">
+              <button
+                onClick={() => {
+                  clearTimers();
+                  onClose();
+                }}
+                className="text-xs text-gray-400 hover:text-white flex items-center gap-1 py-1 px-3 rounded-lg hover:bg-white/10 transition-colors"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>{isHindi ? 'विश्लेषण रद्द करें' : 'Cancel Analysis'}</span>
+              </button>
+            </div>
+
             {/* Prototype Transparency Notice */}
-            <div className="border-t border-white/10 pt-3 text-center">
+            <div className="border-t border-white/10 pt-2.5 text-center">
               <p className="text-[10px] text-[#878377] font-mono">
-                SIMULATED / PROTOTYPE READING · Backend Random Forest Model
+                {isHindi 
+                  ? 'सिम्युलेटेड / प्रोटोटाइप विश्लेषण · बैकएंड रैंडम फॉरेस्ट मॉडल' 
+                  : 'SIMULATED / PROTOTYPE READING · Backend Random Forest Model'}
               </p>
             </div>
           </>
