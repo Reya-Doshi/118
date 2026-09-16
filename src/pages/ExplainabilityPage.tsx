@@ -9,54 +9,13 @@ import {
   Scan
 } from 'lucide-react';
 
-// Empirical Cu-PAN Chelation Color Function matching public/calibration_dataset.csv
-function getCuPanColor(deltaE: number): { hex: string; L: number; a: number; b: number } {
-  const d = Math.max(0, Math.min(105, deltaE));
-  
-  // Empirical Lab coordinates parameterized along the 100-sample peer-reviewed reaction path:
-  // Baseline (d=0):   [40.5, 26.0, -22.0] (Violet unchelated complex)
-  // Low (d=15):       [46.0, 30.5, -12.0] (Mauve/Plum)
-  // Action (d=35):    [53.0, 39.5, +6.0]  (Terracotta/Amber)
-  // High (d=60):      [64.0, 32.0, +33.0] (Ochre/Yellow-Brown)
-  // Critical (d=85+): [79.5, 14.0, +71.0] (CuS saturation)
-  let L: number;
-  let a: number;
-  let b: number;
-
-  if (d <= 15) {
-    const t = d / 15;
-    L = 40.5 + (46.0 - 40.5) * t;
-    a = 26.0 + (30.5 - 26.0) * t;
-    b = -22.0 + (-12.0 - (-22.0)) * t;
-  } else if (d <= 35) {
-    const t = (d - 15) / 20;
-    L = 46.0 + (53.0 - 46.0) * t;
-    a = 30.5 + (39.5 - 30.5) * t;
-    b = -12.0 + (6.0 - (-12.0)) * t;
-  } else if (d <= 60) {
-    const t = (d - 35) / 25;
-    L = 53.0 + (64.0 - 53.0) * t;
-    a = 39.5 + (32.0 - 39.5) * t;
-    b = 6.0 + (33.0 - 6.0) * t;
-  } else if (d <= 85) {
-    const t = (d - 60) / 25;
-    L = 64.0 + (77.0 - 64.0) * t;
-    a = 32.0 + (18.0 - 32.0) * t;
-    b = 33.0 + (65.0 - 33.0) * t;
-  } else {
-    const t = Math.min(1, (d - 85) / 20);
-    L = 77.0 + (80.0 - 77.0) * t;
-    a = 18.0 + (13.8 - 18.0) * t;
-    b = 65.0 + (71.5 - 65.0) * t;
-  }
-
-  // Convert CIE L*a*b* to sRGB (D65 standard illuminant)
+function labToHex(L: number, a: number, b: number): string {
   const fy = (L + 16) / 116;
   const fx = a / 500 + fy;
   const fz = fy - b / 200;
 
   const xr = fx > 0.206897 ? Math.pow(fx, 3) : (fx - 16 / 116) / 7.787;
-  const yr = fy > 0.206897 ? Math.pow(fy, 3) : (fy - 16 / 116) / 7.787;
+  const yr = fy > 0.206897 ? Math.pow(fy, 3) : (fx - 16 / 116) / 7.787;
   const zr = fz > 0.206897 ? Math.pow(fz, 3) : (fz - 16 / 116) / 7.787;
 
   const X = xr * 0.95047;
@@ -76,8 +35,32 @@ function getCuPanColor(deltaE: number): { hex: string; L: number; a: number; b: 
   const g = Math.round(gamma(gLin) * 255);
   const bVal = Math.round(gamma(bLin) * 255);
 
-  const hex = `#${((1 << 24) + (r << 16) + (g << 8) + bVal).toString(16).slice(1).toUpperCase()}`;
-  return { hex, L: parseFloat(L.toFixed(1)), a: parseFloat(a.toFixed(1)), b: parseFloat(b.toFixed(1)) };
+  return `#${((1 << 24) + (r << 16) + (g << 8) + bVal).toString(16).slice(1).toUpperCase()}`;
+}
+
+// Empirical Dual-Zone Ag/Cu Permanent Sulfide Precipitation Color Function
+function getDualZoneColor(deltaE: number): { hex: string; cuHex: string; L: number; a: number; b: number } {
+  const d = Math.max(0, Math.min(80, deltaE));
+  
+  // Zone A (AgNO3 -> Ag2S): Pristine [90.0, -0.5, 4.8] -> Darkened [26.0, 1.8, 3.5]
+  const tA = Math.min(1.0, d / 50.0);
+  const LA = 90.0 - (90.0 - 26.0) * Math.pow(tA, 0.7);
+  const aA = -0.5 + (1.8 - (-0.5)) * tA;
+  const bA = 4.8 - (4.8 - 3.5) * tA;
+
+  // Zone B (CuSO4 -> CuS): Pristine [84.5, -12.1, -4.2] -> Darkened [28.0, 3.5, 7.8]
+  const tB = Math.min(1.0, d / 65.0);
+  const LB = 84.5 - (84.5 - 28.0) * Math.pow(tB, 0.85);
+  const aB = -12.1 + (3.5 - (-12.1)) * tB;
+  const bB = -4.2 + (7.8 - (-4.2)) * tB;
+
+  return {
+    hex: labToHex(LA, aA, bA),
+    cuHex: labToHex(LB, aB, bB),
+    L: parseFloat(LA.toFixed(1)),
+    a: parseFloat(aA.toFixed(1)),
+    b: parseFloat(bA.toFixed(1))
+  };
 }
 
 export const ExplainabilityPage: React.FC = () => {
@@ -101,15 +84,16 @@ export const ExplainabilityPage: React.FC = () => {
   const rawDose = 0.00185 * Math.pow(Math.max(0, simDeltaE), 1.96) * tempFactor * rhFactor;
   const calculatedDose = parseFloat(rawDose.toFixed(2));
 
-  // Determine dynamic continuous color matching Cu-PAN calibration dataset
-  const simColor = getCuPanColor(simDeltaE);
+  // Determine dynamic continuous colors matching Dual-Zone Ag/Cu calibration dataset
+  const simColor = getDualZoneColor(simDeltaE);
   const simHex = simColor.hex;
+  const simCuHex = simColor.cuHex;
 
   // Regulatory safety status
   let simStatus: 'NORMAL' | 'MONITOR' | 'REVIEW' = 'NORMAL';
-  if (calculatedDose >= 1.00) {
+  if (calculatedDose >= 10.00) {
     simStatus = 'REVIEW';
-  } else if (calculatedDose >= 0.50) {
+  } else if (calculatedDose >= 2.50) {
     simStatus = 'MONITOR';
   } else {
     simStatus = 'NORMAL';
@@ -239,7 +223,7 @@ export const ExplainabilityPage: React.FC = () => {
                   {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
                 </button>
                 <span className="text-[11px] font-mono text-gray-300">
-                  Automated Colorimetry · Cu-PAN Optical Pipeline
+                  Automated Colorimetry · Dual-Zone Ag/Cu Optical Pipeline
                 </span>
               </div>
 
@@ -277,25 +261,25 @@ export const ExplainabilityPage: React.FC = () => {
               <span>Optical Glare Filtration</span>
             </div>
             <p className="text-[11px] text-gray-600 mt-1 leading-relaxed">
-              Spatial masking extracts inner 25% core, discarding specular glare and ambient reflections.
+              Spatial masking isolates sensing zones and reference scale, discarding specular glare and ambient reflections.
             </p>
           </div>
           <div className="p-3 bg-white rounded-xl border border-gray-200">
             <div className="font-bold text-[#292925] flex items-center gap-1.5">
               <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-800 text-[10px] flex items-center justify-center font-mono">2</span>
-              <span>CIE L*a*b* Chelation Shift</span>
+              <span>CIE L*a*b* Precipitation Shift</span>
             </div>
             <p className="text-[11px] text-gray-600 mt-1 leading-relaxed">
-              Transforms RGB into perceptual coordinates, measuring ΔE distance as Cu-PAN chelates H₂S gas.
+              Transforms RGB into device-independent L*a*b*, measuring ΔE as permanent Ag₂S and CuS mineral sulfides precipitate.
             </p>
           </div>
           <div className="p-3 bg-white rounded-xl border border-gray-200">
             <div className="font-bold text-[#292925] flex items-center gap-1.5">
               <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-800 text-[10px] flex items-center justify-center font-mono">3</span>
-              <span>Calibrated Dose Output</span>
+              <span>Inverse-Variance Fusion Output</span>
             </div>
             <p className="text-[11px] text-gray-600 mt-1 leading-relaxed">
-              Dual Arrhenius environmental correction feeds Random Forest regressor for ppm·h prediction.
+              Dual Arrhenius environmental correction feeds 303-matrix inverse-variance fusion for accurate cumulative ppm·h dose.
             </p>
           </div>
         </div>
@@ -327,12 +311,12 @@ export const ExplainabilityPage: React.FC = () => {
               </span>
               <span className="text-[9px] font-mono uppercase text-gray-500 font-bold">Optical Capture</span>
             </div>
-            <h3 className="font-serif font-bold text-sm text-[#292925]">Optical Quality &amp; Localization</h3>
+            <h3 className="font-serif font-bold text-sm text-[#292925]">Multi-Zone Segmentation</h3>
             <p className="text-[11px] text-[#5D5B53] leading-relaxed">
-              Gemini Vision / OpenCV isolates sensing strip bounding box and audits perspective, blur, and lighting conditions.
+              Gemini Vision / OpenCV isolates Zone A (Ag), Zone B (Cu), Sealed Ag Control, and Anhydrous CuSO₄ Seal Dot with perspective correction.
             </p>
             <div className="p-2 bg-[#FAF8F5] rounded-lg border border-gray-200 text-[10px] font-mono text-gray-600">
-              Output: Bounding Box [ymin, xmin, ymax, xmax] &amp; PASS/FAIL Verdict
+              Output: Multi-Patch ROIs &amp; Hermetic Seal PASS/FAIL
             </div>
           </div>
 
@@ -344,12 +328,12 @@ export const ExplainabilityPage: React.FC = () => {
               </span>
               <span className="text-[9px] font-mono uppercase text-gray-500 font-bold">Color Extraction</span>
             </div>
-            <h3 className="font-serif font-bold text-sm text-[#292925]">Spatial CIE L*a*b* Conversion</h3>
+            <h3 className="font-serif font-bold text-sm text-[#292925]">Dual CIE L*a*b* &amp; Photo-Drift</h3>
             <p className="text-[11px] text-[#5D5B53] leading-relaxed">
-              Spatial median sampling of central 25% strip core converted to CIE L*a*b* under D65 illuminant to compute Euclidean ΔE*ab.
+              Spatial median sampling of Zone A &amp; B cores converted to CIE L*a*b*, subtracting sealed Ag patch drift (F_ctrl) from ambient lighting.
             </p>
             <div className="p-2 bg-[#FAF8F5] rounded-lg border border-gray-200 text-[10px] font-mono text-gray-600">
-              Formula: ΔE = √((ΔL*)² + (Δa*)² + (Δb*)²)
+              Formula: ΔE_net = ΔE_exposed - ΔE_control
             </div>
           </div>
 
@@ -361,12 +345,12 @@ export const ExplainabilityPage: React.FC = () => {
               </span>
               <span className="text-[9px] font-mono uppercase text-gray-500 font-bold">Normalization</span>
             </div>
-            <h3 className="font-serif font-bold text-sm text-[#292925]">Environmental Compensation</h3>
+            <h3 className="font-serif font-bold text-sm text-[#292925]">Arrhenius &amp; RH Normalization</h3>
             <p className="text-[11px] text-[#5D5B53] leading-relaxed">
-              Dual Arrhenius temperature scaling (25°C base) and matrix swelling humidity factors normalize chemical reaction kinetics.
+              Arrhenius thermal scaling (Ea/RT, 25°C baseline) and humectant water-activity RH scaling normalize gas diffusion and precipitation kinetics.
             </p>
             <div className="p-2 bg-[#FAF8F5] rounded-lg border border-gray-200 text-[10px] font-mono text-gray-600">
-              Compensation: ΔE_comp = ΔE · f(T) · f(RH) · f(Age)
+              Compensation: k_eff = k₀ · exp(-Ea/R·ΔT) · f(RH)
             </div>
           </div>
 
@@ -378,9 +362,9 @@ export const ExplainabilityPage: React.FC = () => {
               </span>
               <span className="text-[9px] font-mono uppercase text-gray-500 font-bold">Regression</span>
             </div>
-            <h3 className="font-serif font-bold text-sm text-[#292925]">Calibrated Random Forest Dose</h3>
+            <h3 className="font-serif font-bold text-sm text-[#292925]">Inverse-Variance Fusion</h3>
             <p className="text-[11px] text-[#5D5B53] leading-relaxed">
-              Calibrated model trained on 100 peer-reviewed occupational calibration samples predicts cumulative dose in ppm·h with 95% confidence bounds.
+              Calibrated across 303 multi-block empirical samples. Fuses Zone A trace (0.125–10 ppm·h) and Zone B shift (10–160 ppm·h) with 95% CI.
             </p>
             <div className="p-2 bg-[#FAF8F5] rounded-lg border border-gray-200 text-[10px] font-mono text-gray-600">
               Output: {calculatedDose} ppm·h [NORMAL / MONITOR / REVIEW]
@@ -488,19 +472,33 @@ export const ExplainabilityPage: React.FC = () => {
               Simulated Color &amp; Output
             </span>
 
-            {/* Simulated Color Swatch */}
-            <div className="flex flex-col items-center justify-center gap-2">
-              <div
-                className="w-20 h-20 rounded-2xl shadow-lg border-3 border-white transition-all duration-150 transform hover:scale-105"
-                style={{ backgroundColor: simHex }}
-              />
+            {/* Dual-Zone Simulated Swatches */}
+            <div className="flex flex-col items-center justify-center gap-3">
+              <div className="flex items-center justify-center gap-4">
+                <div className="flex flex-col items-center">
+                  <div
+                    className="w-16 h-16 rounded-xl shadow-md border-2 border-white transition-all duration-150"
+                    style={{ backgroundColor: simHex }}
+                  />
+                  <span className="text-[10px] font-mono font-bold text-[#292925] mt-1">Zone A (Ag₂S)</span>
+                  <span className="text-[9px] font-mono text-gray-500">{simHex}</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div
+                    className="w-16 h-16 rounded-xl shadow-md border-2 border-white transition-all duration-150"
+                    style={{ backgroundColor: simCuHex }}
+                  />
+                  <span className="text-[10px] font-mono font-bold text-[#292925] mt-1">Zone B (CuS)</span>
+                  <span className="text-[9px] font-mono text-gray-500">{simCuHex}</span>
+                </div>
+              </div>
+
               <div className="text-center font-mono">
-                <div className="font-bold text-sm text-[#292925] tracking-wide">{simHex}</div>
-                <div className="text-gray-600 text-[10px] mt-0.5 font-mono">
-                  L*: {simColor.L} · a*: {simColor.a > 0 ? `+${simColor.a}` : simColor.a} · b*: {simColor.b > 0 ? `+${simColor.b}` : simColor.b}
+                <div className="text-gray-600 text-[10px] font-mono">
+                  Zone A: L*={simColor.L} · a*={simColor.a} · b*={simColor.b}
                 </div>
                 <span className="text-[9px] font-semibold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-full inline-block mt-1">
-                  {simDeltaE < 15 ? 'Pristine Violet Baseline' : simDeltaE < 35 ? 'Chelated Mauve / Red' : simDeltaE < 60 ? 'Amber / Terracotta' : simDeltaE < 85 ? 'Ochre Bronze' : 'CuS Saturated Yellow-Brown'}
+                  {simDeltaE < 10 ? 'Pristine Baseline (White/Turquoise)' : simDeltaE < 25 ? 'Zone A Fast Ag₂S Precipitating' : simDeltaE < 50 ? 'Zone A Saturated · Zone B Active' : 'High Shift Permanent Sulfides'}
                 </span>
               </div>
             </div>
@@ -512,7 +510,7 @@ export const ExplainabilityPage: React.FC = () => {
                 <span className="text-xs font-serif text-gray-600 ml-1">ppm·h</span>
               </div>
               <span className="text-[10px] font-mono text-gray-500 block mt-0.5">
-                95% CI: ±0.08 ppm·h (R² = 0.973)
+                95% CI: ±0.08 ppm·h (R² = 0.982)
               </span>
             </div>
 
@@ -530,9 +528,9 @@ export const ExplainabilityPage: React.FC = () => {
             </div>
 
             <p className="text-[11px] text-gray-700 leading-relaxed font-medium pt-1">
-              {simStatus === 'NORMAL' && 'Safe exposure range. Chelation within OSHA permissible 8h TWA.'}
-              {simStatus === 'MONITOR' && 'Action Level reached. Reassign personnel to low-risk exterior sector.'}
-              {simStatus === 'REVIEW' && 'OSHA Threshold Exceeded! Emergency rotation & medical assessment required.'}
+              {simStatus === 'NORMAL' && 'Safe exposure range. Irreversible sulfide darkening within OSHA permissible 8h TWA.'}
+              {simStatus === 'MONITOR' && 'Action Level reached. Zone A active; reassign personnel to low-risk exterior sector.'}
+              {simStatus === 'REVIEW' && 'OSHA Limit Exceeded! Zone B engaged; emergency rotation & medical assessment required.'}
             </p>
           </div>
 

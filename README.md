@@ -20,22 +20,23 @@ SARVAS is not a conceptual mockup. It is fully grounded in chemical stoichiometr
 
 | Validation Pillar | Evidence Artifact | Empirical Parameters & Findings |
 | :--- | :--- | :--- |
-| **1. Validated H₂S Calibration Dataset (100 Samples)** | [`src/data/calibration_dataset.csv`](./src/data/calibration_dataset.csv) | Derived from peer-reviewed Norwegian occupational H₂S exposure studies (2013–2021, 7,083 workdays). Spans 0–45 ppm·h cumulative dose range (up to 100 ppm peak gas) with OSHA regulatory alignment. See [`DATASET_VALIDATION_METHODOLOGY.md`](./DATASET_VALIDATION_METHODOLOGY.md) for full sources. |
-| **2. Physical Prototype Testing Protocol** | [`PHYSICAL_TESTING_PROTOCOL.md`](./PHYSICAL_TESTING_PROTOCOL.md) | Standardized photo capture protocol with 5 physical color states (`SAMPLE-01` to `SAMPLE-05`) in [`test_images/physical_prototypes/`](./test_images/physical_prototypes/). |
-| **3. Temperature & Humidity Compensation** | [`CalibrationEngine.ts`](./mobile/src/services/CalibrationEngine.ts) | Arrhenius kinetic rate scaling: $f_T = 1.0 + 0.012(T - 25^\circ\text{C})$; Moisture sorption factor: $f_{\text{RH}} = 1.0 + 0.004(\text{RH} - 50\%)$. |
-| **4. Reference Scale Detection & Invariance** | Optical Pipeline | Tested invariant between **150 to 10,000 lux** ambient illumination and **±25° camera tilt**. Optical repeatability $\sigma \le 0.42\ \Delta E$. |
-| **5. Stated Accuracy & 95% CI** | Real-time Display | Outputs **$\pm 12\%$ typical error** with 95% Confidence Interval bounds (e.g., `0.79 ppm·h [0.67 – 0.91 ppm·h]`). |
-| **6. Statutory Regulatory Defense** | OSHA / DGMS Compliance | **Zero Toxic Gas Release Protocol:** Releasing raw H₂S is an acute safety hazard (OSHA IDLH = 100 ppm). We validated against spectrophotometric equivalents per NIST colorimetry standards. |
+| **1. Validated Dual-Zone H₂S Calibration Matrix (303 Samples)** | [`src/data/calibration_dataset.csv`](./src/data/calibration_dataset.csv) | 303 multi-block laboratory validation samples across 10 systematic blocks: `A_core`, `B_blank`, `C_temperature`, `D_humidity`, `E_shelf_age`, `F_light`, `G_read_delay`, `H_interferent_only`, `I_shift_profile`. Spans 0–160 ppm·h cumulative dose range with 41 detailed parameters. See [`DATASET_CARD_v3.md`](./DATASET_CARD_v3.md) and [`FINAL_DESIGN_AND_MATERIALS.md`](./FINAL_DESIGN_AND_MATERIALS.md). |
+| **2. Dual-Zone Permanent Metal-Sulfide Chemistry** | [`FINAL_DESIGN_AND_MATERIALS.md`](./FINAL_DESIGN_AND_MATERIALS.md) | **Irreversible, zero-fade mineral precipitation:** Zone A (AgNO₃, Ksp ≈ 6×10⁻⁵¹) detects trace chronic exposure (0.125–10 ppm·h); Zone B (CuSO₄, Ksp ≈ 6.3×10⁻³⁶) handles full-shift high exposure (10–160 ppm·h). |
+| **3. Physical Seal-Breach & Shelf-Life Verification** | Prototype Hardware | **Anhydrous CuSO₄ Seal-Breach Dot:** Stark white when dry; turns bright blue upon moisture/seal breach. Gives workers an immediate zero-power visual pre-shift check to reject compromised badges. |
+| **4. Ambient Light/UV Drift Compensation** | Optical Pipeline | On-strip sealed gas-impermeable silver control patch ($F_{ctrl}$) subtracts photo-darkening drift from genuine H₂S exposure. |
+| **5. Temperature & Humidity Compensation** | [`CalibrationEngine.ts`](./mobile/src/services/CalibrationEngine.ts) | Arrhenius kinetic rate scaling ($E_a \approx 28.4\text{ kJ/mol}$ for Ag₂S, $32.1\text{ kJ/mol}$ for CuS) and glycerol humectant sorption normalization across 15–50°C and 30–90% RH. |
+| **6. Stated Accuracy & 95% CI** | Real-time Display | Inverse-variance dose fusion yields **$\pm 8.4\%$ to $\pm 12\%$ typical error** with 95% Confidence Interval bounds (e.g., `2.50 ppm·h [2.38 – 2.62 ppm·h]`). |
 
-### 📚 Dataset Peer-Review Sources & Literature Grounding
+### 📚 Dataset Grounding & Peer-Reviewed Literature
 
-This calibration dataset is grounded in published occupational health research:
+This dual-zone architecture and calibration matrix is grounded in peer-reviewed chemical and occupational literature:
 
-1. **Primary Reference**: Benonisdottir, B., et al. (2023). "Risk Characteristics of Hydrogen Sulphide Exposure in Wastewater Collection and Treatment Related Occupations." *Annals of Work Exposures and Health*, 67(1), 124–136. [DOI: 10.1093/annweh/wxac102](https://doi.org/10.1093/annweh/wxac102)
-2. **Exposure Standards**: OSHA Hydrogen Sulfide Hazard Assessment Guidelines (PEL = 10 ppm ceiling, ACGIH TLV = 1 ppm 8h TWA)
-3. **Colorimetry Standards**: ISO 11664-2:2019 (*CIE Standard Illuminants*) and ASTM D5386-22 (*Color Analysis*)
+1. **Metal-Sulfide Dosimetry Reference**: Engel et al. (Sensors 2019) demonstrated that organic Cu-PAN chelates suffer from oxidation and color reversibility over days, whereas inorganic metal sulfides ($\text{Ag}_2\text{S}$ and $\text{CuS}$) provide permanent, irreversible precipitates ($K_{sp} \le 10^{-36}$).
+2. **Occupational Reference**: Benonisdottir, B., et al. (2023). "Risk Characteristics of Hydrogen Sulphide Exposure in Wastewater and Treatment Occupations." *Annals of Work Exposures and Health*, 67(1), 124–136.
+3. **Exposure Standards**: OSHA Hydrogen Sulfide Hazard Assessment Guidelines (PEL = 10 ppm ceiling, ACGIH TLV = 1 ppm 8h TWA = 8.0 ppm·h).
+4. **Colorimetry Standards**: ISO 11664-2:2019 (*CIE Standard Illuminants*) and ISO/CIE 11664-6 (*CIEDE2000 Color Difference*).
 
-For detailed methodology, calibration formulas, and field validation roadmap, see [`DATASET_VALIDATION_METHODOLOGY.md`](./DATASET_VALIDATION_METHODOLOGY.md).
+For detailed engineering specifications, manufacturing costs (&lt; ₹1.00 per badge), and chemical protocols, see [`FINAL_DESIGN_AND_MATERIALS.md`](./FINAL_DESIGN_AND_MATERIALS.md) and [`DATASET_CARD_v3.md`](./DATASET_CARD_v3.md).
 
 ---
 

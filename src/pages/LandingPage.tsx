@@ -306,10 +306,10 @@ export const LandingPage: React.FC = () => {
                 <span className="w-4 h-4 rounded bg-[#4F5D4B] text-[#EDE5D6] text-[10px] font-mono font-bold flex items-center justify-center">
                   01
                 </span>
-                <h4 className="text-[11px] font-bold text-[#EDE5D6] uppercase font-mono">COLORIMETRIC STRIP</h4>
+                <h4 className="text-[11px] font-bold text-[#EDE5D6] uppercase font-mono">DUAL-ZONE SENSORS</h4>
               </div>
               <p className="text-[11px] text-[#A69F91] leading-relaxed">
-                Passively responds to cumulative H₂S exposure. Chemosensitive matrix darkens proportionally over time.
+                Permanent Ag₂S (Zone A, 0.125–10 ppm·h) &amp; CuS (Zone B, 10–160 ppm·h) precipitation. Insoluble mineral sulfides guarantee zero fading.
               </p>
             </div>
 
@@ -318,10 +318,10 @@ export const LandingPage: React.FC = () => {
                 <span className="w-4 h-4 rounded bg-[#B08A55]/30 text-[#EDE5D6] text-[10px] font-mono font-bold flex items-center justify-center">
                   02
                 </span>
-                <h4 className="text-[11px] font-bold text-[#EDE5D6] uppercase font-mono">REFERENCE SCALE</h4>
+                <h4 className="text-[11px] font-bold text-[#EDE5D6] uppercase font-mono">REFERENCE &amp; CONTROL</h4>
               </div>
               <p className="text-[11px] text-[#A69F91] leading-relaxed">
-                Provides a visual calibration reference for image-based reading, enabling ambient lighting compensation.
+                Printed CIE scale for ambient normalization, plus a sealed gas-impermeable silver control patch to subtract light photo-drift.
               </p>
             </div>
 
@@ -330,10 +330,10 @@ export const LandingPage: React.FC = () => {
                 <span className="w-4 h-4 rounded bg-[#71806B]/40 text-[#EDE5D6] text-[10px] font-mono font-bold flex items-center justify-center">
                   03
                 </span>
-                <h4 className="text-[11px] font-bold text-[#EDE5D6] uppercase font-mono">EXPIRY INDICATOR</h4>
+                <h4 className="text-[11px] font-bold text-[#EDE5D6] uppercase font-mono">SEAL-BREACH DOT</h4>
               </div>
               <p className="text-[11px] text-[#A69F91] leading-relaxed">
-                Confirms whether the sensing chemistry is still valid, rejecting degraded or expired dosimeters.
+                Anhydrous white CuSO₄ dot turns vivid blue upon moisture/seal breach, providing a physical pre-shift visual shelf-life indicator.
               </p>
             </div>
 
@@ -506,8 +506,8 @@ export const LandingPage: React.FC = () => {
           </div>
           <div className="p-4 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
             <div className="text-[10px] font-mono text-[#878377] uppercase font-bold">CALIBRATION POINTS</div>
-            <div className="text-2xl font-bold font-mono text-[#4F5D4B] mt-1">100</div>
-            <div className="text-[11px] text-[#5D5B53]">Peer-reviewed dataset</div>
+            <div className="text-2xl font-bold font-mono text-[#4F5D4B] mt-1">303</div>
+            <div className="text-[11px] text-[#5D5B53]">Dual-Zone empirical matrix</div>
           </div>
         </div>
       </section>
@@ -548,7 +548,7 @@ export const LandingPage: React.FC = () => {
               className="w-full sm:w-auto px-6 py-3 rounded bg-[#32322D] border border-[#43423A] text-[#EDE5D6] text-xs font-medium hover:bg-[#3B3A34] transition-colors flex items-center justify-center gap-2"
             >
               <Database className="w-3.5 h-3.5 text-[#B08A55]" />
-              <span>Explore 100-Row Dataset</span>
+              <span>Explore 303-Sample Matrix</span>
             </button>
           </div>
 

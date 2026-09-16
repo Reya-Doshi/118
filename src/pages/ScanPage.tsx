@@ -22,8 +22,8 @@ export const ScanPage: React.FC = () => {
   const { selectedSample, setLatestReading, setActivePage, workers, currentUser, selectedWorker, workerLanguage } = useApp();
   const isHindiWorker = currentUser?.role === 'WORKER' && workerLanguage === 'hi';
   
-  const [activeSampleId, setActiveSampleId] = useState<string>(selectedSample.id || 'OW-014');
-  const activeCalibration = CALIBRATION_DATASET.find(s => s.sampleId === activeSampleId) || CALIBRATION_DATASET[5];
+  const [activeSampleId, setActiveSampleId] = useState<string>(selectedSample.id || 'SIM-0030');
+  const activeCalibration = CALIBRATION_DATASET.find(s => s.sampleId === activeSampleId) || CALIBRATION_DATASET[29] || CALIBRATION_DATASET[0];
   
   const [assignedWorkerId, setAssignedWorkerId] = useState<string>(() => {
     if (selectedWorker) return selectedWorker.workerId;
@@ -67,11 +67,11 @@ export const ScanPage: React.FC = () => {
   const streamRef = useRef<MediaStream | null>(null);
 
   const steps = [
-    'Detecting wristband & QR badge ID…',
-    `Extracting raw strip color: L*=${activeCalibration.lab.L}, a*=${activeCalibration.lab.a}, b*=${activeCalibration.lab.b}…`,
-    `Computing reference target color difference: ΔEab* = ${activeCalibration.deltaE}…`,
-    `Applying simulated environmental compensation (${activeCalibration.tempC}°C, ${activeCalibration.rh}% RH)…`,
-    `Estimating cumulative H₂S exposure: ${activeCalibration.targetDose} ppm·h [${activeCalibration.actionFlag}]…`
+    'Detecting wristband QR, Zone A (Ag), Zone B (Cu), and Control patch…',
+    `Extracting dual-zone color: Zone A ΔE=${activeCalibration.agZone?.deltaE ?? activeCalibration.deltaE}, Zone B ΔE=${activeCalibration.cuZone?.deltaE ?? 0}…`,
+    `Verifying sealed Ag photo-control (F_ctrl) & anhydrous CuSO₄ seal-breach dot…`,
+    `Applying Arrhenius thermal (${activeCalibration.tempC}°C) & humidity (${activeCalibration.rh}% RH) compensation…`,
+    `Inverse-variance dose fusion: ${activeCalibration.targetDose} ppm·h [${activeCalibration.actionFlag}]…`
   ];
 
   // Helper: Stop camera tracks
@@ -260,16 +260,16 @@ export const ScanPage: React.FC = () => {
             const avgB = Math.round(totalB / count);
 
             const lab = srgbToLab(avgR, avgG, avgB);
-            // Reference baseline Cu-PAN unexposed values: L0*=40.5, a0*=26.0, b0*=-22.0
+            // Reference baseline unexposed Ag-zone values: L0*=90.0, a0*=-0.5, b0*=4.8
             const deltaE = parseFloat(
               Math.sqrt(
-                Math.pow(lab.L - 40.5, 2) +
-                Math.pow(lab.a - 26.0, 2) +
-                Math.pow(lab.b - (-22.0), 2)
+                Math.pow(lab.L - 90.0, 2) +
+                Math.pow(lab.a - (-0.5), 2) +
+                Math.pow(lab.b - 4.8, 2)
               ).toFixed(2)
             );
 
-            // Match against 100-sample calibrated Cu-PAN dataset
+            // Match against 303-sample calibrated Dual-Zone Ag/Cu dataset
             const sorted = [...CALIBRATION_DATASET].map(s => {
               const dist = Math.sqrt(
                 Math.pow(lab.L - s.lab.L, 2) +
@@ -305,18 +305,18 @@ export const ScanPage: React.FC = () => {
             let status: ExposureStatus = 'NORMAL';
             let actionFlag = 'Clean / Safe (< 0.5 ppm·h)';
 
-            if (activeCalibration.shelfAge > 60) {
+            if (activeCalibration.shelfAge > 90 || activeCalibration.sealDot === 'BLUE') {
               status = 'REVIEW';
-              actionFlag = 'EXPIRED / REJECT (Shelf age > 60 days)';
-            } else if (calculatedDose >= 5.0) {
+              actionFlag = 'SEAL BREACH / EXPIRED (Reject badge)';
+            } else if (calculatedDose >= 10.0) {
               status = 'REVIEW';
-              actionFlag = 'Critical (Severe Overexposure)';
-            } else if (calculatedDose >= 1.5) {
-              status = 'REVIEW';
-              actionFlag = 'PEL / Limit (Elevated Exposure)';
-            } else if (calculatedDose >= 0.5) {
+              actionFlag = 'Critical / Overexposure (>= 10.0 ppm·h)';
+            } else if (calculatedDose >= 2.5) {
               status = 'MONITOR';
-              actionFlag = 'Action Level (Intermediate Dose)';
+              actionFlag = 'Action Level (2.5 - 10.0 ppm·h)';
+            } else if (calculatedDose >= 0.5) {
+              status = 'NORMAL';
+              actionFlag = 'Low Trace (0.5 - 2.5 ppm·h)';
             }
 
             const hex = `#${((1 << 24) + (avgR << 16) + (avgG << 8) + avgB).toString(16).slice(1)}`;
@@ -343,15 +343,15 @@ export const ScanPage: React.FC = () => {
 
         // Fallback default if canvas fails
         const fallback = {
-          r: 125, g: 65, b: 90,
-          hex: '#7D415A',
-          lab: { L: 35.2, a: 31.4, b: -5.2 },
-          deltaE: 24.5,
-          estimatedDose: 0.85,
+          r: 180, g: 172, b: 155,
+          hex: '#B4AC9B',
+          lab: { L: 69.5, a: 1.2, b: 9.8 },
+          deltaE: 21.5,
+          estimatedDose: 2.50,
           status: 'MONITOR' as ExposureStatus,
-          actionFlag: 'Action Level (Intermediate Dose)',
-          confidence: 85,
-          closestSampleId: 'CP-042'
+          actionFlag: 'Action Level (2.5 - 10.0 ppm·h)',
+          confidence: 88,
+          closestSampleId: 'SIM-0030'
         };
         setExtractedColorimetry(fallback);
         resolve(fallback);
@@ -587,6 +587,14 @@ export const ScanPage: React.FC = () => {
               tempC: activeCalibration.tempC,
               humidityPercent: activeCalibration.rh,
               stripColorHex: activeCalibration.hexColor,
+              zoneA_hexColor: activeCalibration.agZone?.hex || activeCalibration.hexColor,
+              zoneB_hexColor: activeCalibration.cuZone?.hex || activeCalibration.cuHexColor,
+              zoneA_deltaE: activeCalibration.agZone?.deltaE ?? comp.rawDeltaE,
+              zoneB_deltaE: activeCalibration.cuZone?.deltaE ?? 0,
+              dose_ppm_h_zoneA: activeCalibration.estAgZonePpmH ?? comp.estimatedDosePpmH,
+              dose_ppm_h_zoneB: activeCalibration.estCuZonePpmH ?? comp.estimatedDosePpmH,
+              seal_breach_detected: activeCalibration.sealDot === 'BLUE',
+              light_exposure_warning: activeCalibration.lightKluxH > 50,
               isDemo: true,
               lab: activeCalibration.lab,
               rawColorString: activeCalibration.rawColorString,
@@ -619,12 +627,12 @@ export const ScanPage: React.FC = () => {
   };
 
   const featuredSamples = [
-    { id: 'OW-001', label: 'Baseline Clean', dose: '0.0', deltaE: '0.3' },
-    { id: 'OW-006', label: 'Trace Detection', dose: '0.2', deltaE: '2.8' },
-    { id: 'OW-014', label: 'Moderate Task', dose: '3.2', deltaE: '17.5' },
-    { id: 'OW-017', label: 'STEL Peak Exposure', dose: '6.5', deltaE: '25.9' },
-    { id: 'OW-024', label: 'Oil/Gas Refinery Ops', dose: '25.0', deltaE: '43.7' },
-    { id: 'OW-050', label: 'EXPIRED Reject (90d)', dose: '0.0', deltaE: '16.5' }
+    { id: 'SIM-0001', label: 'Pristine Blank (0h)', dose: '0.0', deltaE: '0.0' },
+    { id: 'SIM-0010', label: 'Zone A Trace (4h)', dose: '0.5', deltaE: '4.8' },
+    { id: 'SIM-0030', label: 'Action Level (4h)', dose: '2.5', deltaE: '13.2' },
+    { id: 'SIM-0060', label: 'OSHA 8h TWA (8h)', dose: '10.0', deltaE: '24.1' },
+    { id: 'SIM-0090', label: 'Zone B Shift (8h)', dose: '40.0', deltaE: '41.2' },
+    { id: 'SIM-0130', label: 'Moisture Reject (Dot)', dose: '0.0', deltaE: '1.2' }
   ];
 
   const currentComp = computeEnvironmentalCompensation(activeCalibration);
@@ -655,7 +663,7 @@ export const ScanPage: React.FC = () => {
         </div>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#B08A55]/15 border border-[#B08A55]/35 text-[#292925] text-xs font-mono font-semibold">
           <Sparkles className="w-3.5 h-3.5 text-[#B08A55]" />
-          <span>{isHindiWorker ? 'एआई-सहायता प्राप्त वास्तविक रिस्टबैंड स्कैन' : 'Simulated Calibration Data · AI-Assisted Estimate'}</span>
+          <span>{isHindiWorker ? 'एआई-सहायता प्राप्त वास्तविक रिस्टबैंड स्कैन' : 'Dual-Zone Ag/Cu Dosimeter · AI-Assisted Estimate'}</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#292925]">
           {isHindiWorker ? 'रिस्टबैंड स्कैन करें' : 'Read Wristband'}
@@ -663,7 +671,7 @@ export const ScanPage: React.FC = () => {
         <p className="text-xs text-[#292925]/70 max-w-xl mx-auto">
           {isHindiWorker 
             ? 'कैमरे से 118 रिस्टबैंड की फोटो लें ताकि वास्तविक रंग निकाला जा सके और गैस का सटीक स्तर पता चले।'
-            : 'Capture or upload an optical reading of the 118 dosimeter wristband. Extract CIE L*a*b* values, compute ΔE, and quantify cumulative H₂S exposure.'}
+            : 'Capture or upload an optical reading of the SARVAS Dual-Zone Ag/Cu dosimeter badge. Extract Zone A & Zone B CIE L*a*b* values, verify seal-breach dot, and quantify cumulative H₂S exposure.'}
         </p>
       </div>
 
@@ -690,7 +698,7 @@ export const ScanPage: React.FC = () => {
             }`}
           >
             <Sliders className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span className="truncate">{isHindiWorker ? 'कैलिब्रेशन मानक' : 'Preset Standards (100)'}</span>
+            <span className="truncate">{isHindiWorker ? 'कैलिब्रेशन मानक' : 'Preset Standards (303)'}</span>
           </button>
         </div>
       </div>
@@ -703,7 +711,7 @@ export const ScanPage: React.FC = () => {
             <div className="flex items-center gap-2">
               <Sliders className="w-4 h-4 text-[#4F5D4B]" />
               <span className="text-xs font-bold uppercase tracking-wider text-[#292925]">
-                Select Sample from Calibration Dataset
+                Select Sample from Dual-Zone Ag/Cu 303-Matrix
               </span>
             </div>
             <button
@@ -711,11 +719,11 @@ export const ScanPage: React.FC = () => {
               className="text-xs font-semibold text-[#4F5D4B] hover:underline flex items-center gap-1 cursor-pointer"
             >
               <Database className="w-3.5 h-3.5" />
-              <span>Explore All 100 Samples</span>
+              <span>Explore All 303 Samples</span>
             </button>
           </div>
 
-          {/* 6 Quick Presets */}
+          {/* 6 Quick Presets with Dual-Zone Swatches */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
             {featuredSamples.map(f => {
               const item = CALIBRATION_DATASET.find(s => s.sampleId === f.id);
@@ -732,10 +740,18 @@ export const ScanPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-between text-[11px] font-mono font-bold">
                     <span className="text-[#292925]">{f.id}</span>
-                    <div
-                      className="w-3 h-3 rounded-xs border border-black/20"
-                      style={{ backgroundColor: item?.hexColor }}
-                    />
+                    <div className="flex items-center gap-1">
+                      <div
+                        className="w-2.5 h-2.5 rounded-xs border border-black/20"
+                        style={{ backgroundColor: item?.agZone?.hex || item?.hexColor }}
+                        title="Zone A (Ag₂S)"
+                      />
+                      <div
+                        className="w-2.5 h-2.5 rounded-xs border border-black/20"
+                        style={{ backgroundColor: item?.cuZone?.hex || item?.cuHexColor || '#1e3a5f' }}
+                        title="Zone B (CuS)"
+                      />
+                    </div>
                   </div>
                   <div className="text-[10px] font-bold text-[#4F5D4B] mt-1">{f.dose} ppm·h</div>
                   <div className="text-[9px] text-[#292925]/70 truncate">{f.label}</div>
@@ -744,14 +760,14 @@ export const ScanPage: React.FC = () => {
             })}
           </div>
 
-          {/* Dropdown to pick ANY of the 100 samples & Assign to Worker */}
+          {/* Dropdown to pick ANY of the 303 samples & Assign to Worker */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-[#D8D0C2]">
             
-            {/* 100 Samples Dropdown */}
+            {/* 303 Samples Dropdown */}
             <div className="space-y-1">
               <label className="text-[11px] font-bold text-[#292925]/70 uppercase tracking-wide flex items-center gap-1.5">
                 <Database className="w-3.5 h-3.5 text-[#292925]/50" />
-                <span>Full 100-Sample Directory:</span>
+                <span>Full 303-Sample Matrix:</span>
               </label>
               <select
                 value={activeSampleId}
@@ -760,7 +776,7 @@ export const ScanPage: React.FC = () => {
               >
                 {CALIBRATION_DATASET.map(s => (
                   <option key={s.sampleId} value={s.sampleId}>
-                    {s.sampleId} | {s.targetDose} ppm·h | ΔE: {s.deltaE} | {s.actionFlag} ({s.expiryStatus})
+                    {s.sampleId} | {s.block} | {s.targetDose} ppm·h | {s.actionFlag}
                   </option>
                 ))}
               </select>
@@ -1076,47 +1092,91 @@ export const ScanPage: React.FC = () => {
               </div>
             </div>
 
-          /* 5. Default Synthetic Calibration Sample Simulation */
+          /* 5. Dual-Zone Calibration Wristband Simulation */
           ) : (
-            <div className="w-full max-w-md bg-[#292925] border border-white/15 rounded-lg p-4 shadow-md space-y-4">
-              <div className="flex items-center justify-between text-xs font-mono text-[#EDE5D6]/70 border-b border-white/10 pb-2">
-                <span>SAMPLE: {activeCalibration.sampleId}</span>
-                <span className={activeCalibration.expiryStatus === 'EXPIRED' ? 'text-[#9A6258] font-bold' : 'text-[#71806B]'}>
-                  STATUS: {activeCalibration.expiryStatus}
+            <div className="w-full max-w-lg bg-[#292925] border border-white/15 rounded-xl p-4 shadow-lg space-y-3">
+              <div className="flex items-center justify-between text-xs font-mono text-[#EDE5D6]/80 border-b border-white/10 pb-2">
+                <span className="font-bold">SARVAS DUAL-ZONE DOSIMETER: {activeCalibration.sampleId}</span>
+                <span className={activeCalibration.expiryStatus === 'EXPIRED' || activeCalibration.sealDot === 'BLUE' ? 'text-[#9A6258] font-bold' : 'text-[#71806B]'}>
+                  {activeCalibration.sealDot === 'BLUE' ? 'SEAL BREACHED' : `STATUS: ${activeCalibration.expiryStatus}`}
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                {/* Sensing Strip with simulated color */}
-                <div className="bg-[#1e1e1b] p-3 rounded border border-white/10 text-center">
-                  <div className="text-[10px] text-[#EDE5D6]/70 uppercase font-mono mb-1.5">SENSING STRIP</div>
+              {/* Wristband Physical Architecture Preview */}
+              <div className="grid grid-cols-4 gap-2 bg-[#1e1e1b] p-3 rounded-lg border border-white/10">
+                {/* Zone A: AgNO3 Trace Sensor */}
+                <div className="text-center space-y-1">
+                  <div className="text-[9px] text-[#EDE5D6]/70 uppercase font-mono truncate">ZONE A (Ag)</div>
                   <div
-                    className="h-10 rounded border border-white/20 shadow-inner flex items-center justify-center transition-colors duration-500"
-                    style={{ backgroundColor: activeCalibration.hexColor }}
+                    className="h-12 rounded border border-white/20 shadow-inner flex flex-col items-center justify-center transition-colors duration-500"
+                    style={{ backgroundColor: activeCalibration.agZone?.hex || activeCalibration.hexColor }}
                   >
-                    <span className="text-[9px] font-mono text-white/90 font-bold drop-shadow-xs">
-                      ΔE: {activeCalibration.deltaE}
+                    <span className="text-[8px] font-mono text-white drop-shadow-xs font-bold">
+                      ΔE {activeCalibration.agZone?.deltaE ?? activeCalibration.deltaE}
                     </span>
+                    <span className="text-[7px] font-mono text-white/80">0.1-10 ppm·h</span>
                   </div>
                 </div>
 
-                {/* Printed Reference Scale */}
-                <div className="bg-[#1e1e1b] p-3 rounded border border-white/10 text-center">
-                  <div className="text-[10px] text-[#EDE5D6]/70 uppercase font-mono mb-1.5">REFERENCE</div>
-                  <div className="flex items-center justify-center gap-1">
-                    {[
-                      { code: 'A1', hex: '#d4c5a9' },
-                      { code: 'A2', hex: '#b59b75' },
-                      { code: 'A3', hex: '#8c6d48' },
-                      { code: 'A4', hex: '#5d4533' },
-                      { code: 'A5', hex: '#3a2e2b' }
-                    ].map(r => (
-                      <div key={r.code} className="flex flex-col items-center">
-                        <div className="w-3.5 h-7 rounded-xs border border-white/20" style={{ backgroundColor: r.hex }} />
-                        <span className="text-[7px] font-mono text-[#EDE5D6]/70 mt-0.5">{r.code}</span>
-                      </div>
-                    ))}
+                {/* Zone B: CuSO4 High-Range Sensor */}
+                <div className="text-center space-y-1">
+                  <div className="text-[9px] text-[#EDE5D6]/70 uppercase font-mono truncate">ZONE B (Cu)</div>
+                  <div
+                    className="h-12 rounded border border-white/20 shadow-inner flex flex-col items-center justify-center transition-colors duration-500"
+                    style={{ backgroundColor: activeCalibration.cuZone?.hex || activeCalibration.cuHexColor || '#1e3a5f' }}
+                  >
+                    <span className="text-[8px] font-mono text-white drop-shadow-xs font-bold">
+                      ΔE {activeCalibration.cuZone?.deltaE ?? 0}
+                    </span>
+                    <span className="text-[7px] font-mono text-white/80">10-160 ppm·h</span>
                   </div>
+                </div>
+
+                {/* Sealed Ag Control Patch */}
+                <div className="text-center space-y-1">
+                  <div className="text-[9px] text-[#EDE5D6]/70 uppercase font-mono truncate">CONTROL (Ag)</div>
+                  <div
+                    className="h-12 rounded border border-white/20 shadow-inner flex flex-col items-center justify-center bg-[#E5E0D5]"
+                  >
+                    <span className="text-[8px] font-mono text-[#292925] font-bold">SEALED</span>
+                    <span className="text-[7px] font-mono text-[#292925]/70">UV/Light Ref</span>
+                  </div>
+                </div>
+
+                {/* Anhydrous CuSO4 Moisture Seal Dot */}
+                <div className="text-center space-y-1">
+                  <div className="text-[9px] text-[#EDE5D6]/70 uppercase font-mono truncate">SEAL DOT</div>
+                  <div
+                    className={`h-12 rounded border border-white/20 shadow-inner flex flex-col items-center justify-center ${
+                      activeCalibration.sealDot === 'BLUE'
+                        ? 'bg-[#3b82f6] text-white'
+                        : 'bg-[#fafafa] text-[#292925]'
+                    }`}
+                  >
+                    <div className={`w-3 h-3 rounded-full border border-black/20 ${activeCalibration.sealDot === 'BLUE' ? 'bg-[#1d4ed8]' : 'bg-white'}`} />
+                    <span className="text-[7px] font-mono font-bold mt-0.5">
+                      {activeCalibration.sealDot === 'BLUE' ? 'BLUE (LEAK)' : 'WHITE (OK)'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Reference Color Calibration Scale */}
+              <div className="bg-[#1e1e1b] p-2.5 rounded-lg border border-white/10 flex items-center justify-between">
+                <span className="text-[9px] font-mono text-[#EDE5D6]/70 uppercase">CIE Reference Swatches:</span>
+                <div className="flex items-center gap-1.5">
+                  {[
+                    { code: 'R1', hex: '#d4c5a9' },
+                    { code: 'R2', hex: '#b59b75' },
+                    { code: 'R3', hex: '#8c6d48' },
+                    { code: 'R4', hex: '#5d4533' },
+                    { code: 'R5', hex: '#3a2e2b' }
+                  ].map(r => (
+                    <div key={r.code} className="flex flex-col items-center">
+                      <div className="w-4 h-4 rounded-xs border border-white/30" style={{ backgroundColor: r.hex }} />
+                      <span className="text-[7px] font-mono text-[#EDE5D6]/70">{r.code}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 

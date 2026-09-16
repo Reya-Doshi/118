@@ -36,6 +36,16 @@ export interface ExposureReading {
   stripColorHex: string;
   isDemo: boolean;
   
+  // Dual-Zone Sensor Fields
+  zoneA_hexColor?: string;
+  zoneB_hexColor?: string;
+  zoneA_deltaE?: number;
+  zoneB_deltaE?: number;
+  dose_ppm_h_zoneA?: number;
+  dose_ppm_h_zoneB?: number;
+  seal_breach_detected?: boolean;
+  light_exposure_warning?: boolean;
+
   // Calibration dataset specific parameters
   lab?: { L: number; a: number; b: number };
   rawColorString?: string;

@@ -1,0 +1,2 @@
+sample_id,date,operator,badge_batch,strip_age_days,sealed_pouch,h2s_generation_method,na2s_mg,acid_and_volume,chamber_volume_L,calculated_h2s_ppm,reference_meter_ppm,duration_h,dose_ppmh,temp_C,rh_pct,light_klux_h,uv_film,read_delay_h,phone_model,photo_filename,agZone_L,agZone_a,agZone_b,cuZone_L,cuZone_a,cuZone_b,ctrl_patch_L,seal_dot,notes
+LAB-0001,YYYY-MM-DD,initials,B01,0,True,"Na2S + dilute acid, sealed jar, fume hood, faculty present",,,,,,1,,(measure),(measure),,,,,LAB-0001.jpg,,,,,,,,,EXAMPLE ROW - delete before use

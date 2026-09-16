@@ -58,46 +58,50 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
       id: 'q-chem-1',
       category: 'chemistry',
       badge: 'Reaction Stoichiometry',
-      question: 'What is the exact chemical mechanism? How does Cu-PAN react with H₂S and why does it turn from violet to brown/black?',
-      quickPitch: 'Cu²⁺-PAN complex (violet) undergoes irreversible nucleophilic displacement by dissolved S²⁻ ions to form colloidal CuS (insoluble black precipitate, Ksp ≈ 6.3 × 10⁻³⁶), freeing amber-orange PAN dye.',
+      question: 'What is the exact chemical mechanism? Why did you choose Dual-Zone Ag/Cu precipitation over Cu-PAN or lead acetate?',
+      quickPitch: 'PS-118 demands permanent darkening. Organic Cu-PAN chelation suffers from oxidation and color fading back over days (Engel et al., Sensors 2019), while lead acetate is toxic. SARVAS uses Dual-Zone metal-sulfide precipitation: Zone A (AgNO₃, Ksp ≈ 6×10⁻⁵¹) detects trace doses (0.125–10 ppm·h), while Zone B (CuSO₄, Ksp ≈ 6.3×10⁻³⁶) handles extended shifts (10–160 ppm·h). Mineral sulfides Ag₂S and CuS are completely insoluble and permanent.',
       fullAnswer: (
         <div className="space-y-4 text-xs leading-relaxed text-[#5D5B53]">
           <p>
-            The chemical sensor utilizes <strong>Copper(II)-1-(2-Pyridylazo)-2-naphthol [Cu²⁺-PAN]</strong> immobilized on an amorphous cellulose acetate microporous substrate. The reaction follows quantitative ligand displacement:
+            The chemical dosimeter uses an indigenously formulated <strong>Dual-Zone Metal-Sulfide Precipitation Matrix</strong> immobilized on Whatman #1 qualitative filter paper with glycerol humectant:
           </p>
-          <div className="p-3.5 rounded-xl bg-[#EDE5D6]/70 border border-[#D8D0C2] font-mono text-[11px] text-[#292925] space-y-1.5">
-            <div className="font-bold text-[#4F5D4B]">Stoichiometric Reaction:</div>
-            <div>[Cu(PAN)]⁺ (violet) + H₂S(g) ⟶ CuS↓ (insoluble brown-black) + PAN-H (amber-orange) + H⁺</div>
-            <div className="text-[10px] text-[#878377] mt-1">Solubility product constant: Ksp(CuS) ≈ 6.3 × 10⁻³⁶ mol²·L⁻²</div>
+          <div className="p-3.5 rounded-xl bg-[#EDE5D6]/70 border border-[#D8D0C2] font-mono text-[11px] text-[#292925] space-y-2">
+            <div className="font-bold text-[#4F5D4B]">Zone A (Trace Sensor — AgNO₃):</div>
+            <div>2 Ag⁺ + H₂S(g) ⟶ Ag₂S↓ (permanent brown/black precipitate) + 2 H⁺</div>
+            <div className="text-[10px] text-[#878377]">Solubility product constant: Ksp(Ag₂S) ≈ 6 × 10⁻⁵¹ mol³·L⁻³ · Range: 0.125–10 ppm·h</div>
+
+            <div className="font-bold text-[#4F5D4B] pt-1">Zone B (Extended Shift Sensor — CuSO₄):</div>
+            <div>Cu²⁺ + H₂S(g) ⟶ CuS↓ (permanent dark brown/black precipitate) + 2 H⁺</div>
+            <div className="text-[10px] text-[#878377]">Solubility product constant: Ksp(CuS) ≈ 6.3 × 10⁻³⁶ mol²·L⁻² · Range: 10–160 ppm·h</div>
           </div>
           <p>
-            Because the formation constant of CuS precipitate is astronomically higher than the stability constant of the Cu²⁺-PAN chelate, the reaction proceeds <strong>spontaneously, instantaneously, and irreversibly</strong> at room temperature. The visible color progression shifts along a predictable trajectory:
+            Because mineral sulfides are inorganic precipitates with extreme negative Gibbs free energy of formation (ΔG°f), the darkening is <strong>thermodynamically irreversible</strong>. Unlike organic chelates that fade back in ambient air, mineral Ag₂S and CuS provide permanent, tamper-evident legal records for plant safety audits.
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
             <div className="p-2.5 rounded-lg border border-[#D8D0C2] bg-white text-center shadow-2xs">
-              <div className="w-5 h-5 rounded-full mx-auto mb-1.5 border border-black/10" style={{ backgroundColor: '#6B4C7A' }} />
+              <div className="w-5 h-5 rounded-full mx-auto mb-1.5 border border-black/10" style={{ backgroundColor: '#E8E5DC' }} />
               <div className="font-bold text-[10px] text-[#292925]">0.0 ppm·h</div>
-              <div className="text-[9px] text-[#878377]">Deep Violet</div>
+              <div className="text-[9px] text-[#878377]">Pristine Cream / Turq</div>
             </div>
             <div className="p-2.5 rounded-lg border border-[#D8D0C2] bg-white text-center shadow-2xs">
-              <div className="w-5 h-5 rounded-full mx-auto mb-1.5 border border-black/10" style={{ backgroundColor: '#8B6B4A' }} />
-              <div className="font-bold text-[10px] text-[#292925]">3.5 ppm·h</div>
-              <div className="text-[9px] text-[#878377]">Bronze-Olive</div>
+              <div className="w-5 h-5 rounded-full mx-auto mb-1.5 border border-black/10" style={{ backgroundColor: '#B8A88E' }} />
+              <div className="font-bold text-[10px] text-[#292925]">2.5 ppm·h</div>
+              <div className="text-[9px] text-[#878377]">Zone A Darkening</div>
             </div>
             <div className="p-2.5 rounded-lg border border-[#D8D0C2] bg-white text-center shadow-2xs">
-              <div className="w-5 h-5 rounded-full mx-auto mb-1.5 border border-black/10" style={{ backgroundColor: '#5C3A21' }} />
-              <div className="font-bold text-[10px] text-[#292925]">7.0 ppm·h</div>
-              <div className="text-[9px] text-[#878377]">Deep Brown</div>
+              <div className="w-5 h-5 rounded-full mx-auto mb-1.5 border border-black/10" style={{ backgroundColor: '#5A4E3E' }} />
+              <div className="font-bold text-[10px] text-[#292925]">10.0 ppm·h</div>
+              <div className="text-[9px] text-[#878377]">Zone A Sat / Zone B Engaged</div>
             </div>
             <div className="p-2.5 rounded-lg border border-[#D8D0C2] bg-white text-center shadow-2xs">
-              <div className="w-5 h-5 rounded-full mx-auto mb-1.5 border border-black/10" style={{ backgroundColor: '#1A1815' }} />
-              <div className="font-bold text-[10px] text-[#292925]">≥ 10.0 ppm·h</div>
-              <div className="text-[9px] text-[#878377]">Saturated Black</div>
+              <div className="w-5 h-5 rounded-full mx-auto mb-1.5 border border-black/10" style={{ backgroundColor: '#201C18' }} />
+              <div className="font-bold text-[10px] text-[#292925]">≥ 40.0 ppm·h</div>
+              <div className="text-[9px] text-[#878377]">Dual Deep Black</div>
             </div>
           </div>
         </div>
       ),
-      tags: ['reaction', 'chemistry', 'cu-pan', 'cus', 'solubility', 'stoichiometry']
+      tags: ['reaction', 'chemistry', 'ag2s', 'cus', 'permanence', 'dual-zone', 'solubility']
     },
     {
       id: 'q-chem-2',
@@ -174,20 +178,21 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
       id: 'q-chem-5',
       category: 'chemistry',
       badge: 'Stability & Shelf-Life',
-      question: 'What is the unexposed shelf-life of the band, and does ambient sunlight/UV degrade the reagent?',
-      quickPitch: 'Hermetically foil-sealed in nitrogen-flushed blister packs, strips have an 180-day shelf life. Once worn, an embedded 400nm UV-blocking PTFE film prevents photolytic degradation of the PAN complex.',
+      question: 'How do you validate unexposed shelf-life, and how does the badge prove it hasn\'t expired or degraded before wearing?',
+      quickPitch: 'Every wristband embeds an Anhydrous CuSO₄ Seal-Breach Dot (stark white when dry, vivid blue pentahydrate upon moisture breach). Workers perform a 1-second visual zero-power check before shift. Storage life in nitrogen-flushed foil pouches is 180 days; an on-strip sealed Ag patch subtracts ambient UV photo-drift (F_ctrl).',
       fullAnswer: (
         <div className="space-y-3 text-xs leading-relaxed text-[#5D5B53]">
           <p>
-            The unexposed badge utilizes two protective barriers:
+            PS-118 explicitly demands: <em>"no way to confirm the badge itself hasn't already expired or degraded before it's worn."</em> SARVAS solves this with an innovative triple-defense architecture:
           </p>
           <ol className="list-decimal list-inside space-y-1.5 pl-1 text-[11px]">
-            <li><strong>Storage Protection:</strong> Vacuum-sealed multi-laminate aluminum pouches with desiccant. Shelf stability validated at 6 months at &lt;30°C with &lt;0.5 ΔE zero-point drift.</li>
-            <li><strong>Operational UV Filter:</strong> The outer transparent membrane incorporates a benzophenone UV absorber that cuts off &lt;380 nm radiation, eliminating photobleaching during 8-12 hour outdoor refinery shifts.</li>
+            <li><strong>Anhydrous CuSO₄ Moisture Breach Dot:</strong> Pristine anhydrous copper sulfate is stark white. If pouch integrity is breached during transport or storage, moisture hydrates it to vivid blue [Cu(H₂O)₄]SO₄·H₂O. Workers reject any badge with a blue dot before ever putting it on.</li>
+            <li><strong>Hermetic Barrier Packaging:</strong> Nitrogen-flushed aluminum blister packs with molecular sieve desiccant provide 180-day shelf life (&lt;30°C, zero baseline drift).</li>
+            <li><strong>Sealed Ag Photo-Control Reference:</strong> An identical AgNO₃ patch sealed under gas-impermeable optical barrier tracks and subtracts ambient UV/light photo-reduction (F_ctrl) during outdoor refinery shifts.</li>
           </ol>
         </div>
       ),
-      tags: ['shelf-life', 'stability', 'uv', 'photobleaching', 'packaging']
+      tags: ['shelf-life', 'stability', 'seal-breach', 'cuso4', 'moisture', 'packaging', 'photo-drift']
     },
     {
       id: 'q-ml-1',
@@ -219,7 +224,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
       category: 'ml-cv',
       badge: 'AI Architecture',
       question: 'Which algorithm is used, and why not use an end-to-end deep convolutional neural network (CNN) on edge?',
-      quickPitch: 'We use a hybrid pipeline: Edge-CV for fiducial localization + deterministic CIEDE2000 colorimetry + XGBoost regression ensemble. Deep CNNs are non-transparent black boxes prone to hallucinating under glare; our pipeline is 100% auditable.',
+      quickPitch: 'We use a hybrid pipeline: Edge-CV for fiducial localization + deterministic CIEDE2000 colorimetry + inverse-variance dual-zone regression. Deep CNNs are non-transparent black boxes prone to hallucinating under glare; our pipeline is 100% auditable.',
       fullAnswer: (
         <div className="space-y-3 text-xs leading-relaxed text-[#5D5B53]">
           <p>
@@ -231,11 +236,11 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
             <li><strong>Latency &amp; Power:</strong> Heavy models drain worker mobile devices and cause lag on low-power kiosk terminals.</li>
           </ul>
           <p>
-            SARVAS pairs <strong>CIEDE2000 (ISO/CIE 11664-6)</strong> deterministic spectrophotometry with a lightweight <strong>XGBoost gradient-boosted ensemble</strong> trained on 100 peer-reviewed occupational calibration samples. Inference takes <strong>&lt;45 ms</strong> in WebAssembly.
+            SARVAS pairs <strong>CIEDE2000 (ISO/CIE 11664-6)</strong> deterministic spectrophotometry with a multi-block <strong>inverse-variance fusion model</strong> calibrated across 303 empirical samples (0.1–160 ppm·h). Inference executes in <strong>&lt;25 ms</strong> in on-device WebAssembly.
           </p>
         </div>
       ),
-      tags: ['ml algorithm', 'xgboost', 'cnn', 'ciede2000', 'deterministic', 'auditability']
+      tags: ['ml algorithm', 'inverse-variance', 'fusion', 'cnn', 'ciede2000', 'deterministic', 'auditability']
     },
     {
       id: 'q-ml-3',

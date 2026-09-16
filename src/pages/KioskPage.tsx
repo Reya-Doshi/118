@@ -98,30 +98,30 @@ export const KioskPage: React.FC = () => {
   const PRESET_CONFIGS = {
     normal: {
       name: 'Sample A: Unexposed Baseline (Shift Start)',
-      dose: 0.18,
+      dose: 0.0,
       status: 'NORMAL' as ExposureStatus,
-      deltaE: 8.2,
-      hex: '#B8728A',
-      lab: { L: 42.0, a: 24.5, b: -18.0 },
-      directive: 'Normal baseline reading. Dosimeter chelation strip within pristine range. Safe to begin shift.'
+      deltaE: 0.0,
+      hex: '#E8E5DC',
+      lab: { L: 90.0, a: -0.5, b: 4.8 },
+      directive: 'Normal pristine baseline. Zone A (Ag) and Zone B (Cu) unexposed. Seal dot white (hermetic). Safe to begin shift.'
     },
     monitor: {
       name: 'Sample B: Intermediate Exposure (Hour 4)',
-      dose: 0.68,
+      dose: 2.50,
       status: 'MONITOR' as ExposureStatus,
-      deltaE: 28.4,
-      hex: '#7A5B43',
-      lab: { L: 52.0, a: 18.5, b: 12.0 },
-      directive: 'Action Level (0.50–1.00 ppm·h). Rotate operator to pressurized control room. Cap remaining shift exposure.'
+      deltaE: 13.2,
+      hex: '#8C7A65',
+      lab: { L: 58.0, a: 0.8, b: 4.2 },
+      directive: 'Action Level Reached (2.50 ppm·h). Zone A (Ag₂S) darkening active. Rotate worker to low-risk area; cap remaining shift exposure.'
     },
     review: {
       name: 'Sample C: Overexposure Alert (Shift Peak)',
-      dose: 1.48,
+      dose: 12.50,
       status: 'REVIEW' as ExposureStatus,
-      deltaE: 64.8,
-      hex: '#3D2B1F',
-      lab: { L: 28.0, a: 8.2, b: 4.5 },
-      directive: 'CRITICAL OVEREXPOSURE (> 1.00 ppm·h). Suspend shift immediately. Escort worker to Occupational Health Center.'
+      deltaE: 28.5,
+      hex: '#2B2724',
+      lab: { L: 28.0, a: 1.8, b: 3.5 },
+      directive: 'CRITICAL LIMIT EXCEEDED (≥ 10.00 ppm·h). Zone A saturated, Zone B (CuS) darkening active. Evacuate sector & escort to Occupational Health Center.'
     }
   };
 

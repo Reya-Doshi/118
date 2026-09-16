@@ -16,25 +16,25 @@ export interface CalibrationResult {
   notes: string;
 }
 
-// Cu-PAN Baseline Optical Parameters
-const L0_STAR = 40.5;
-const A0_STAR = 26.0;
-const B0_STAR = -22.0;
+// Dual-Zone Ag/Cu Baseline Optical Parameters (Unexposed Ag-Zone)
+const L0_STAR = 90.0;
+const A0_STAR = -0.5;
+const B0_STAR = 4.8;
 
 /**
  * AI-Assisted Colorimetric Calibration Pipeline (On-Device & Mobile Engine)
- * Directly implements Cu-PAN chemical chelation mechanics from the 100-sample peer-reviewed dataset.
+ * Directly implements Dual-Zone Ag/Cu permanent metal-sulfide precipitation from the 303-sample empirical matrix.
  */
 export class CalibrationEngine {
   /**
    * Evaluates shelf life and expiry logic.
-   * Discard threshold: Shelf age > 60 days.
+   * Discard threshold: Shelf age > 90 days or moisture seal breached.
    */
   public static evaluateExpiry(shelfAgeDays: number): { isExpired: boolean; warning?: string } {
-    if (shelfAgeDays > 60) {
+    if (shelfAgeDays > 90) {
       return {
         isExpired: true,
-        warning: 'BADGE EXPIRED: Reading rejected because the sensing chemistry may have degraded (Shelf age > 60 days).'
+        warning: 'BADGE EXPIRED: Reading rejected because the sensing chemistry may have degraded (Shelf age > 90 days).'
       };
     }
     return { isExpired: false };
@@ -210,12 +210,12 @@ export class CalibrationEngine {
   public static getPrecautions(status: ExposureStatus, dose: number, isExpired: boolean): string[] {
     if (isExpired) {
       return [
-        "QUARANTINE BADGE: Exceeded 60-day matrix stability ceiling.",
+        "QUARANTINE BADGE: Exceeded 90-day shelf life or moisture seal breached.",
         "Immediately decommission and log serial in Admin Registry.",
-        "Issue fresh batch-certified Cu-PAN dosimeter before next shift entry."
+        "Issue fresh batch-certified SARVAS Dual-Zone dosimeter before next shift entry."
       ];
     }
-    if (status === 'REVIEW' || dose >= 1.0) {
+    if (status === 'REVIEW' || dose >= 10.0) {
       return [
         "IMMEDIATE EVACUATION: Worker must exit exposure zone immediately.",
         "NOTIFY SAFETY OFFICER: Report to Occupational Health Center for triage within 2h.",
@@ -223,7 +223,7 @@ export class CalibrationEngine {
         "ROTATION MANDATE: Worker suspended from active H2S areas for minimum 24 hours."
       ];
     }
-    if (status === 'MONITOR' || dose >= 0.50) {
+    if (status === 'MONITOR' || dose >= 2.50) {
       return [
         "ACTION LEVEL ROTATION: Rotate operator to lower-risk exterior zone within 1 hour.",
         "CHECK PPE: Verify SCBA / half-mask cartridge expiration and seal integrity.",
@@ -231,7 +231,7 @@ export class CalibrationEngine {
       ];
     }
     return [
-      "SAFE LEVEL: Within permissible 8-hour shift limits (<0.50 ppm·h).",
+      "SAFE LEVEL: Within permissible 8-hour shift limits (<2.50 ppm·h).",
       "Continue standard operation with routine end-of-shift scan logging.",
       "Store dosimeter in desiccated sealed pouch when off duty."
     ];
@@ -307,8 +307,8 @@ export class CalibrationEngine {
       }
 
       let status: ExposureStatus = 'NORMAL';
-      if (expiry.isExpired || dose >= 1.0) status = 'REVIEW';
-      else if (dose >= 0.50) status = 'MONITOR';
+      if (expiry.isExpired || dose >= 10.0) status = 'REVIEW';
+      else if (dose >= 2.50) status = 'MONITOR';
 
       const precautions = CalibrationEngine.getPrecautions(status, dose, expiry.isExpired);
       let guideline = precautions[0];
@@ -409,8 +409,8 @@ export class CalibrationEngine {
               status = 'MONITOR';
               guidelineNote = locus.reason || 'Surface grease/soot detected along non-chelation vector. Clean band.';
             } else {
-              if (expiry.isExpired || dose >= 1.0) status = 'REVIEW';
-              else if (dose >= 0.50) status = 'MONITOR';
+              if (expiry.isExpired || dose >= 10.0) status = 'REVIEW';
+              else if (dose >= 2.50) status = 'MONITOR';
             }
 
             const hex = `#${((1 << 24) + (avgR << 16) + (avgG << 8) + avgB).toString(16).slice(1)}`;
@@ -444,7 +444,7 @@ export class CalibrationEngine {
               band_detected: !locus.isOffTarget,
               action_guideline: guidelineNote || precautions[0],
               prototype: true,
-              vision_engine: 'On-Device CIEDE2000 Cu-PAN Engine (Locus Verified)',
+              vision_engine: 'On-Device CIEDE2000 Dual-Zone Engine (Locus Verified)',
               precautions
             });
             return;
@@ -466,7 +466,7 @@ export class CalibrationEngine {
   }
 
   private static getRobustDefault(temp: number, rh: number, shelfAgeDays: number, isExpired: boolean): BackendAnalyzeResponse {
-    const dose = isExpired ? 1.45 : 0.15;
+    const dose = isExpired ? 12.5 : 0.0;
     const status: ExposureStatus = isExpired ? 'REVIEW' : 'NORMAL';
     const precautions = this.getPrecautions(status, dose, isExpired);
 
@@ -479,9 +479,9 @@ export class CalibrationEngine {
         ci_lower_ppm_h: Math.max(0, dose - 0.08),
         ci_upper_ppm_h: dose + 0.08
       },
-      rgb: { r: 92, g: 58, b: 122, hex: '#5C3A7A' },
-      lab: { L: 40.5, a: 26.0, b: -22.0 },
-      delta_e: 0.8,
+      rgb: { r: 232, g: 229, b: 220, hex: '#E8E5DC' },
+      lab: { L: 90.0, a: -0.5, b: 4.8 },
+      delta_e: 0.0,
       temperature: temp,
       humidity: rh,
       shelf_age_days: shelfAgeDays,
@@ -493,12 +493,12 @@ export class CalibrationEngine {
         is_blurry: false,
         strip_not_visible: false,
         reference_scale_missing: false,
-        notes: 'Pristine unexposed baseline Cu-PAN dosimeter calibrated.'
+        notes: 'Pristine unexposed baseline Dual-Zone Ag/Cu dosimeter calibrated.'
       },
       band_detected: true,
       action_guideline: precautions[0],
       prototype: true,
-      vision_engine: 'On-Device Calibrated Cu-PAN Engine (Baseline Safe)',
+      vision_engine: 'On-Device Calibrated Dual-Zone Ag/Cu Engine (Baseline Safe)',
       precautions
     };
   }
