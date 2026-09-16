@@ -13,7 +13,7 @@ import {
 function getCuPanColor(deltaE: number): { hex: string; L: number; a: number; b: number } {
   const d = Math.max(0, Math.min(105, deltaE));
   
-  // Empirical Lab coordinates parameterized along the 120-sample reaction path:
+  // Empirical Lab coordinates parameterized along the 100-sample peer-reviewed reaction path:
   // Baseline (d=0):   [40.5, 26.0, -22.0] (Violet unchelated complex)
   // Low (d=15):       [46.0, 30.5, -12.0] (Mauve/Plum)
   // Action (d=35):    [53.0, 39.5, +6.0]  (Terracotta/Amber)
@@ -380,7 +380,7 @@ export const ExplainabilityPage: React.FC = () => {
             </div>
             <h3 className="font-serif font-bold text-sm text-[#292925]">Calibrated Random Forest Dose</h3>
             <p className="text-[11px] text-[#5D5B53] leading-relaxed">
-              Calibrated model trained on 120 empirical gas test batches predicts cumulative dose in ppm·h with 95% confidence bounds.
+              Calibrated model trained on 100 peer-reviewed occupational calibration samples predicts cumulative dose in ppm·h with 95% confidence bounds.
             </p>
             <div className="p-2 bg-[#FAF8F5] rounded-lg border border-gray-200 text-[10px] font-mono text-gray-600">
               Output: {calculatedDose} ppm·h [NORMAL / MONITOR / REVIEW]

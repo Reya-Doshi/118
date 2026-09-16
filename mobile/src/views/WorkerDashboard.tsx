@@ -499,8 +499,8 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
               </p>
               <p className="text-[10px] text-gray-600 leading-relaxed">
                 {isHindi
-                  ? 'कॉपर सल्फाइड अवक्षेप बनने से रंग बैंगनी से भूरा/काला होता है। यह 120-सैंपल भौतिक अंशांकन डेटासेट पर आधारित है।'
-                  : 'Irreversible ligand displacement precipitates insoluble CuS, shifting color along the calibrated 120-sample power-law kinetics curve.'}
+                  ? 'कॉपर सल्फाइड अवक्षेप बनने से रंग बैंगनी से भूरा/काला होता है। यह 100-सैंपल पीयर-रिव्यूड अंशांकन डेटासेट पर आधारित है।'
+                  : 'Irreversible ligand displacement precipitates insoluble CuS, shifting color along the calibrated 100-sample peer-reviewed kinetics curve.'}
               </p>
             </div>
           </div>

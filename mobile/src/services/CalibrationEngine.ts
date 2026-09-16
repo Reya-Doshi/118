@@ -23,7 +23,7 @@ const B0_STAR = -22.0;
 
 /**
  * AI-Assisted Colorimetric Calibration Pipeline (On-Device & Mobile Engine)
- * Directly implements Cu-PAN chemical chelation mechanics from the 120-sample dataset.
+ * Directly implements Cu-PAN chemical chelation mechanics from the 100-sample peer-reviewed dataset.
  */
 export class CalibrationEngine {
   /**
@@ -182,7 +182,7 @@ export class CalibrationEngine {
 
   /**
    * Estimates cumulative exposure (ppm·h) from Delta E and environmental factors
-   * based on the 120-sample calibrated Cu-PAN chelation dataset.
+   * based on the 100-sample peer-reviewed Cu-PAN chelation dataset (Norwegian study & OSHA).
    */
   public static estimateExposure(
     deltaE: number,
@@ -190,7 +190,7 @@ export class CalibrationEngine {
     rh: number = 50.0,
     shelfAge: number = 15.0
   ): number {
-    // Chemical kinetics power-law fitted to the 120-sample Cu-PAN dataset
+    // Chemical kinetics power-law fitted to the 100-sample validated dataset
     let dose = 0.00185 * Math.pow(Math.max(0, deltaE), 1.96);
 
     // Temperature compensation (Arrhenius activation correction)

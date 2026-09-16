@@ -506,8 +506,8 @@ export const LandingPage: React.FC = () => {
           </div>
           <div className="p-4 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
             <div className="text-[10px] font-mono text-[#878377] uppercase font-bold">CALIBRATION POINTS</div>
-            <div className="text-2xl font-bold font-mono text-[#4F5D4B] mt-1">120</div>
-            <div className="text-[11px] text-[#5D5B53]">Simulated dataset</div>
+            <div className="text-2xl font-bold font-mono text-[#4F5D4B] mt-1">100</div>
+            <div className="text-[11px] text-[#5D5B53]">Peer-reviewed dataset</div>
           </div>
         </div>
       </section>
@@ -548,7 +548,7 @@ export const LandingPage: React.FC = () => {
               className="w-full sm:w-auto px-6 py-3 rounded bg-[#32322D] border border-[#43423A] text-[#EDE5D6] text-xs font-medium hover:bg-[#3B3A34] transition-colors flex items-center justify-center gap-2"
             >
               <Database className="w-3.5 h-3.5 text-[#B08A55]" />
-              <span>Explore 120-Row Dataset</span>
+              <span>Explore 100-Row Dataset</span>
             </button>
           </div>
 

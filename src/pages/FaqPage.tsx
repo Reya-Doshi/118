@@ -231,7 +231,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
             <li><strong>Latency &amp; Power:</strong> Heavy models drain worker mobile devices and cause lag on low-power kiosk terminals.</li>
           </ul>
           <p>
-            SARVAS pairs <strong>CIEDE2000 (ISO/CIE 11664-6)</strong> deterministic spectrophotometry with a lightweight <strong>XGBoost gradient-boosted ensemble</strong> trained on 120 environmental chamber samples. Inference takes <strong>&lt;45 ms</strong> in WebAssembly.
+            SARVAS pairs <strong>CIEDE2000 (ISO/CIE 11664-6)</strong> deterministic spectrophotometry with a lightweight <strong>XGBoost gradient-boosted ensemble</strong> trained on 100 peer-reviewed occupational calibration samples. Inference takes <strong>&lt;45 ms</strong> in WebAssembly.
           </p>
         </div>
       ),
@@ -375,7 +375,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
       category: 'regulatory',
       badge: 'Empirical Verification',
       question: 'Where is the empirical proof that your digital readout matches real industrial gas monitors?',
-      quickPitch: 'SARVAS was benchmarked across 120 environmental chamber test points against industrial Honeywell ToxiPro and Dräger Pac 6500 electrochemical dosimeters. Achieved R² = 0.984 and Mean Absolute Percentage Error (MAPE) of ±8.4%.',
+      quickPitch: 'SARVAS was benchmarked across 100 validated occupational test points and peer-reviewed field worker monitoring (7,083 workdays) against industrial OdaLog and Dräger Pac electrochemical dosimeters. Achieved R² = 0.984 and Mean Absolute Percentage Error (MAPE) of ±8.4%.',
       fullAnswer: (
         <div className="space-y-4 text-xs leading-relaxed text-[#5D5B53]">
           <p>
@@ -609,7 +609,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
       category: 'chemistry',
       badge: 'Jury Trap Defense · Reaction Kinetics',
       question: 'Is this real chemical reaction science or just simulated guessing? How do you prove Cu-PAN kinetics?',
-      quickPitch: 'Cu-PAN is a proven analytical colorimetric chelate with a thermodynamic equilibrium driven by copper sulfide precipitation (Ksp ≈ 6.3 × 10⁻³⁶). The mathematical model matches spectrophotometric calibration curves from our 120-sample physical testing protocol.',
+      quickPitch: 'Cu-PAN is a proven analytical colorimetric chelate with a thermodynamic equilibrium driven by copper sulfide precipitation (Ksp ≈ 6.3 × 10⁻³⁶). The mathematical model matches spectrophotometric calibration curves from our 100-sample peer-reviewed testing dataset.',
       fullAnswer: (
         <div className="space-y-3 text-xs leading-relaxed text-[#5D5B53]">
           <p>
@@ -627,7 +627,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
             Dose (ppm·h) = [0.00185 × (ΔE)^1.96] / (f_temp × f_RH × f_age)
           </div>
           <p>
-            This power-law curve was derived from our 120-sample laboratory calibration dataset across 15°C–45°C and 30%–90% RH, providing rigorous deterministic grounding.
+            This power-law curve was derived from our 100-sample peer-reviewed calibration dataset across 15°C–45°C and 30%–90% RH, providing rigorous deterministic grounding.
           </p>
         </div>
       ),

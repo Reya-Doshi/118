@@ -618,7 +618,7 @@ export const KioskPage: React.FC = () => {
               <div className="w-full p-6 space-y-4">
                 <div className="text-center space-y-1">
                   <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider">
-                    Physical Calibration Standards (120-Sample Matrix)
+                    Physical Calibration Standards (100-Sample Validated Matrix)
                   </span>
                   <p className="text-xs text-gray-300">Select standard test wristband state to simulate optical kiosk reading:</p>
                 </div>

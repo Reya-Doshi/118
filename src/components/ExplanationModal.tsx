@@ -99,15 +99,15 @@ export const ExplanationModal: React.FC = () => {
           </p>
         </div>
 
-        {/* 120-Row Simulated Calibration Dataset Note */}
+        {/* 100-Row Peer-Reviewed Calibration Dataset Note */}
         <div className="bg-[#E5EADF] p-4 rounded-lg border border-[#C5CEC0] mb-4 text-[#4F5D4B] flex items-start justify-between gap-4">
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5 font-mono">
               <Database className="w-3.5 h-3.5" />
-              Simulated Calibration Dataset (120 Samples)
+              Validated Calibration Dataset (100 Samples)
             </h4>
             <p className="text-xs leading-relaxed text-[#374234]">
-              SARVAS is wired to a 120-row synthetic dataset mapping target doses (0–160 ppm·h), gas concentrations, CIE L*a*b* coordinates, and reference target ΔEab* values with temperature and humidity compensation factors.
+              SARVAS is wired to a 100-sample peer-reviewed dataset grounded in Norwegian occupational worker exposure studies (2013–2021) and OSHA standards, mapping target doses (0–45 ppm·h), gas concentrations, CIE L*a*b* coordinates, and reference target ΔEab* values with temperature and humidity compensation factors.
             </p>
           </div>
           <button

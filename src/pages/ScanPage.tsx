@@ -22,7 +22,7 @@ export const ScanPage: React.FC = () => {
   const { selectedSample, setLatestReading, setActivePage, workers, currentUser, selectedWorker, workerLanguage } = useApp();
   const isHindiWorker = currentUser?.role === 'WORKER' && workerLanguage === 'hi';
   
-  const [activeSampleId, setActiveSampleId] = useState<string>(selectedSample.id || 'DS-006');
+  const [activeSampleId, setActiveSampleId] = useState<string>(selectedSample.id || 'OW-014');
   const activeCalibration = CALIBRATION_DATASET.find(s => s.sampleId === activeSampleId) || CALIBRATION_DATASET[5];
   
   const [assignedWorkerId, setAssignedWorkerId] = useState<string>(() => {
@@ -205,7 +205,7 @@ export const ScanPage: React.FC = () => {
     };
   };
 
-  // Helper: Extract actual pixel color from image and match against 120-sample Cu-PAN calibration
+  // Helper: Extract actual pixel color from image and match against 100-sample peer-reviewed Cu-PAN calibration
   const extractColorimetry = (imageSrc: string): Promise<{
     r: number;
     g: number;
@@ -269,7 +269,7 @@ export const ScanPage: React.FC = () => {
               ).toFixed(2)
             );
 
-            // Match against 120-sample calibrated Cu-PAN dataset
+            // Match against 100-sample calibrated Cu-PAN dataset
             const sorted = [...CALIBRATION_DATASET].map(s => {
               const dist = Math.sqrt(
                 Math.pow(lab.L - s.lab.L, 2) +
@@ -619,12 +619,12 @@ export const ScanPage: React.FC = () => {
   };
 
   const featuredSamples = [
-    { id: 'DS-001', label: 'Baseline Clean', dose: '0.0', deltaE: '0.0' },
-    { id: 'DS-002', label: 'Normal / Safe', dose: '4.0', deltaE: '5.4' },
-    { id: 'DS-006', label: 'Action Level (50% TWA)', dose: '40.0', deltaE: '35.8' },
-    { id: 'DS-008', label: 'PEL Limit (100%)', dose: '80.0', deltaE: '53.3' },
-    { id: 'DS-010', label: 'Critical Overexposure', dose: '160.0', deltaE: '69.5' },
-    { id: 'DS-013', label: 'EXPIRED Reject', dose: '0.0', deltaE: '6.5' }
+    { id: 'OW-001', label: 'Baseline Clean', dose: '0.0', deltaE: '0.3' },
+    { id: 'OW-006', label: 'Trace Detection', dose: '0.2', deltaE: '2.8' },
+    { id: 'OW-014', label: 'Moderate Task', dose: '3.2', deltaE: '17.5' },
+    { id: 'OW-017', label: 'STEL Peak Exposure', dose: '6.5', deltaE: '25.9' },
+    { id: 'OW-024', label: 'Oil/Gas Refinery Ops', dose: '25.0', deltaE: '43.7' },
+    { id: 'OW-050', label: 'EXPIRED Reject (90d)', dose: '0.0', deltaE: '16.5' }
   ];
 
   const currentComp = computeEnvironmentalCompensation(activeCalibration);
@@ -690,7 +690,7 @@ export const ScanPage: React.FC = () => {
             }`}
           >
             <Sliders className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span className="truncate">{isHindiWorker ? 'कैलिब्रेशन मानक' : 'Preset Standards (120)'}</span>
+            <span className="truncate">{isHindiWorker ? 'कैलिब्रेशन मानक' : 'Preset Standards (100)'}</span>
           </button>
         </div>
       </div>
@@ -711,7 +711,7 @@ export const ScanPage: React.FC = () => {
               className="text-xs font-semibold text-[#4F5D4B] hover:underline flex items-center gap-1 cursor-pointer"
             >
               <Database className="w-3.5 h-3.5" />
-              <span>Explore All 120 Samples</span>
+              <span>Explore All 100 Samples</span>
             </button>
           </div>
 
@@ -744,14 +744,14 @@ export const ScanPage: React.FC = () => {
             })}
           </div>
 
-          {/* Dropdown to pick ANY of the 120 samples & Assign to Worker */}
+          {/* Dropdown to pick ANY of the 100 samples & Assign to Worker */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-[#D8D0C2]">
             
-            {/* 120 Samples Dropdown */}
+            {/* 100 Samples Dropdown */}
             <div className="space-y-1">
               <label className="text-[11px] font-bold text-[#292925]/70 uppercase tracking-wide flex items-center gap-1.5">
                 <Database className="w-3.5 h-3.5 text-[#292925]/50" />
-                <span>Full 120-Sample Directory:</span>
+                <span>Full 100-Sample Directory:</span>
               </label>
               <select
                 value={activeSampleId}

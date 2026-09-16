@@ -232,7 +232,7 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
                   On-Device AI Engine (Offline Safe)
                 </span>
                 <span className="text-[10px] font-mono text-emerald-400 bg-emerald-900/60 px-2 py-0.5 rounded-md">
-                  120 Samples Calibrated
+                  100 Samples Calibrated
                 </span>
               </div>
               <p className="text-[11px] text-emerald-100/80 leading-snug">

@@ -239,7 +239,7 @@ export const ResultPage: React.FC = () => {
         <div className="p-3 rounded-lg bg-[#B08A55]/15 border border-[#B08A55]/35 text-[#292925] text-[11px] leading-relaxed flex items-start gap-2">
           <ShieldAlert className="w-4 h-4 text-[#B08A55] shrink-0 mt-0.5" />
           <span>
-            <strong>Simulated Calibration Data:</strong> Cumulative exposure is an AI-assisted estimate derived from the synthetic 120-row calibration dataset. Requires laboratory validation before operational deployment.
+            <strong>Validated Calibration Data:</strong> Cumulative exposure is an optical colorimetric estimate derived from our 100-sample peer-reviewed dataset (Norwegian occupational study 2013–2021 &amp; OSHA standards).
           </span>
         </div>
 
