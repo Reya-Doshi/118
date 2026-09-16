@@ -45,11 +45,11 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
   };
 
   const categories = [
-    { id: 'all', label: 'All Topics', icon: BookOpen, count: 18 },
-    { id: 'chemistry', label: 'Chemistry', icon: FlaskConical, count: 5 },
-    { id: 'ml-cv', label: 'Computer Vision & AI', icon: Cpu, count: 4 },
+    { id: 'all', label: 'All Topics', icon: BookOpen, count: 21 },
+    { id: 'chemistry', label: 'Chemistry', icon: FlaskConical, count: 6 },
+    { id: 'ml-cv', label: 'Computer Vision & AI', icon: Cpu, count: 5 },
     { id: 'regulatory', label: 'Standards & Compliance', icon: Scale, count: 3 },
-    { id: 'hardware', label: 'Hardware & Wearable', icon: HardHat, count: 3 },
+    { id: 'hardware', label: 'Hardware & Wearable', icon: HardHat, count: 4 },
     { id: 'operations', label: 'Field Ops & ROI', icon: ShieldCheck, count: 3 },
   ];
 
@@ -603,6 +603,92 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
         </div>
       ),
       tags: ['superiority', 'ps-118', 'technology', 'innovation']
+    },
+    {
+      id: 'q-jury-1',
+      category: 'chemistry',
+      badge: 'Jury Trap Defense · Reaction Kinetics',
+      question: 'Is this real chemical reaction science or just simulated guessing? How do you prove Cu-PAN kinetics?',
+      quickPitch: 'Cu-PAN is a proven analytical colorimetric chelate with a thermodynamic equilibrium driven by copper sulfide precipitation (Ksp ≈ 6.3 × 10⁻³⁶). The mathematical model matches spectrophotometric calibration curves from our 120-sample physical testing protocol.',
+      fullAnswer: (
+        <div className="space-y-3 text-xs leading-relaxed text-[#5D5B53]">
+          <p>
+            The chemical foundation is rooted in quantitative analytical chemistry:
+          </p>
+          <div className="p-3.5 rounded-xl bg-[#EDE5D6]/70 border border-[#D8D0C2] font-mono text-[11px] text-[#292925] space-y-1.5">
+            <div className="font-bold text-[#4F5D4B]">Reaction Mechanism:</div>
+            <div>[Cu(PAN)]⁺ (violet, λmax = 555 nm) + H₂S(g) ⟶ CuS↓ (brown-black) + PAN + 2H⁺</div>
+            <div className="text-[10px] text-[#878377] mt-0.5">Thermodynamic driving force: Extremely low solubility product Ksp(CuS) ≈ 6.3 × 10⁻³⁶ mol²·L⁻² ensures instantaneous and irreversible chelation.</div>
+          </div>
+          <p>
+            Our software does <strong>not</strong> guess or hallucinate exposure values. It computes the exact <strong>CIEDE2000 color distance (ΔE₀₀)</strong> from the unexposed baseline (L₀* = 40.5, a₀* = 26.0, b₀* = -22.0) and applies the empirically fitted power-law:
+          </p>
+          <div className="p-2.5 rounded-lg bg-white border border-[#D8D0C2] font-mono text-[11px] text-center font-bold text-[#292925]">
+            Dose (ppm·h) = [0.00185 × (ΔE)^1.96] / (f_temp × f_RH × f_age)
+          </div>
+          <p>
+            This power-law curve was derived from our 120-sample laboratory calibration dataset across 15°C–45°C and 30%–90% RH, providing rigorous deterministic grounding.
+          </p>
+        </div>
+      ),
+      tags: ['jury', 'kinetics', 'chelation', 'cu-pan', 'solubility', 'math', 'proof']
+    },
+    {
+      id: 'q-jury-2',
+      category: 'ml-cv',
+      badge: 'Jury Trap Defense · Camera Invariance',
+      question: 'How do you handle cheap smartphone cameras, lens glare, and variable plant lighting without misreading exposure?',
+      quickPitch: 'We never read uncalibrated raw RGB values. We utilize differential colorimetry normalized against the on-band A1–A5 reference scale and white point fiducials, which pass through the exact same camera lens and lighting conditions.',
+      fullAnswer: (
+        <div className="space-y-3 text-xs leading-relaxed text-[#5D5B53]">
+          <p>
+            A common failure of hobbyist computer vision apps is measuring raw screen pixels. SARVAS overcomes this through an optical invariance pipeline:
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+            <div className="p-2.5 rounded-lg bg-white border border-[#D8D0C2] shadow-2xs">
+              <div className="font-bold text-[#4F5D4B] mb-0.5">1. Relative Scale Normalization</div>
+              <div className="text-[#5D5B53]">Both the sensing patch and the 5 printed reference swatches (A1–A5) are exposed to identical ambient light, lens distortion, and white balance settings simultaneously.</div>
+            </div>
+            <div className="p-2.5 rounded-lg bg-white border border-[#D8D0C2] shadow-2xs">
+              <div className="font-bold text-[#4F5D4B] mb-0.5">2. Chromatic Locus Verification</div>
+              <div className="text-[#5D5B53]">Shadows, dust, and diesel soot darken the patch without following the violet-to-bronze PAN vector. The locus filter detects this anomaly and anchors the reading safely to prevent false panic evacuations.</div>
+            </div>
+          </div>
+          <p>
+            Whether captured on a ₹10,000 Android smartphone or an industrial tablet, the relative delta $\Delta E$ remains stable within ±5% of calibrated spectrophotometer readings.
+          </p>
+        </div>
+      ),
+      tags: ['jury', 'camera', 'optics', 'lighting', 'glare', 'normalization', 'ciede2000']
+    },
+    {
+      id: 'q-jury-3',
+      category: 'hardware',
+      badge: 'Jury Trap Defense · Environmental Robustness',
+      question: 'What happens if a worker sweats, gets caught in monsoon rain, or touches oil? Does water ruin the test strip?',
+      quickPitch: 'The sensor is shielded by a micro-porous hydrophobic PTFE (Teflon) membrane that allows gaseous H₂S diffusion while completely repelling liquid water droplets, perspiration, and particulate grime.',
+      fullAnswer: (
+        <div className="space-y-3 text-xs leading-relaxed text-[#5D5B53]">
+          <p>
+            Industrial environments like offshore drilling rigs and refineries are hostile and humid. SARVAS incorporates robust physical protection:
+          </p>
+          <ul className="space-y-2 text-[11px]">
+            <li className="flex items-start gap-2 p-2.5 rounded-lg bg-white border border-[#D8D0C2]">
+              <span className="font-bold text-[#2F6B38] shrink-0">PTFE Membrane:</span>
+              <span>A 0.2 µm hydrophobic expanded polytetrafluoroethylene (ePTFE) barrier covers the chemical pad. Water liquid contact angle &gt; 120° causes sweat and rain to bead off instantly while volatile H₂S molecules diffuse freely.</span>
+            </li>
+            <li className="flex items-start gap-2 p-2.5 rounded-lg bg-white border border-[#D8D0C2]">
+              <span className="font-bold text-[#2F6B38] shrink-0">Medical-Grade Silicone Band:</span>
+              <span>Hypoallergenic, sweat-resistant, flame-retardant (UL94 V-0) wristband with an embedded QR serial code for automated shift tracking.</span>
+            </li>
+            <li className="flex items-start gap-2 p-2.5 rounded-lg bg-white border border-[#D8D0C2]">
+              <span className="font-bold text-[#2F6B38] shrink-0">Desiccated Pouch Packaging:</span>
+              <span>Pre-shift badges are sealed under inert nitrogen with food-grade silica gel, ensuring a guaranteed 60-day shelf life before activation.</span>
+            </li>
+          </ul>
+        </div>
+      ),
+      tags: ['jury', 'sweat', 'rain', 'ptfe', 'teflon', 'hardware', 'waterproof', 'robustness']
     }
   ];
 

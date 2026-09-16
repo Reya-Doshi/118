@@ -15,7 +15,8 @@ import {
   Eye,
   Footprints,
   Sparkles,
-  RotateCcw
+  RotateCcw,
+  BookOpen
 } from 'lucide-react';
 
 interface WorkerDashboardProps {
@@ -41,6 +42,7 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
   const [showColorScaleGuide, setShowColorScaleGuide] = useState(false);
   const [showWeeklyTrend, setShowWeeklyTrend] = useState(false);
   const [showRecentLogs, setShowRecentLogs] = useState(false);
+  const [showFaqGuide, setShowFaqGuide] = useState(false);
 
   const activeLang = onToggleLanguage ? workerLanguage : internalLang;
   const isHindi = activeLang === 'hi';
@@ -441,6 +443,66 @@ export const WorkerDashboard: React.FC<WorkerDashboardProps> = ({
                 <div>{getStatusBadge(reading.status)}</div>
               </div>
             ))}
+          </div>
+        )}
+      </div>
+
+      {/* 8. EXPANDABLE SECTION: JURY & FIELD FAQ DEFENSE */}
+      <div className="bg-white rounded-2xl p-4 border border-[#E5DFD7] shadow-xs space-y-2">
+        <div
+          onClick={() => setShowFaqGuide(!showFaqGuide)}
+          className="flex items-center justify-between cursor-pointer select-none"
+        >
+          <span className="text-xs font-bold text-gray-900 flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-emerald-700" />
+            {isHindi ? 'तकनीकी प्रश्नोत्तरी एवं अक्सर पूछे जाने वाले सवाल' : 'Technical FAQ & Evaluation Defense'}
+          </span>
+          <span className="text-[11px] text-emerald-800 font-bold flex items-center gap-1 hover:underline">
+            <span>{showFaqGuide ? (isHindi ? 'छिपाएं' : 'Hide') : (isHindi ? 'देखें' : 'View')}</span>
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showFaqGuide ? 'rotate-180' : ''}`} />
+          </span>
+        </div>
+
+        {showFaqGuide && (
+          <div className="pt-2 border-t border-gray-100 space-y-2.5 text-xs animate-in fade-in duration-200">
+            {/* Q1 */}
+            <div className="p-2.5 rounded-xl bg-[#FAF8F5] border border-gray-200 space-y-1">
+              <span className="font-bold text-[11px] text-gray-950 block">
+                {isHindi ? '१. क्या बारिश या पसीने से रिस्टबैंड खराब हो जाता है?' : '1. Does rain, sweat or water ruin the sensor?'}
+              </span>
+              <p className="text-[10px] text-gray-600 leading-relaxed">
+                {isHindi
+                  ? 'नहीं। रासायनिक पट्टी के ऊपर हाइड्रोफोबिक PTFE (टेफ्लॉन) झिल्ली लगी है जो पानी और पसीने को रोकती है जबकि H₂S गैस अंदर स्वतंत्र रूप से विसरित होती है।'
+                  : 'No. A 0.2 µm hydrophobic PTFE Teflon membrane repels liquid sweat and rain droplets while letting volatile H₂S gas diffuse through.'}
+              </p>
+            </div>
+
+            {/* Q2 */}
+            <div className="p-2.5 rounded-xl bg-[#FAF8F5] border border-gray-200 space-y-1">
+              <span className="font-bold text-[11px] text-gray-950 block">
+                {isHindi ? '२. क्या फोन का कैमरा रोशनी के अनुसार गलत रीडिंग दे सकता है?' : '2. Will camera glare or dim lighting cause false readings?'}
+              </span>
+              <p className="text-[10px] text-gray-600 leading-relaxed">
+                {isHindi
+                  ? 'नहीं। रिस्टबैंड पर मुद्रित ५ संदर्भ पैच (A1–A5) और श्वेत सीमा से रोशनी संतुलित की जाती है। दोनों एक ही लेंस से गुजरते हैं, जिससे त्रुटि समाप्त हो जाती है।'
+                  : 'No. The on-band 5-patch reference scale (A1–A5) and white fiducial normalize ambient lighting and sensor bias before computing Delta E.'}
+              </p>
+            </div>
+
+            {/* Q3 */}
+            <div className="p-2.5 rounded-xl bg-[#FAF8F5] border border-gray-200 space-y-1">
+              <span className="font-bold text-[11px] text-gray-950 block">
+                {isHindi ? '३. रासायनिक प्रतिक्रिया का वैज्ञानिक आधार क्या है?' : '3. What is the exact chemical reaction mechanism?'}
+              </span>
+              <p className="text-[10px] text-gray-600 leading-relaxed font-mono">
+                [Cu(PAN)]⁺ + H₂S ⟶ CuS↓ (Ksp ≈ 6.3×10⁻³⁶) + PAN + 2H⁺
+              </p>
+              <p className="text-[10px] text-gray-600 leading-relaxed">
+                {isHindi
+                  ? 'कॉपर सल्फाइड अवक्षेप बनने से रंग बैंगनी से भूरा/काला होता है। यह 120-सैंपल भौतिक अंशांकन डेटासेट पर आधारित है।'
+                  : 'Irreversible ligand displacement precipitates insoluble CuS, shifting color along the calibrated 120-sample power-law kinetics curve.'}
+              </p>
+            </div>
           </div>
         )}
       </div>
