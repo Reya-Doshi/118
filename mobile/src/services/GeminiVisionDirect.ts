@@ -29,7 +29,7 @@ export interface GeminiDirectAuditResult {
   raw_gemini_response?: any;
 }
 
-const DEFAULT_KEY = (import.meta as any).env?.VITE_GEMINI_API_KEY || 'AQ.Ab8RN6KEAs-AWxTbi2CC6dZns7wrjCclZAnk1UE7ACvoXiIUGg';
+const DEFAULT_KEY = (import.meta as any).env?.VITE_GEMINI_API_KEY || 'AQ.Ab8RN6KMV6ZB7eEFc1YlLPytHtmHbiVPBT7aU-cGOiiwmMGL-w';
 const STORAGE_KEY = 'RAGEB8_GEMINI_API_KEY';
 
 const GEMINI_PROMPT = `
@@ -87,8 +87,8 @@ export class GeminiVisionDirect {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved && saved.trim()) return saved.trim();
     const envKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
-    if (envKey && envKey.trim() && envKey.startsWith('AIzaSy')) return envKey.trim();
-    return '';
+    if (envKey && envKey.trim()) return envKey.trim();
+    return DEFAULT_KEY;
   }
 
   public static setApiKey(key: string): void {
@@ -101,7 +101,7 @@ export class GeminiVisionDirect {
 
   public static isKeyConfigured(): boolean {
     const key = this.getApiKey();
-    return Boolean(key && key.length > 20 && key.startsWith('AIzaSy'));
+    return Boolean(key && key.trim().length > 10);
   }
 
   /**
@@ -136,7 +136,10 @@ export class GeminiVisionDirect {
 
         const response = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
           body: JSON.stringify({
             contents: [
               {
