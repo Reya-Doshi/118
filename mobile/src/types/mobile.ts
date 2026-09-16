@@ -156,6 +156,7 @@ export interface DemoSampleBadge {
   humidity: number;
   shelfAgeDays: number;
   colorHex: string;
+  imageUri?: string;
   isExpired: boolean;
   description: string;
 }

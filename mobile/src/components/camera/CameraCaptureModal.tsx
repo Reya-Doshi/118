@@ -130,6 +130,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
     } else if (selectedDemoSample) {
       onPhotoSelected({
         sample: selectedDemoSample,
+        imageUri: selectedDemoSample.imageUri,
         targetWorker,
         inspectionLocation: isWorkerRole ? targetWorker?.workLocation : inspectionLocation,
         officerNotes: isWorkerRole ? undefined : officerNotes
@@ -271,18 +272,15 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
           </div>
         ) : selectedDemoSample ? (
           <div className="w-full bg-[#292925] border border-[#71806B]/50 rounded-xl p-4 text-center shadow-lg">
-            <div className="w-full h-28 rounded-lg bg-[#1a1a17] border border-white/10 flex flex-col items-center justify-center relative mb-3 overflow-hidden">
+            <div className="w-full h-44 rounded-xl bg-[#1a1a17] border border-white/15 flex items-center justify-center relative mb-3 overflow-hidden shadow-inner">
               <img 
-                src="/band_design.png" 
-                alt="Band Anatomy" 
-                className="w-3/4 object-contain opacity-75"
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                src={selectedDemoSample.imageUri || '/samples/sample_1_fresh.png'} 
+                alt={selectedDemoSample.label} 
+                className="w-full h-full object-contain p-1"
               />
-              <div 
-                className="w-16 h-7 rounded border border-white/40 shadow-sm mt-1"
-                style={{ backgroundColor: selectedDemoSample.colorHex }}
-              ></div>
-              <span className="text-[9px] font-mono text-[#C9BFAE] mt-1">Simulated Sensing Strip</span>
+              <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-xs px-2 py-0.5 rounded text-[10px] font-mono text-white border border-white/20">
+                {selectedDemoSample.estimatedDose} ppm·h · {selectedDemoSample.status}
+              </div>
             </div>
 
             <div className="text-left space-y-1">
@@ -395,20 +393,24 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                 <div className="text-[10px] font-mono text-[#C9BFAE] uppercase tracking-wider">
                   Select Calibrated SIH Sample:
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 max-h-56 overflow-y-auto pr-1">
                   {DEMO_SAMPLES.map((sample) => (
                     <button
                       key={sample.id}
                       onClick={() => handleSelectSample(sample)}
-                      className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-left text-xs transition-colors flex items-center gap-2"
+                      className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-left text-xs transition-colors flex items-center gap-2.5"
                     >
-                      <div
-                        className="w-3.5 h-3.5 rounded-full shrink-0 border border-white/40"
-                        style={{ backgroundColor: sample.colorHex }}
+                      <img
+                        src={sample.imageUri}
+                        alt={sample.label}
+                        className="w-14 h-9 rounded object-contain bg-black border border-white/20 shrink-0"
                       />
-                      <div className="truncate">
-                        <div className="font-semibold truncate text-white">{sample.bandId}</div>
-                        <div className="text-[10px] text-[#C9BFAE]">{sample.estimatedDose} ppm·h</div>
+                      <div className="truncate flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-white truncate text-[11px]">{sample.label.split(':')[1] || sample.label}</span>
+                          <span className="font-mono text-[10px] font-bold text-[#EDE5D6] shrink-0 ml-1">{sample.estimatedDose} ppm·h</span>
+                        </div>
+                        <div className="text-[10px] text-[#C9BFAE] truncate">{sample.description}</div>
                       </div>
                     </button>
                   ))}

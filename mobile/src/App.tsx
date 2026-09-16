@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MobileAuthProvider, useMobileAuth } from './context/MobileAuthContext';
 import { repository } from './services/DosimeterRepository';
+import { CalibrationEngine } from './services/CalibrationEngine';
 import type { Worker, Reading, Alert, Wristband, DemoSampleBadge, BackendAnalyzeResponse } from './types/mobile';
 
 import { SplashView } from './components/SplashView';
@@ -91,23 +92,29 @@ const MainAppContent: React.FC = () => {
 
     if (data.sample) {
       // Demo reference badge selected
+      setSelectedDemoSample(data.sample);
+      const sampleImg = data.sample.imageUri || data.imageUri || null;
+      setSelectedImageUri(sampleImg);
+
+      const hex = data.sample.colorHex;
+      const r = parseInt(hex.slice(1, 3), 16) || 200;
+      const g = parseInt(hex.slice(3, 5), 16) || 200;
+      const b = parseInt(hex.slice(5, 7), 16) || 200;
+      const lab = CalibrationEngine.srgbToLab(r, g, b);
+      const deltaE = Math.round(CalibrationEngine.computeDeltaE(lab) * 10) / 10;
+
       const sampleResp: BackendAnalyzeResponse = {
         estimated_exposure_ppm_h: data.sample.estimatedDose,
         status: data.sample.status,
         confidence: {
           score: data.sample.confidence / 100,
-          uncertainty_95_ci_ppm_h: 0.25,
-          ci_lower_ppm_h: Math.max(0, data.sample.estimatedDose - 0.25),
-          ci_upper_ppm_h: data.sample.estimatedDose + 0.25
+          uncertainty_95_ci_ppm_h: 0.12,
+          ci_lower_ppm_h: Math.max(0, data.sample.estimatedDose - 0.12),
+          ci_upper_ppm_h: data.sample.estimatedDose + 0.12
         },
-        rgb: {
-          r: parseInt(data.sample.colorHex.slice(1, 3), 16) || 150,
-          g: parseInt(data.sample.colorHex.slice(3, 5), 16) || 100,
-          b: parseInt(data.sample.colorHex.slice(5, 7), 16) || 120,
-          hex: data.sample.colorHex
-        },
-        lab: { L: 55.0, a: 35.0, b: 10.0 },
-        delta_e: data.sample.status === 'NORMAL' ? 8.5 : data.sample.status === 'MONITOR' ? 32.0 : 65.0,
+        rgb: { r, g, b, hex },
+        lab,
+        delta_e: deltaE,
         temperature: data.sample.temperature,
         humidity: data.sample.humidity,
         shelf_age_days: data.sample.shelfAgeDays,
@@ -119,12 +126,12 @@ const MainAppContent: React.FC = () => {
           is_blurry: false,
           strip_not_visible: false,
           reference_scale_missing: false,
-          notes: 'Calibrated SIH physical reference sample.'
+          notes: 'Calibrated Dual-Zone physical reference sample.'
         },
         band_detected: true,
         action_guideline: data.sample.description,
         prototype: true,
-        vision_engine: 'Calibrated Physical Reference Sample'
+        vision_engine: 'Calibrated Dual-Zone Physical Reference Sample'
       };
       setCurrentApiResponse(sampleResp);
       setIsAnalyzing(false);

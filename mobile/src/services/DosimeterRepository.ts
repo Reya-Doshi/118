@@ -43,6 +43,7 @@ export const DEMO_SAMPLES: DemoSampleBadge[] = [
     humidity: 50,
     shelfAgeDays: 0,
     colorHex: '#EDECE5',
+    imageUri: '/samples/sample_1_fresh.png',
     isExpired: false,
     description: 'Pristine unexposed baseline. Zone A (AgNO3) off-white, Zone B (CuSO4) sky-blue (#AED3E8). Intact seal.'
   },
@@ -60,6 +61,7 @@ export const DEMO_SAMPLES: DemoSampleBadge[] = [
     humidity: 50,
     shelfAgeDays: 0,
     colorHex: '#D8D4CD',
+    imageUri: '/samples/sample_2_trace.png',
     isExpired: false,
     description: 'Permissible 8-hour shift level. Trace silver sulfide (Ag2S) warm-gray darkening in Zone A.'
   },
@@ -77,6 +79,7 @@ export const DEMO_SAMPLES: DemoSampleBadge[] = [
     humidity: 50,
     shelfAgeDays: 0,
     colorHex: '#928D88',
+    imageUri: '/samples/sample_3_monitor.png',
     isExpired: false,
     description: 'Action level reached (ACGIH TLV). Zone A slate-gray; worker rotation to clean area required.'
   },
@@ -94,6 +97,7 @@ export const DEMO_SAMPLES: DemoSampleBadge[] = [
     humidity: 50,
     shelfAgeDays: 0,
     colorHex: '#504A44',
+    imageUri: '/samples/sample_4_critical.png',
     isExpired: false,
     description: 'OSHA PEL ceiling exceeded. Zone A saturated Ag2S black; Zone B prominent CuS olive-slate. Immediate evacuation.'
   },
@@ -111,6 +115,7 @@ export const DEMO_SAMPLES: DemoSampleBadge[] = [
     humidity: 85,
     shelfAgeDays: 0,
     colorHex: '#6A655E',
+    imageUri: '/samples/sample_5_breached.png',
     isExpired: false,
     description: 'SEAL BROKEN: Anhydrous CuSO4 moisture indicator turned vivid azure blue (#1E70B8). Reading rejected.'
   }

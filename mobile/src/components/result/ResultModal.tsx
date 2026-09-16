@@ -165,6 +165,20 @@ export const ResultModal: React.FC<ResultModalProps> = ({
           </div>
         )}
 
+        {/* Scanned Badge Photo Preview */}
+        {(imageUri || sample?.imageUri) && (
+          <div className="w-full bg-[#1a1a17] rounded-xl overflow-hidden border border-black/15 p-2 shadow-xs flex flex-col items-center justify-center">
+            <img 
+              src={imageUri || sample?.imageUri} 
+              alt="Scanned Dosimeter Badge" 
+              className="max-h-40 w-auto object-contain rounded-lg shadow-sm" 
+            />
+            <span className="text-[10px] font-mono text-gray-400 mt-1">
+              {sample ? sample.label : 'Optical Capture Region'}
+            </span>
+          </div>
+        )}
+
         {/* Primary Dose Card with Dynamic Status Glow */}
         <div className={`p-4 text-center rounded-2xl ${
           isExpired || apiResult.status === 'REVIEW'
