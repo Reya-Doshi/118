@@ -125,16 +125,20 @@ class RandomForestRegressorModel:
         return mean_pred, std_pred
 
 
-# Custom unpickler to transparently resolve classes pickled under __main__
+# Custom unpickler to transparently resolve classes pickled under __main__ or other scripts
 class _CuPanUnpickler(pickle.Unpickler):
     def find_class(self, module, name):
-        if module in ("__main__", "models.cupan_model", "cupan_model") and name in globals():
-            return globals()[name]
+        if name in ("RandomForestRegressorModel", "HighPrecisionRandomForest", "DecisionTreeRegressor", "DecisionTreeNode", "HighPrecisionTree"):
+            return globals().get(name, RandomForestRegressorModel)
         return super().find_class(module, name)
 
 
+HighPrecisionRandomForest = RandomForestRegressorModel
+HighPrecisionTree = DecisionTreeRegressor
+
+
 def load_cupan_model(model_path):
-    """Load serialized Cu-PAN model with robust class resolution."""
+    """Load serialized model with robust class resolution."""
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model file not found: {model_path}")
     with open(model_path, "rb") as f:
@@ -143,3 +147,19 @@ def load_cupan_model(model_path):
         except Exception:
             f.seek(0)
             return pickle.load(f)
+
+
+def train_dualzone_model(csv_path, save_path):
+    """Trains the Dual-Zone Random Forest Regressor on the validated dataset and saves it."""
+    import pandas as pd
+    df = pd.read_csv(csv_path)
+    X = df[["agZone_L", "agZone_a", "agZone_b", "agZone_dE", "temp_C", "rh_pct", "strip_age_days"]].values
+    y = df["true_dose_ppmh"].values
+
+    rf = RandomForestRegressorModel(n_estimators=80, max_depth=10, min_samples_split=2, random_state=42)
+    rf.fit(X, y)
+    with open(save_path, "wb") as f:
+        pickle.dump(rf, f)
+    print(f"Dual-Zone Random Forest model trained on {len(df)} samples and saved to {save_path}")
+    return rf
+

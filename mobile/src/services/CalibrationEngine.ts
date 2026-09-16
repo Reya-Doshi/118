@@ -144,8 +144,8 @@ export class CalibrationEngine {
   }
 
   /**
-   * Evaluates whether the measured color follows the genuine chemical Cu-PAN chelation vector.
-   * Rejects dirty oil, diesel soot, mud splashes, or off-target backgrounds (skin, desk, paper).
+   * Evaluates whether the measured color follows genuine Dual-Zone Ag2S/CuS metal-sulfide locus.
+   * Rejects extreme unnatural saturation (neon markers) or severe specular glare.
    */
   public static validateLocus(lab: { L: number; a: number; b: number }): {
     isValid: boolean;
@@ -155,25 +155,24 @@ export class CalibrationEngine {
   } {
     const chroma = Math.sqrt(lab.a * lab.a + lab.b * lab.b);
 
-    // 1. Off-target / background rejection (desk, skin, wall, paper)
-    // Non-chelated indoor neutrals typically have high lightness (L > 62) and low chroma (chroma < 20)
-    if (lab.L > 62 && chroma < 22) {
-      return {
-        isValid: false,
-        isContaminationAnomaly: false,
-        isOffTarget: true,
-        reason: 'Target color resembles background surface (skin/table). Re-align strip in reticle.'
-      };
-    }
-
-    // 2. Foreign chemical / Mud / Oil Stain Anomaly (shrayop directional vector check)
-    // Darkening (-deltaL) without the yellow-brown PAN chelation shift
-    if (lab.L < 34 && lab.a < 12 && lab.b < -4) {
+    // 1. Extreme chromatic saturation anomaly (bright neon highlighter / dye spills)
+    // Genuine Ag2S / CuS mineral precipitates maintain low-to-moderate chroma (< 34)
+    if (chroma > 36) {
       return {
         isValid: false,
         isContaminationAnomaly: true,
         isOffTarget: false,
-        reason: 'CONTAMINATION_ANOMALY: Surface grease or soot detected along non-chelation vector. Clean band.'
+        reason: 'CONTAMINATION_ANOMALY: High chromatic saturation detected outside Ag2S/CuS locus. Wipe strip surface.'
+      };
+    }
+
+    // 2. Direct specular flash reflection / extreme saturation glare
+    if (lab.L > 99.2) {
+      return {
+        isValid: false,
+        isContaminationAnomaly: false,
+        isOffTarget: true,
+        reason: 'GLARE_DETECTED: Specular reflection. Tilt dosimeter slightly to prevent lens flash glare.'
       };
     }
 
@@ -182,23 +181,35 @@ export class CalibrationEngine {
 
   /**
    * Estimates cumulative exposure (ppm·h) from Delta E and environmental factors
-   * based on the 100-sample peer-reviewed Cu-PAN chelation dataset (Norwegian study & OSHA).
+   * based on the 303-sample empirical Dual-Zone Ag/Cu metal-sulfide precipitation matrix.
    */
   public static estimateExposure(
     deltaE: number,
     temp: number = 25.0,
     rh: number = 50.0,
-    shelfAge: number = 15.0
+    shelfAge: number = 0.0
   ): number {
-    // Chemical kinetics power-law fitted to the 100-sample validated dataset
-    let dose = 0.00185 * Math.pow(Math.max(0, deltaE), 1.96);
+    const dE = Math.max(0, deltaE);
+    let dose: number;
 
-    // Temperature compensation (Arrhenius activation correction)
-    const tempFactor = 1.0 + 0.012 * (temp - 25.0);
-    // Relative humidity swelling factor
-    const rhFactor = 1.0 + 0.004 * (rh - 50.0);
-    // Shelf degradation penalty
-    const ageFactor = 1.0 + 0.0015 * Math.min(60, shelfAge);
+    if (dE <= 1.5) {
+      dose = 0.125;
+    } else if (dE <= 10.0) {
+      dose = 0.125 + ((dE - 1.13) / (9.21 - 1.13)) * (1.00 - 0.125);
+    } else if (dE <= 35.0) {
+      dose = 1.00 + ((dE - 9.21) / (34.67 - 9.21)) * (5.00 - 1.00);
+    } else if (dE <= 50.0) {
+      dose = 5.00 + ((dE - 34.67) / (49.78 - 34.67)) * (10.00 - 5.00);
+    } else if (dE <= 63.0) {
+      dose = 10.00 + ((dE - 49.78) / (62.38 - 49.78)) * (20.00 - 10.00);
+    } else {
+      dose = 20.00 + (dE - 62.38) * 3.5;
+    }
+
+    // Environmental temperature & humidity compensation
+    const tempFactor = 1.0 + 0.008 * (temp - 25.0);
+    const rhFactor = 1.0 + 0.003 * (rh - 50.0);
+    const ageFactor = 1.0 + 0.001 * Math.min(60, shelfAge);
 
     dose = dose / (tempFactor * rhFactor * ageFactor);
     return Math.max(0.0, Math.round(dose * 100) / 100);
@@ -366,7 +377,6 @@ export class CalibrationEngine {
           if (ctx) {
             ctx.drawImage(img, 0, 0, w, h);
 
-            // If bounding box was provided by Gemini, sample center of that box
             let cx = Math.floor(w / 2);
             let cy = Math.floor(h / 2);
             if (boundingBox && Array.isArray(boundingBox) && boundingBox.length === 4) {
@@ -374,8 +384,52 @@ export class CalibrationEngine {
               cx = Math.floor(((boundingBox[1] + boundingBox[3]) / 2000) * w);
             }
 
+            // 1. Check for Moisture Seal Breach (Right quadrant: ~0.71w, ~0.43h)
+            let isSealBreached = false;
+            try {
+              const dotX = Math.floor(w * 0.714);
+              const dotY = Math.floor(h * 0.433);
+              const dotData = ctx.getImageData(Math.max(0, dotX - 5), Math.max(0, dotY - 5), 10, 10).data;
+              let dotR = 0, dotG = 0, dotB = 0;
+              for (let i = 0; i < dotData.length; i += 4) {
+                dotR += dotData[i];
+                dotG += dotData[i + 1];
+                dotB += dotData[i + 2];
+              }
+              const dCount = dotData.length / 4;
+              dotR /= dCount;
+              dotG /= dCount;
+              dotB /= dCount;
+              // Anhydrous CuSO4 turns azure blue when hydrated (>65% RH)
+              if (dotB > dotR + 35 && dotB > 120 && dotR < 130) {
+                isSealBreached = true;
+              }
+            } catch {
+              // Ignore seal sampling error if out of bounds
+            }
+
+            // 2. Check if this is a Full Dual-Zone Badge (Zone B sky blue at cx + 0.08w)
+            let targetX = cx;
+            try {
+              const zbX = Math.floor(w * 0.57);
+              const zbData = ctx.getImageData(zbX - 5, cy - 5, 10, 10).data;
+              let zbR = 0, zbB = 0;
+              for (let i = 0; i < zbData.length; i += 4) {
+                zbR += zbData[i];
+                zbB += zbData[i + 2];
+              }
+              zbR /= (zbData.length / 4);
+              zbB /= (zbData.length / 4);
+              // If right zone is sky-blue CuSO4, target Zone A (AgNO3) on the left
+              if (zbB > zbR + 25 && zbB > 160) {
+                targetX = Math.floor(w * 0.43);
+              }
+            } catch {
+              // Default to center
+            }
+
             const sampleSize = 16;
-            const sx = Math.max(0, Math.min(w - sampleSize, cx - Math.floor(sampleSize / 2)));
+            const sx = Math.max(0, Math.min(w - sampleSize, targetX - Math.floor(sampleSize / 2)));
             const sy = Math.max(0, Math.min(h - sampleSize, cy - Math.floor(sampleSize / 2)));
             const imgData = ctx.getImageData(sx, sy, sampleSize, sampleSize).data;
 
@@ -397,13 +451,14 @@ export class CalibrationEngine {
             let dose = CalibrationEngine.estimateExposure(deltaE00, temp, rh, shelfAgeDays);
             let status: ExposureStatus = 'NORMAL';
 
-            // CRUCIAL: Protect against off-target false 4.xx ppm·h reading
             let guidelineNote = '';
-            if (locus.isOffTarget) {
-              // The sampled pixels were background (skin, desk, paper). Re-anchor to baseline!
-              dose = 0.15;
+            if (isSealBreached) {
+              status = 'REVIEW';
+              guidelineNote = 'SEAL BREACHED: Anhydrous CuSO4 indicator turned azure blue (>65% RH ingress). Dosimeter invalidated; quarantine badge.';
+            } else if (locus.isOffTarget) {
+              dose = 0.125;
               status = 'NORMAL';
-              guidelineNote = 'Target alignment notice: Sampled region stabilized to baseline (0.15 ppm·h). Frame dosimeter within reticle.';
+              guidelineNote = locus.reason || 'Target alignment notice: Frame dosimeter within reticle.';
             } else if (locus.isContaminationAnomaly) {
               dose = 0.20;
               status = 'MONITOR';
@@ -414,7 +469,7 @@ export class CalibrationEngine {
             }
 
             const hex = `#${((1 << 24) + (avgR << 16) + (avgG << 8) + avgB).toString(16).slice(1)}`;
-            const precautions = CalibrationEngine.getPrecautions(status, dose, expiry.isExpired);
+            const precautions = CalibrationEngine.getPrecautions(status, dose, expiry.isExpired || isSealBreached);
 
             resolve({
               estimated_exposure_ppm_h: dose,

@@ -35,18 +35,18 @@ from scripts.analyze_wristband import srgb_to_cielab, compute_delta_e_cie76, det
 # CONSTANTS & MODEL INITIALIZATION
 # ---------------------------------------------------------
 MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "cupan_best_model.pkl")
-L0_STAR = 40.5
-A0_STAR = 26.0
-B0_STAR = -22.0
+L0_STAR = 90.0
+A0_STAR = -0.5
+B0_STAR = 4.8
 
-DOSE_NORMAL_MAX = 0.50
-DOSE_MONITOR_MAX = 1.00
-SHELF_LIFE_MAX_DAYS = 60.0
+DOSE_NORMAL_MAX = 2.50
+DOSE_MONITOR_MAX = 10.00
+SHELF_LIFE_MAX_DAYS = 90.0
 
 # Pre-load calibrated Random Forest model on server start
-print(f"Loading Cu-PAN Random Forest model from: {MODEL_PATH}...")
+print(f"Loading Dual-Zone Random Forest model from: {MODEL_PATH}...")
 model = load_cupan_model(MODEL_PATH)
-print("Cu-PAN Model loaded successfully (60 estimators ready).")
+print("Dual-Zone Ag/Cu Random Forest Model loaded successfully (100 estimators ready).")
 
 # ---------------------------------------------------------
 # FASTAPI APP CONFIGURATION

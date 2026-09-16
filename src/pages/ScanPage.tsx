@@ -15,12 +15,99 @@ import {
   Check,
   SwitchCamera,
   AlertTriangle,
-  RotateCcw
+  RotateCcw,
+  Download,
+  Scissors,
+  Eye
 } from 'lucide-react';
+
+export const SCANNABLE_BENCHMARK_BADGES = [
+  {
+    id: 'stage-1',
+    badgeId: 'SARVAS-0001',
+    title: 'Stage 1: Fresh Baseline',
+    dose: '0.125 ppm·h',
+    status: 'NORMAL (SAFE)',
+    tier: 'SAFE',
+    badgeTheme: 'border-emerald-500/40 text-emerald-400 bg-emerald-950/40',
+    agHex: '#EDECE5',
+    agRgb: '237, 236, 229',
+    cuHex: '#AED3E8',
+    cuRgb: '174, 211, 232',
+    sealDot: 'Chalk White (Intact)',
+    imageSrc: '/samples/sample_1_fresh.png',
+    notes: 'Pristine unexposed baseline dosimeter. Zone A unreacted AgNO₃ off-white.'
+  },
+  {
+    id: 'stage-2',
+    badgeId: 'SARVAS-0010',
+    title: 'Stage 2: Trace Exposure',
+    dose: '1.000 ppm·h',
+    status: 'NORMAL',
+    tier: 'SAFE',
+    badgeTheme: 'border-emerald-500/40 text-emerald-400 bg-emerald-950/40',
+    agHex: '#D8D4CD',
+    agRgb: '216, 212, 205',
+    cuHex: '#A8CDE1',
+    cuRgb: '168, 205, 225',
+    sealDot: 'Chalk White (Intact)',
+    imageSrc: '/samples/sample_2_trace.png',
+    notes: 'Permissible 8-hour shift level. Trace silver sulfide (Ag₂S) warm-gray darkening.'
+  },
+  {
+    id: 'stage-3',
+    badgeId: 'SARVAS-0066',
+    title: 'Stage 3: Action Level / Monitor',
+    dose: '5.000 ppm·h',
+    status: 'MONITOR',
+    tier: 'CAUTION',
+    badgeTheme: 'border-amber-500/40 text-amber-400 bg-amber-950/40',
+    agHex: '#928D88',
+    agRgb: '146, 141, 136',
+    cuHex: '#A4C7D8',
+    cuRgb: '164, 199, 216',
+    sealDot: 'Chalk White (Intact)',
+    imageSrc: '/samples/sample_3_monitor.png',
+    notes: 'Action level reached (ACGIH TLV). Zone A slate-gray; worker rotation mandated.'
+  },
+  {
+    id: 'stage-4',
+    badgeId: 'SARVAS-0082',
+    title: 'Stage 4: Critical Review (PEL Exceeded)',
+    dose: '20.000 ppm·h',
+    status: 'REVIEW (EVACUATE)',
+    tier: 'DANGER',
+    badgeTheme: 'border-rose-500/40 text-rose-400 bg-rose-950/40',
+    agHex: '#504A44',
+    agRgb: '80, 74, 68',
+    cuHex: '#97ACB7',
+    cuRgb: '151, 172, 183',
+    sealDot: 'Chalk White (Intact)',
+    imageSrc: '/samples/sample_4_critical.png',
+    notes: 'OSHA PEL exceeded. Zone A dense black Ag₂S, Zone B prominent olive-slate CuS.'
+  },
+  {
+    id: 'stage-5',
+    badgeId: 'SARVAS-0205',
+    title: 'Stage 5: Seal Breached / Ingress',
+    dose: '10.000 ppm·h',
+    status: 'SEAL BROKEN (REJECT)',
+    tier: 'REJECT',
+    badgeTheme: 'border-cyan-500/40 text-cyan-400 bg-cyan-950/40',
+    agHex: '#6A655E',
+    agRgb: '106, 101, 94',
+    cuHex: '#9FBBCA',
+    cuRgb: '159, 187, 202',
+    sealDot: 'Azure Blue #1E70B8 (BREACHED)',
+    imageSrc: '/samples/sample_5_breached.png',
+    notes: 'Anhydrous CuSO₄ moisture barrier breached (>65% RH ingress). Reading rejected.'
+  }
+];
 
 export const ScanPage: React.FC = () => {
   const { selectedSample, setLatestReading, setActivePage, workers, currentUser, selectedWorker, workerLanguage } = useApp();
   const isHindiWorker = currentUser?.role === 'WORKER' && workerLanguage === 'hi';
+  const [showDiyGuide, setShowDiyGuide] = useState(false);
   
   const [activeSampleId, setActiveSampleId] = useState<string>(selectedSample.id || 'SIM-0030');
   const activeCalibration = CALIBRATION_DATASET.find(s => s.sampleId === activeSampleId) || CALIBRATION_DATASET[29] || CALIBRATION_DATASET[0];
@@ -233,11 +320,52 @@ export const ScanPage: React.FC = () => {
 
           if (ctx) {
             ctx.drawImage(img, 0, 0, w, h);
-            // Sample central 25% sensing strip core
-            const sampleW = Math.max(10, Math.floor(w * 0.25));
-            const sampleH = Math.max(10, Math.floor(h * 0.25));
-            const sx = Math.floor((w - sampleW) / 2);
-            const sy = Math.floor((h - sampleH) / 2);
+            // 1. Check for Moisture Seal Breach (Right quadrant: ~0.714w, ~0.433h)
+            let isSealBreached = false;
+            try {
+              const dotX = Math.floor(w * 0.714);
+              const dotY = Math.floor(h * 0.433);
+              const dotData = ctx.getImageData(Math.max(0, dotX - 4), Math.max(0, dotY - 4), 8, 8).data;
+              let dotR = 0, dotB = 0;
+              for (let i = 0; i < dotData.length; i += 4) {
+                dotR += dotData[i];
+                dotB += dotData[i + 2];
+              }
+              const dCount = dotData.length / 4;
+              dotR /= dCount;
+              dotB /= dCount;
+              if (dotB > dotR + 35 && dotB > 120 && dotR < 130) {
+                isSealBreached = true;
+              }
+            } catch {
+              // Ignore seal sampling error
+            }
+
+            // 2. Check if this is a Full Dual-Zone Badge (Zone B sky blue at ~0.57w, ~0.51h)
+            let sampleTargetX = Math.floor(w / 2);
+            try {
+              const zbX = Math.floor(w * 0.57);
+              const zbY = Math.floor(h * 0.51);
+              const zbData = ctx.getImageData(zbX - 4, zbY - 4, 8, 8).data;
+              let zbR = 0, zbB = 0;
+              for (let i = 0; i < zbData.length; i += 4) {
+                zbR += zbData[i];
+                zbB += zbData[i + 2];
+              }
+              zbR /= (zbData.length / 4);
+              zbB /= (zbData.length / 4);
+              if (zbB > zbR + 25 && zbB > 160) {
+                sampleTargetX = Math.floor(w * 0.43);
+              }
+            } catch {
+              // Default to center
+            }
+
+            // Sample sensing strip core (either Zone A of badge or center of paper swatch)
+            const sampleW = Math.max(12, Math.floor(w * 0.10));
+            const sampleH = Math.max(12, Math.floor(h * 0.10));
+            const sx = Math.max(0, Math.min(w - sampleW, sampleTargetX - Math.floor(sampleW / 2)));
+            const sy = Math.max(0, Math.min(h - sampleH, Math.floor(h * 0.51) - Math.floor(sampleH / 2)));
             const imgData = ctx.getImageData(sx, sy, sampleW, sampleH).data;
 
             let totalR = 0, totalG = 0, totalB = 0, count = 0;
@@ -245,7 +373,6 @@ export const ScanPage: React.FC = () => {
               const r = imgData[i];
               const g = imgData[i + 1];
               const b = imgData[i + 2];
-              // Filter out extreme highlights or dark vignetting if possible
               if ((r + g + b) > 30 && (r + g + b) < 740) {
                 totalR += r;
                 totalG += g;
@@ -290,7 +417,6 @@ export const ScanPage: React.FC = () => {
             }
 
             let calculatedDose = totalWeight > 0 ? weightedDose / totalWeight : 0;
-            // Physical power-law fallback if image color is outside dataset bounding hull
             if (top3[0].dist > 18) {
               calculatedDose = 0.00185 * Math.pow(Math.max(0, deltaE), 1.96);
             }
@@ -305,9 +431,10 @@ export const ScanPage: React.FC = () => {
             let status: ExposureStatus = 'NORMAL';
             let actionFlag = 'Clean / Safe (< 0.5 ppm·h)';
 
-            if (activeCalibration.shelfAge > 90 || activeCalibration.sealDot === 'BLUE') {
+            if (isSealBreached || activeCalibration.shelfAge > 90 || activeCalibration.sealDot === 'BLUE') {
               status = 'REVIEW';
               actionFlag = 'SEAL BREACH / EXPIRED (Reject badge)';
+              calculatedDose = 10.0;
             } else if (calculatedDose >= 10.0) {
               status = 'REVIEW';
               actionFlag = 'Critical / Overexposure (>= 10.0 ppm·h)';
@@ -1239,7 +1366,193 @@ export const ScanPage: React.FC = () => {
 
       </div>
 
-      {/* DETAILED COLORIMETRIC & ENVIRONMENTAL COMPENSATION DIAGNOSTIC PANEL */}
+      {/* 5 SCANNABLE BENCHMARK TEST BADGES (INSTANT TESTING & DOWNLOADABLE CARDS) */}
+      <div className="bg-[#EDE5D6]/35 p-5 sm:p-6 rounded-2xl border border-[#D8D0C2] shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#D8D0C2] pb-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#B08A55]" />
+              <h3 className="text-base font-bold text-[#292925]">
+                {isHindiWorker ? '5 कैलिब्रेटेड टेस्ट बैज (तुरंत स्कैन और DIY पेपर क्राफ्ट)' : '5 Scannable Benchmark Badges (Camera Samples & DIY Test)'}
+              </h3>
+            </div>
+            <p className="text-xs text-[#292925]/70">
+              {isHindiWorker
+                ? 'इन 5 नमूनों को सीधे स्कैनर में लोड करें, या घर पर रंगीन पेपर से बैज बनाकर फोन कैमरे से स्कैन करें।'
+                : 'Click "Test in Scanner" to instantly test any stage, or download PNG to scan with your phone camera.'}
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowDiyGuide(!showDiyGuide)}
+            className="px-3 py-1.5 rounded-lg bg-[#4F5D4B] text-[#F6F1E7] text-xs font-bold hover:bg-[#3d493a] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <Scissors className="w-3.5 h-3.5" />
+            <span>{showDiyGuide ? 'Hide Crafting Guide' : 'DIY Paper Crafting Guide'}</span>
+          </button>
+        </div>
+
+        {/* 5 Badge Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+          {SCANNABLE_BENCHMARK_BADGES.map((badge) => (
+            <div
+              key={badge.id}
+              className="bg-[#F6F1E7] rounded-xl border border-[#D8D0C2] p-3 flex flex-col justify-between space-y-3 hover:shadow-md transition-all group"
+            >
+              {/* Badge Thumbnail */}
+              <div className="relative rounded-lg overflow-hidden border border-[#D8D0C2] bg-[#1e1e1b] aspect-4/3 flex items-center justify-center">
+                <img
+                  src={badge.imageSrc}
+                  alt={badge.title}
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200"
+                />
+                <span className={`absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold border ${badge.badgeTheme}`}>
+                  {badge.dose}
+                </span>
+              </div>
+
+              {/* Title & Info */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono text-[#292925]/60 font-semibold">{badge.badgeId}</span>
+                  <span className="text-[10px] font-mono font-bold text-[#4F5D4B]">{badge.tier}</span>
+                </div>
+                <h4 className="text-xs font-bold text-[#292925] leading-tight">{badge.title}</h4>
+                <p className="text-[10px] text-[#292925]/70 line-clamp-2 leading-relaxed">{badge.notes}</p>
+
+                {/* Swatches */}
+                <div className="pt-1.5 border-t border-[#D8D0C2]/60 space-y-1">
+                  <div className="flex items-center justify-between text-[10px] font-mono">
+                    <span className="text-[#292925]/70">Zone A (Ag):</span>
+                    <div className="flex items-center gap-1">
+                      <span className="w-2.5 h-2.5 rounded-xs border border-black/20" style={{ backgroundColor: badge.agHex }} />
+                      <span className="font-bold">{badge.agHex}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] font-mono">
+                    <span className="text-[#292925]/70">Zone B (Cu):</span>
+                    <div className="flex items-center gap-1">
+                      <span className="w-2.5 h-2.5 rounded-xs border border-black/20" style={{ backgroundColor: badge.cuHex }} />
+                      <span className="font-bold">{badge.cuHex}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] font-mono">
+                    <span className="text-[#292925]/70">Seal Dot:</span>
+                    <span className="font-bold text-[9px] truncate max-w-[90px]">{badge.sealDot}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-1.5 pt-1">
+                <button
+                  onClick={() => {
+                    processNewImage(badge.imageSrc);
+                    window.scrollTo({ top: 180, behavior: 'smooth' });
+                  }}
+                  className="px-2 py-1.5 rounded-md bg-[#4F5D4B] text-[#F6F1E7] text-[10px] font-bold hover:bg-[#3d493a] transition-all flex items-center justify-center gap-1 cursor-pointer"
+                  title="Load into scanner and analyze"
+                >
+                  <Eye className="w-3 h-3" />
+                  <span>Test Scan</span>
+                </button>
+
+                <a
+                  href={badge.imageSrc}
+                  download={badge.imageSrc.split('/').pop()}
+                  className="px-2 py-1.5 rounded-md bg-[#EDE5D6] text-[#292925] border border-[#D8D0C2] text-[10px] font-bold hover:bg-[#D8D0C2] transition-all flex items-center justify-center gap-1 text-center"
+                  title="Download PNG image for phone scanning or printing"
+                >
+                  <Download className="w-3 h-3" />
+                  <span>Download</span>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* DIY PAPER CRAFTING KIT (EXPANDABLE) */}
+        {showDiyGuide && (
+          <div className="p-4 sm:p-5 rounded-xl bg-[#F6F1E7] border border-[#D8D0C2] space-y-4 animate-in fade-in duration-200">
+            <div className="flex items-center justify-between border-b border-[#D8D0C2] pb-3">
+              <div className="flex items-center gap-2">
+                <Scissors className="w-4 h-4 text-[#B08A55]" />
+                <h4 className="text-sm font-bold text-[#292925] uppercase tracking-wide">
+                  DIY Paper Wristband Crafting &amp; Calibration Specification
+                </h4>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EDE5D6] text-[#4F5D4B] font-bold">
+                At-Home Physical Verification
+              </span>
+            </div>
+
+            <p className="text-xs text-[#292925]/80 leading-relaxed">
+              You can construct a functional physical test wristband prototype at home using colored craft paper or printouts. The SARVAS machine vision engine will automatically recognize the paper patch colors, convert to CIE L*a*b*, apply ambient lighting compensation, and estimate the exact cumulative H₂S dose.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              {/* Step 1: Band Dimensions */}
+              <div className="p-3.5 rounded-lg bg-[#EDE5D6]/50 border border-[#D8D0C2] space-y-2">
+                <div className="font-bold text-[#292925] flex items-center gap-1.5">
+                  <span className="w-4 h-4 rounded-full bg-[#4F5D4B] text-[#F6F1E7] text-[10px] font-mono flex items-center justify-center">1</span>
+                  <span>Physical Dimensions</span>
+                </div>
+                <ul className="space-y-1 text-[#292925]/80 text-[11px] font-mono list-disc list-inside">
+                  <li><strong>Strap:</strong> 240 mm × 22 mm (Black/dark paper)</li>
+                  <li><strong>Housing:</strong> 42 mm × 26 mm (White cardstock)</li>
+                  <li><strong>Zone A Cutout:</strong> 18 mm × 18 mm (Left half)</li>
+                  <li><strong>Zone B Cutout:</strong> 18 mm × 18 mm (Right half)</li>
+                  <li><strong>Seal Dot:</strong> 5 mm circle on right side</li>
+                </ul>
+              </div>
+
+              {/* Step 2: Paper Color Matches */}
+              <div className="p-3.5 rounded-lg bg-[#EDE5D6]/50 border border-[#D8D0C2] space-y-2">
+                <div className="font-bold text-[#292925] flex items-center gap-1.5">
+                  <span className="w-4 h-4 rounded-full bg-[#4F5D4B] text-[#F6F1E7] text-[10px] font-mono flex items-center justify-center">2</span>
+                  <span>Paper Color Selection</span>
+                </div>
+                <div className="space-y-1 text-[11px]">
+                  <div className="flex items-center justify-between">
+                    <span><strong>Stage 1 (0.125 ppm·h):</strong></span>
+                    <span className="font-mono text-[10px] text-[#4F5D4B]">Off-White / Cream (#EDECE5)</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span><strong>Stage 2 (1.0 ppm·h):</strong></span>
+                    <span className="font-mono text-[10px] text-[#4F5D4B]">Light Gray Paper (#D8D4CD)</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span><strong>Stage 3 (5.0 ppm·h):</strong></span>
+                    <span className="font-mono text-[10px] text-[#B08A55]">Slate / Cement Gray (#928D88)</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span><strong>Stage 4 (20.0 ppm·h):</strong></span>
+                    <span className="font-mono text-[10px] text-rose-700">Charcoal / Black Paper (#504A44)</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span><strong>Zone B (All Badges):</strong></span>
+                    <span className="font-mono text-[10px] text-sky-700">Sky Blue Craft Paper (#AED3E8)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 3: Scanning Instructions */}
+              <div className="p-3.5 rounded-lg bg-[#EDE5D6]/50 border border-[#D8D0C2] space-y-2">
+                <div className="font-bold text-[#292925] flex items-center gap-1.5">
+                  <span className="w-4 h-4 rounded-full bg-[#4F5D4B] text-[#F6F1E7] text-[10px] font-mono flex items-center justify-center">3</span>
+                  <span>Testing with Scanner</span>
+                </div>
+                <ol className="space-y-1 text-[#292925]/80 text-[11px] list-decimal list-inside">
+                  <li>Assemble the paper cutouts into the housing window.</li>
+                  <li>Click <strong>Take Photo</strong> or open the SARVAS mobile app.</li>
+                  <li>Align the paper band inside the reticle frame.</li>
+                  <li>Click <strong>Capture Photo</strong> and watch the 5-step analysis compute your exposure!</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       <div className="bg-[#EDE5D6]/30 p-6 rounded-xl border border-[#D8D0C2] shadow-xs space-y-6">
         
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[#D8D0C2] pb-4">
