@@ -86,7 +86,9 @@ export class GeminiVisionDirect {
   public static getApiKey(): string {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved && saved.trim()) return saved.trim();
-    return DEFAULT_KEY;
+    const envKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
+    if (envKey && envKey.trim() && envKey.startsWith('AIzaSy')) return envKey.trim();
+    return '';
   }
 
   public static setApiKey(key: string): void {
@@ -99,7 +101,7 @@ export class GeminiVisionDirect {
 
   public static isKeyConfigured(): boolean {
     const key = this.getApiKey();
-    return Boolean(key && key.length > 5);
+    return Boolean(key && key.length > 20 && key.startsWith('AIzaSy'));
   }
 
   /**

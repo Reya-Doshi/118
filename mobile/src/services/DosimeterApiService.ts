@@ -98,6 +98,17 @@ export class DosimeterApiService {
    * Seamlessly falls back to On-Device AI Engine (Offline Safe) when server is offline or unreachable.
    */
   public static async analyzeWristband(params: AnalyzeWristbandParams): Promise<BackendAnalyzeResponse> {
+    // 1. Direct Gemini Vision Mode: If a valid Google Gemini API key is configured on phone or in env, execute Gemini Vision directly!
+    try {
+      const { GeminiVisionDirect } = await import('./GeminiVisionDirect');
+      if (GeminiVisionDirect.isKeyConfigured()) {
+        console.log('Gemini API key active on mobile. Executing Direct Google Gemini 2.5 Flash Vision...');
+        return await this.analyzeViaDirectGemini(params);
+      }
+    } catch {
+      // Continue to backend/on-device flow
+    }
+
     const baseUrl = this.getBaseUrl();
     const endpoint = `${baseUrl}/api/analyze-wristband`;
 
