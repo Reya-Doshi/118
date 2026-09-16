@@ -18,16 +18,14 @@ import { WorkersListView } from './views/WorkersListView';
 import { AlertsListView } from './views/AlertsListView';
 import { BandsManagementView } from './views/BandsManagementView';
 import { KioskModeView } from './views/KioskModeView';
-import { GeminiConfigModal } from './components/GeminiConfigModal';
 
-import { Home, Camera, Clock, User, ShieldAlert, Users, Radio, LogOut, Sparkles, Scan } from 'lucide-react';
+import { Home, Camera, Clock, User, ShieldAlert, Users, Radio, LogOut, Scan } from 'lucide-react';
 
 const MainAppContent: React.FC = () => {
   const { currentUser, role, isAuthenticated, logout } = useMobileAuth();
 
   const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState<'HOME' | 'SCAN' | 'HISTORY' | 'PROFILE' | 'WORKERS' | 'ALERTS' | 'BANDS' | 'KIOSK'>('HOME');
-  const [isGeminiModalOpen, setIsGeminiModalOpen] = useState(false);
 
   // Live repository states
   const [workers, setWorkers] = useState<Worker[]>(repository.getWorkers());
@@ -35,8 +33,8 @@ const MainAppContent: React.FC = () => {
   const [alerts, setAlerts] = useState<Alert[]>(repository.getAlerts());
   const [wristbands, setWristbands] = useState<Wristband[]>(repository.getWristbands());
 
-  // Worker language preference (Hindi default for field operators)
-  const [workerLanguage, setWorkerLanguage] = useState<'hi' | 'en'>('hi');
+  // Worker language preference (Default English, Worker can toggle to Hindi)
+  const [workerLanguage, setWorkerLanguage] = useState<'hi' | 'en'>('en');
 
   // Camera & Analysis Modal States
   const [isCameraOpen, setIsCameraOpen] = useState(false);
@@ -273,6 +271,8 @@ const MainAppContent: React.FC = () => {
     }
   };
 
+  const isHindiWorker = role === 'WORKER' && workerLanguage === 'hi';
+
   return (
     <div 
       className="min-h-screen bg-[#F6F1E7] text-[#292925] flex flex-col max-w-md mx-auto relative px-3.5 pb-8"
@@ -292,14 +292,14 @@ const MainAppContent: React.FC = () => {
               <span className="text-[9px] font-mono bg-[#4F5D4B]/15 text-[#2F6B38] px-1.5 py-0.5 rounded font-bold">by RageB8</span>
             </div>
             <span className="text-[9px] font-mono text-[#878377] block mt-0.5">
-              {workerLanguage === 'hi' ? 'स्मार्ट रिस्टबैंड डॉसिमीटर' : 'SIH 2026 · PS-118 Dosimeter'}
+              {isHindiWorker ? 'स्मार्ट रिस्टबैंड डॉसिमीटर' : 'SIH 2026 · PS-118 Dosimeter'}
             </span>
           </div>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setActiveTab('KIOSK')}
-            className={`p-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center gap-1 active:scale-95 transition-all shadow-2xs ${
+            className={`py-1.5 px-3 rounded-lg text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all shadow-2xs cursor-pointer ${
               activeTab === 'KIOSK'
                 ? 'bg-black text-white ring-1 ring-black'
                 : 'bg-[#292925] hover:bg-black text-white'
@@ -307,25 +307,16 @@ const MainAppContent: React.FC = () => {
             title="Interactive Kiosk Flow (Start -> Scan -> Dose -> Close)"
           >
             <Scan className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Kiosk</span>
-          </button>
-
-          <button
-            onClick={() => setIsGeminiModalOpen(true)}
-            className="p-1.5 px-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-bold flex items-center gap-1 active:scale-95 transition-all shadow-2xs cursor-pointer"
-            title="Gemini Vision Direct Mode Config"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Gemini</span>
+            <span>Kiosk Flow</span>
           </button>
 
           <button
             onClick={logout}
-            className="p-1.5 px-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[10px] font-semibold flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
-            title={workerLanguage === 'hi' ? 'लॉग आउट' : 'Sign Out'}
+            className="py-1.5 px-3 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-semibold flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer"
+            title={isHindiWorker ? 'लॉग आउट' : 'Sign Out'}
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-bold">{workerLanguage === 'hi' ? 'लॉग आउट' : 'Exit'}</span>
+            <span className="text-xs font-bold">{isHindiWorker ? 'लॉग आउट' : 'Sign Out'}</span>
           </button>
         </div>
       </header>
@@ -344,7 +335,7 @@ const MainAppContent: React.FC = () => {
           }`}
         >
           <Home className="w-5 h-5" />
-          <span>{workerLanguage === 'hi' ? 'मुख्य' : 'Home'}</span>
+          <span>{isHindiWorker ? 'मुख्य' : 'Home'}</span>
         </button>
 
         {role === 'WORKER' && (
@@ -355,7 +346,7 @@ const MainAppContent: React.FC = () => {
             <div className="w-11 h-11 -mt-5 rounded-full bg-[#292925] text-[#F6F1E7] flex items-center justify-center shadow-lg border-2 border-[#F6F1E7]">
               <Camera className="w-5 h-5 text-[#EDE5D6]" />
             </div>
-            <span className="font-bold">{workerLanguage === 'hi' ? 'स्कैन करें' : 'Scan Band'}</span>
+            <span className="font-bold">{isHindiWorker ? 'स्कैन करें' : 'Scan Band'}</span>
           </button>
         )}
 
@@ -427,7 +418,7 @@ const MainAppContent: React.FC = () => {
           }`}
         >
           <Clock className="w-5 h-5" />
-          <span>{workerLanguage === 'hi' ? 'इतिहास' : 'History'}</span>
+          <span>{isHindiWorker ? 'इतिहास' : 'History'}</span>
         </button>
 
         <button
@@ -437,7 +428,7 @@ const MainAppContent: React.FC = () => {
           }`}
         >
           <User className="w-5 h-5" />
-          <span>{workerLanguage === 'hi' ? 'प्रोफाइल' : 'Profile'}</span>
+          <span>{isHindiWorker ? 'प्रोफाइल' : 'Profile'}</span>
         </button>
       </nav>
 
@@ -473,12 +464,6 @@ const MainAppContent: React.FC = () => {
           onRetake={handleRetake}
         />
       )}
-
-      {/* Gemini Vision API Direct Config Modal */}
-      <GeminiConfigModal
-        isOpen={isGeminiModalOpen}
-        onClose={() => setIsGeminiModalOpen(false)}
-      />
     </div>
   );
 };
