@@ -76,7 +76,7 @@ export const Navbar: React.FC = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between gap-4 lg:gap-8 h-16">
           
           {/* Left: Product Name "118" + Minimal Mark */}
           <div className="flex items-center gap-6">
@@ -169,7 +169,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('scan')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer mr-1 lg:mr-2 ${
                       activePage === 'scan'
                         ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -323,7 +323,9 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right: Desktop Controls + Mobile Hamburger */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className={`flex items-center gap-2 sm:gap-2.5 ml-3 sm:ml-4 lg:ml-6 pl-3 sm:pl-4 lg:pl-5 border-l shrink-0 transition-colors ${
+            isTransparentOnHero ? 'border-white/20' : 'border-[#D8D0C2]'
+          }`}>
             {/* Interactive Kiosk Prototype Nav Button */}
             <button
               onClick={() => handleNavClick('kiosk')}
