@@ -9091,7 +9091,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 8.936,
     ci95High: 11.056,
     estErrorPct: -0.0,
-    qaFlag: "OK|SEAL_BROKEN",
+    qaFlag: "SEAL_BROKEN",
     safetyStatus: 'REVIEW',
     
     // Compatibility fields:
@@ -9135,7 +9135,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 9.064,
     ci95High: 11.236,
     estErrorPct: 1.5,
-    qaFlag: "OK|SEAL_BROKEN",
+    qaFlag: "SEAL_BROKEN",
     safetyStatus: 'REVIEW',
     
     // Compatibility fields:
@@ -9179,7 +9179,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 8.79,
     ci95High: 10.886,
     estErrorPct: -1.6,
-    qaFlag: "OK|SEAL_BROKEN",
+    qaFlag: "SEAL_BROKEN",
     safetyStatus: 'REVIEW',
     
     // Compatibility fields:
@@ -9223,7 +9223,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 9.051,
     ci95High: 11.188,
     estErrorPct: 1.2,
-    qaFlag: "OK|SEAL_BROKEN",
+    qaFlag: "SEAL_BROKEN",
     safetyStatus: 'REVIEW',
     
     // Compatibility fields:
@@ -9267,7 +9267,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 8.897,
     ci95High: 11.016,
     estErrorPct: -0.4,
-    qaFlag: "OK|SEAL_BROKEN",
+    qaFlag: "SEAL_BROKEN",
     safetyStatus: 'REVIEW',
     
     // Compatibility fields:
@@ -9311,7 +9311,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 9.256,
     ci95High: 11.456,
     estErrorPct: 3.6,
-    qaFlag: "OK|SEAL_BROKEN",
+    qaFlag: "SEAL_BROKEN",
     safetyStatus: 'REVIEW',
     
     // Compatibility fields:
@@ -9355,7 +9355,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 9.271,
     ci95High: 11.521,
     estErrorPct: 4.0,
-    qaFlag: "OK|SEAL_BROKEN",
+    qaFlag: "SEAL_BROKEN",
     safetyStatus: 'REVIEW',
     
     // Compatibility fields:
@@ -9399,7 +9399,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 8.464,
     ci95High: 10.51,
     estErrorPct: -5.1,
-    qaFlag: "OK|SEAL_BROKEN",
+    qaFlag: "SEAL_BROKEN",
     safetyStatus: 'REVIEW',
     
     // Compatibility fields:
@@ -9443,7 +9443,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 8.021,
     ci95High: 9.968,
     estErrorPct: -10.1,
-    qaFlag: "OK|SEAL_BROKEN",
+    qaFlag: "SEAL_BROKEN",
     safetyStatus: 'REVIEW',
     
     // Compatibility fields:
@@ -9487,7 +9487,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 9.018,
     ci95High: 11.186,
     estErrorPct: 1.0,
-    qaFlag: "OK|SEAL_BROKEN",
+    qaFlag: "SEAL_BROKEN",
     safetyStatus: 'REVIEW',
     
     // Compatibility fields:
@@ -9531,7 +9531,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 8.813,
     ci95High: 10.927,
     estErrorPct: -1.3,
-    qaFlag: "OK|SEAL_BROKEN",
+    qaFlag: "SEAL_BROKEN",
     safetyStatus: 'REVIEW',
     
     // Compatibility fields:
@@ -9575,7 +9575,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 8.763,
     ci95High: 10.869,
     estErrorPct: -1.8,
-    qaFlag: "OK|SEAL_BROKEN",
+    qaFlag: "SEAL_BROKEN",
     safetyStatus: 'REVIEW',
     
     // Compatibility fields:
@@ -10411,7 +10411,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 3.329,
     ci95High: 4.233,
     estErrorPct: -5.5,
-    qaFlag: "OK|LIGHT_OR_AGE_WARNING",
+    qaFlag: "LIGHT_WARNING",
     safetyStatus: 'NORMAL',
     
     // Compatibility fields:
@@ -10424,7 +10424,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     rawColorString: '44.65, 1.86, 4.67',
     deltaE: 49.42,
     expiryStatus: "Fresh (Active)",
-    actionFlag: "F_light \u00b7 OK|LIGHT_OR_AGE_WARNING (3.8 ppm\u00b7h)",
+    actionFlag: "F_light \u00b7 LIGHT_WARNING (3.8 ppm\u00b7h)",
     dataSource: 'DualZone_AgCu_Matrix_v3',
     hexColor: '#706862',
     cuHexColor: '#a8cadc'
@@ -10455,7 +10455,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 3.273,
     ci95High: 4.163,
     estErrorPct: -7.0,
-    qaFlag: "OK|LIGHT_OR_AGE_WARNING",
+    qaFlag: "LIGHT_WARNING",
     safetyStatus: 'NORMAL',
     
     // Compatibility fields:
@@ -10468,7 +10468,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     rawColorString: '44.71, 0.89, 3.48',
     deltaE: 49.3,
     expiryStatus: "Fresh (Active)",
-    actionFlag: "F_light \u00b7 OK|LIGHT_OR_AGE_WARNING (3.7 ppm\u00b7h)",
+    actionFlag: "F_light \u00b7 LIGHT_WARNING (3.7 ppm\u00b7h)",
     dataSource: 'DualZone_AgCu_Matrix_v3',
     hexColor: '#6e6964',
     cuHexColor: '#aacadb'
@@ -10499,7 +10499,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 3.78,
     ci95High: 4.784,
     estErrorPct: 7.0,
-    qaFlag: "OK|LIGHT_OR_AGE_WARNING",
+    qaFlag: "LIGHT_WARNING",
     safetyStatus: 'NORMAL',
     
     // Compatibility fields:
@@ -10512,7 +10512,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     rawColorString: '43.23, 1.75, 3.55',
     deltaE: 50.8,
     expiryStatus: "Fresh (Active)",
-    actionFlag: "F_light \u00b7 OK|LIGHT_OR_AGE_WARNING (4.3 ppm\u00b7h)",
+    actionFlag: "F_light \u00b7 LIGHT_WARNING (4.3 ppm\u00b7h)",
     dataSource: 'DualZone_AgCu_Matrix_v3',
     hexColor: '#6c6560',
     cuHexColor: '#a8c9db'
@@ -10543,7 +10543,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 2.57,
     ci95High: 3.303,
     estErrorPct: -26.6,
-    qaFlag: "OK|LIGHT_OR_AGE_WARNING",
+    qaFlag: "LIGHT_WARNING",
     safetyStatus: 'NORMAL',
     
     // Compatibility fields:
@@ -10556,7 +10556,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     rawColorString: '29.71, 2.89, 4.9',
     deltaE: 64.38,
     expiryStatus: "Fresh (Active)",
-    actionFlag: "F_light \u00b7 OK|LIGHT_OR_AGE_WARNING (2.9 ppm\u00b7h)",
+    actionFlag: "F_light \u00b7 LIGHT_WARNING (2.9 ppm\u00b7h)",
     dataSource: 'DualZone_AgCu_Matrix_v3',
     hexColor: '#4e443f',
     cuHexColor: '#a7c7da'
@@ -10587,7 +10587,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 4.768,
     ci95High: 5.996,
     estErrorPct: 34.5,
-    qaFlag: "OK|LIGHT_OR_AGE_WARNING",
+    qaFlag: "LIGHT_WARNING",
     safetyStatus: 'MONITOR',
     
     // Compatibility fields:
@@ -10600,7 +10600,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     rawColorString: '29.24, 2.51, 3.77',
     deltaE: 64.81,
     expiryStatus: "Fresh (Active)",
-    actionFlag: "F_light \u00b7 OK|LIGHT_OR_AGE_WARNING (5.4 ppm\u00b7h)",
+    actionFlag: "F_light \u00b7 LIGHT_WARNING (5.4 ppm\u00b7h)",
     dataSource: 'DualZone_AgCu_Matrix_v3',
     hexColor: '#4b433f',
     cuHexColor: '#a6c7d9'
@@ -10631,7 +10631,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     ci95Low: 3.254,
     ci95High: 4.138,
     estErrorPct: -7.6,
-    qaFlag: "OK|LIGHT_OR_AGE_WARNING",
+    qaFlag: "LIGHT_WARNING",
     safetyStatus: 'NORMAL',
     
     // Compatibility fields:
@@ -10644,7 +10644,7 @@ export const CALIBRATION_DATASET: CalibrationSample[] = [
     rawColorString: '29.55, 2.39, 4.58',
     deltaE: 64.51,
     expiryStatus: "Fresh (Active)",
-    actionFlag: "F_light \u00b7 OK|LIGHT_OR_AGE_WARNING (3.7 ppm\u00b7h)",
+    actionFlag: "F_light \u00b7 LIGHT_WARNING (3.7 ppm\u00b7h)",
     dataSource: 'DualZone_AgCu_Matrix_v3',
     hexColor: '#4c443f',
     cuHexColor: '#aacada'

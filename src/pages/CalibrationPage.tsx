@@ -26,9 +26,9 @@ export const CalibrationPage: React.FC = () => {
     const matchesFilter =
       flagFilter === 'ALL' ||
       (flagFilter === 'SAFE' && (s.safetyStatus === 'NORMAL' || s.qaFlag === 'BELOW_LOQ')) ||
-      (flagFilter === 'ACTION' && s.safetyStatus === 'MONITOR') ||
-      (flagFilter === 'CRITICAL' && (s.safetyStatus === 'REVIEW' || s.qaFlag === 'ABOVE_RANGE')) ||
-      (flagFilter === 'EXPIRED' && (s.expiryStatus === 'EXPIRED' || s.qaFlag === 'SEAL_BROKEN'));
+      (flagFilter === 'ACTION' && (s.safetyStatus === 'MONITOR' || s.qaFlag === 'LIGHT_WARNING')) ||
+      (flagFilter === 'CRITICAL' && (s.safetyStatus === 'REVIEW' && s.qaFlag !== 'SEAL_BROKEN')) ||
+      (flagFilter === 'EXPIRED' && (s.expiryStatus === 'EXPIRED' || s.qaFlag === 'SEAL_BROKEN' || s.sealDot.includes('BLUE')));
 
     const matchesDoseBracket =
       doseBracket === 'ALL' ||
@@ -605,9 +605,17 @@ export const CalibrationPage: React.FC = () => {
                         ? 'bg-[#71806B]/20 text-[#4F5D4B] border border-[#71806B]/30'
                         : sample.qaFlag === 'BELOW_LOQ'
                         ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                        : 'bg-[#9A6258]/20 text-[#9A6258] border border-[#9A6258]/30'
+                        : sample.qaFlag === 'SEAL_BROKEN'
+                        ? 'bg-red-100 text-red-700 border border-red-300'
+                        : 'bg-orange-100 text-orange-800 border border-orange-300'
                     }`}>
-                      {sample.qaFlag}
+                      {sample.qaFlag === 'OK'
+                        ? 'OK'
+                        : sample.qaFlag === 'BELOW_LOQ'
+                        ? 'BELOW LOQ (<0.25)'
+                        : sample.qaFlag === 'SEAL_BROKEN'
+                        ? 'SEAL BREACHED'
+                        : 'LIGHT WARNING'}
                     </span>
                   </td>
 
