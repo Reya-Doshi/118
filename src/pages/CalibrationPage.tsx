@@ -56,10 +56,46 @@ export const CalibrationPage: React.FC = () => {
   };
 
   const handleDownloadCSV = () => {
+    // Generate CSV content dynamically from CALIBRATION_DATASET so it works 100% offline & on any hosting
+    const headers = [
+      'Sample ID',
+      'Target Dose (ppm·h)',
+      'Gas Conc. (ppm)',
+      'Exposure Time (h)',
+      'Temp (°C)',
+      'RH (%)',
+      'Shelf Age (Days)',
+      'Raw Strip Color (L∗,a∗,b∗)',
+      'Reference Target ΔEab∗',
+      'Expiry Strip Status',
+      'Compliance / Action Flag'
+    ];
+
+    const rows = CALIBRATION_DATASET.map(s => [
+      s.sampleId,
+      s.targetDose.toFixed(1),
+      s.gasConc.toFixed(2),
+      s.exposureTime.toFixed(1),
+      s.tempC,
+      s.rh,
+      s.shelfAge,
+      `"${s.rawColorString}"`,
+      s.deltaE.toFixed(1),
+      s.expiryStatus,
+      `"${s.actionFlag}"`
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
     const link = document.createElement('a');
-    link.href = `${import.meta.env.BASE_URL}calibration_dataset.csv`;
-    link.download = 'calibration_dataset.csv';
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'sih_ps118_cu_pan_calibration_dataset.csv');
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const chartData = CALIBRATION_DATASET.map(s => ({
