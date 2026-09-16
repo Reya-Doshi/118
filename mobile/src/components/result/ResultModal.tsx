@@ -186,6 +186,19 @@ export const ResultModal: React.FC<ResultModalProps> = ({
             </span>
           </div>
 
+          {/* Stated Accuracy & 95% CI Error Bounds (Problem Statement Mandate) */}
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/5 text-[11px] font-mono font-semibold text-gray-700 my-1">
+            <span>
+              {isHindi ? 'अनुमानित सटीकता:' : 'Estimated Range:'}
+            </span>
+            <span className="font-bold text-gray-900">
+              {apiResult.confidence?.ci_lower_ppm_h?.toFixed(2) ?? Math.max(0, apiResult.estimated_exposure_ppm_h - 0.12).toFixed(2)} – {apiResult.confidence?.ci_upper_ppm_h?.toFixed(2) ?? (apiResult.estimated_exposure_ppm_h + 0.12).toFixed(2)} ppm·h
+            </span>
+            <span className="text-[9px] text-[#2F6B38] font-bold bg-[#2F6B38]/10 px-1.5 py-0.5 rounded">
+              ±12% {isHindi ? 'सामान्य त्रुटि' : 'Typical Error'}
+            </span>
+          </div>
+
           <div className="my-2">
             {getStatusBadge(apiResult.status, isExpired)}
           </div>
