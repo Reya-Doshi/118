@@ -224,10 +224,10 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full sm:w-auto">
           <button
             onClick={handleExportCSV}
-            className="px-3 py-1.5 rounded-lg bg-[#4F5D4B] hover:bg-[#3d493a] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+            className="px-3 py-2 rounded-lg bg-[#4F5D4B] hover:bg-[#3d493a] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             title="Download full exposure logs in CSV format"
           >
             <Download className="w-3.5 h-3.5" />
@@ -235,23 +235,23 @@ export const DashboardPage: React.FC = () => {
           </button>
           <button
             onClick={handleExportOSHA}
-            className="px-3 py-1.5 rounded-lg bg-[#292925] hover:bg-black text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+            className="px-3 py-2 rounded-lg bg-[#292925] hover:bg-black text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             title="Export OSHA 300 Safety Summary"
           >
             <FileCheck2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>OSHA 300 Log</span>
+            <span>OSHA 300</span>
           </button>
           <button
             onClick={handleExportOISD}
-            className="px-3 py-1.5 rounded-lg bg-[#3A4D39] hover:bg-[#2c3b2b] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+            className="px-3 py-2 rounded-lg bg-[#3A4D39] hover:bg-[#2c3b2b] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             title="Export Indian Refinery Statutory OISD-STD-113 & DGMS Log"
           >
             <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-            <span>OISD / DGMS Log</span>
+            <span>OISD / DGMS</span>
           </button>
           <button
             onClick={handlePrintReport}
-            className="px-3 py-1.5 rounded-lg border border-[#D8D0C2] bg-[#EDE5D6] hover:bg-[#E5DDCB] text-[#292925] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3 py-2 rounded-lg border border-[#D8D0C2] bg-[#EDE5D6] hover:bg-[#E5DDCB] text-[#292925] text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             title="Print Shift Audit Report"
           >
             <Printer className="w-3.5 h-3.5" />

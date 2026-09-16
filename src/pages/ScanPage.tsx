@@ -668,29 +668,29 @@ export const ScanPage: React.FC = () => {
       </div>
 
       {/* Top Mode Selection Tabs */}
-      <div className="flex items-center justify-center pt-1">
-        <div className="inline-flex p-1 bg-[#EDE5D6] rounded-xl border border-[#D8D0C2] shadow-xs gap-1">
+      <div className="flex items-center justify-center pt-1 px-2">
+        <div className="flex w-full sm:w-auto p-1 bg-[#EDE5D6] rounded-xl border border-[#D8D0C2] shadow-xs gap-1 max-w-md mx-auto">
           <button
             onClick={() => { setActiveTab('camera'); }}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'camera'
                 ? 'bg-[#4F5D4B] text-[#F6F1E7] shadow-sm'
                 : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#E5DDCB]/50'
             }`}
           >
-            <Camera className="w-4 h-4" />
-            <span>{isHindiWorker ? 'कैमरा व फोटो स्कैन' : 'Live Camera & Photo Scan'}</span>
+            <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="truncate">{isHindiWorker ? 'कैमरा व फोटो स्कैन' : 'Live Camera & Photo'}</span>
           </button>
           <button
             onClick={() => { setActiveTab('presets'); stopCamera(); }}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'presets'
                 ? 'bg-[#4F5D4B] text-[#F6F1E7] shadow-sm'
                 : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#E5DDCB]/50'
             }`}
           >
-            <Sliders className="w-4 h-4" />
-            <span>{isHindiWorker ? 'कैलिब्रेशन मानक (120 सैंपल)' : 'Preset Standards (120 Samples)'}</span>
+            <Sliders className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="truncate">{isHindiWorker ? 'कैलिब्रेशन मानक' : 'Preset Standards (120)'}</span>
           </button>
         </div>
       </div>
@@ -794,17 +794,17 @@ export const ScanPage: React.FC = () => {
       <div className="bg-[#292925] text-[#F6F1E7] rounded-2xl p-5 sm:p-7 md:p-8 border border-[#3d3d37] shadow-2xl space-y-6 relative overflow-hidden">
         
         {/* Top Header with Unified Dual Scanning Controls: Take Photo | Upload Photo */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
           <div className="flex items-center gap-2">
             <Camera className="w-5 h-5 text-[#71806B]" />
             <span className="text-sm font-bold tracking-wide">Colorimetric Strip Analyzer</span>
           </div>
 
           {/* Unified Scanner Action Bar */}
-          <div className="inline-flex items-center p-1 rounded-lg bg-white/5 border border-white/15">
+          <div className="flex items-center justify-center p-1 rounded-lg bg-white/5 border border-white/15 w-full sm:w-auto">
             <button
               onClick={() => isCameraActive ? stopCamera() : startCamera()}
-              className={`px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-md text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 isCameraActive
                   ? 'bg-[#4F5D4B] text-[#F6F1E7] shadow-xs'
                   : 'text-[#EDE5D6] hover:text-[#F6F1E7] hover:bg-white/10'
@@ -818,7 +818,7 @@ export const ScanPage: React.FC = () => {
 
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="px-3 py-1.5 rounded-md text-xs font-semibold text-[#EDE5D6] hover:text-[#F6F1E7] hover:bg-white/10 flex items-center gap-1.5 transition-all cursor-pointer"
+              className="flex-1 sm:flex-initial px-3 py-1.5 rounded-md text-xs font-semibold text-[#EDE5D6] hover:text-[#F6F1E7] hover:bg-white/10 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             >
               <Upload className="w-3.5 h-3.5" />
               <span>Upload Photo</span>
@@ -1150,21 +1150,21 @@ export const ScanPage: React.FC = () => {
         </div>
 
         {/* Action Button */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-2">
           <button
             onClick={startAnalysis}
             disabled={isAnalyzing || isCameraActive}
-            className="w-full sm:w-auto px-8 py-3 rounded-lg bg-[#4F5D4B] text-[#F6F1E7] text-sm font-semibold tracking-wide hover:bg-[#3d493a] transition-all duration-200 shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-lg bg-[#4F5D4B] text-[#F6F1E7] text-xs sm:text-sm font-semibold tracking-wide hover:bg-[#3d493a] transition-all duration-200 shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
           >
             <Play className="w-4 h-4 fill-current" />
-            <span>
+            <span className="text-center">
               {customImage
                 ? `Analyze & Save Reading (${extractedColorimetry ? `${extractedColorimetry.estimatedDose.toFixed(2)} ppm·h` : 'Captured Photo'})`
                 : `Analyze Strip (${activeCalibration.sampleId})`}
             </span>
           </button>
 
-          <div className="text-xs font-mono text-[#EDE5D6]/70 text-right">
+          <div className="text-xs font-mono text-[#EDE5D6]/70 text-center sm:text-right">
             {customImage && extractedColorimetry ? (
               <>
                 Estimated Dose: <strong className="text-[#EDE5D6] font-bold">{extractedColorimetry.estimatedDose.toFixed(2)} ppm·h</strong> · Flag: <strong className="text-[#B08A55] font-bold">{extractedColorimetry.actionFlag}</strong>

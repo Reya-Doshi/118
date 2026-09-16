@@ -81,7 +81,7 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-28 pb-24 bg-[#F6F1E7]">
+    <div className="space-y-16 sm:space-y-20 lg:space-y-28 pb-20 sm:pb-24 bg-[#F6F1E7]">
       
       {/* 01 — FULL-SCREEN VIDEO HERO */}
       <section
@@ -118,7 +118,7 @@ export const LandingPage: React.FC = () => {
           <div className="max-w-xl space-y-4 sm:space-y-6 text-left">
             
             {/* Eyebrow */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <img 
                 src="/sarvas_logo_v2.png" 
                 alt="SARVAS Logo" 
@@ -141,7 +141,7 @@ export const LandingPage: React.FC = () => {
             </div>
 
             {/* Editorial Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.14] text-[#F6F1E7]">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.15] text-[#F6F1E7]">
               Because not all danger <br />
               <span className="font-normal text-[#C2CBBF]">announces itself.</span>
             </h1>
@@ -280,9 +280,9 @@ export const LandingPage: React.FC = () => {
               </span>
               <div className="text-sm font-bold text-[#EDE5D6]">SARVAS Hardware Anatomy</div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="px-2 py-0.5 rounded bg-[#32322D] border border-[#43423A] text-[#A69F91] text-[10px] font-mono">
-                Asset: band design.png
+                Architecture: Micro-porous ePTFE
               </span>
               <span className="px-2 py-0.5 rounded bg-[#4F5D4B] text-[#EDE5D6] text-[10px] font-mono font-medium">
                 by RageB8
@@ -423,13 +423,13 @@ export const LandingPage: React.FC = () => {
 
       {/* 05 — DIGITAL READING INTERACTIVE MOCKUP */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6">
-        <div className="bg-[#EDE5D6] rounded-xl border border-[#D8D0C2] p-8 space-y-6">
+        <div className="bg-[#EDE5D6] rounded-xl border border-[#D8D0C2] p-5 sm:p-8 space-y-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[#D8D0C2] pb-6">
             <div>
               <span className="text-[11px] font-mono font-semibold text-[#71806B] uppercase">
                 AI-ASSISTED COLORIMETRIC QUANTIFICATION
               </span>
-              <h3 className="text-2xl font-bold text-[#292925] mt-0.5">
+              <h3 className="text-xl sm:text-2xl font-bold text-[#292925] mt-0.5">
                 Precision Reading from Any Smartphone Photo
               </h3>
               <p className="text-xs text-[#5D5B53] mt-0.5">
@@ -438,7 +438,7 @@ export const LandingPage: React.FC = () => {
             </div>
             <button
               onClick={() => setActivePage('scan')}
-              className="px-5 py-2.5 rounded bg-[#4F5D4B] text-[#F6F1E7] text-xs font-semibold hover:bg-[#3D493A] transition-colors flex items-center gap-2 shadow-xs"
+              className="w-full sm:w-auto px-5 py-2.5 rounded bg-[#4F5D4B] text-[#F6F1E7] text-xs font-semibold hover:bg-[#3D493A] transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
             >
               <Scan className="w-3.5 h-3.5" />
               <span>Launch Wristband Scanner</span>
@@ -521,12 +521,12 @@ export const LandingPage: React.FC = () => {
 
       {/* 07 — FINAL CTA */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="bg-[#292925] text-[#EDE5D6] rounded-xl p-10 md:p-12 text-center space-y-6 border border-[#3E3C36] shadow-sm">
+        <div className="bg-[#292925] text-[#EDE5D6] rounded-xl p-6 sm:p-10 md:p-12 text-center space-y-6 border border-[#3E3C36] shadow-sm">
           <div className="space-y-2 max-w-2xl mx-auto">
             <span className="text-xs font-mono font-semibold uppercase tracking-widest text-[#C2CBBF]">
               SMART INDIA HACKATHON 2026
             </span>
-            <h2 className="text-3xl sm:text-4xl font-normal tracking-tight text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal tracking-tight text-white">
               Make invisible exposure measurable.
             </h2>
             <p className="text-xs sm:text-sm text-[#A69F91] leading-relaxed">

@@ -313,7 +313,7 @@ export const KioskPage: React.FC = () => {
             className="flex-1 md:flex-none px-3 py-1.5 rounded-lg bg-[#4F5D4B] hover:bg-[#5e6b59] text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>ML Pipeline Video</span>
+            <span>ML Pipeline</span>
           </button>
         </div>
       </div>
