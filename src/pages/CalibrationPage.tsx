@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { CALIBRATION_DATASET } from '../data/calibrationData';
 import type { CalibrationSample } from '../data/calibrationData';
-import { Download, Search, Database, ArrowRight, ShieldAlert, LineChart as ChartIcon } from 'lucide-react';
+import { Download, Search, Database, ArrowRight, ShieldAlert, LineChart as ChartIcon, ArrowUpDown, ArrowUp, ArrowDown, Info, Sparkles } from 'lucide-react';
 import { ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, Tooltip, CartesianGrid, ZAxis } from 'recharts';
 
 export const CalibrationPage: React.FC = () => {
   const { setSelectedSample, setActivePage } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [flagFilter, setFlagFilter] = useState<string>('ALL');
-
   const [selectedBlock, setSelectedBlock] = useState<string>('ALL');
+  const [doseBracket, setDoseBracket] = useState<'ALL' | 'TRACE' | 'ACTION' | 'HIGH' | 'STRESS'>('ALL');
+  const [sortField, setSortField] = useState<'sampleId' | 'dose' | 'agDeltaE' | 'cuDeltaE'>('sampleId');
+  const [sortAsc, setSortAsc] = useState<boolean>(true);
 
   const filteredSamples = CALIBRATION_DATASET.filter(s => {
     const matchesSearch =
@@ -28,7 +30,21 @@ export const CalibrationPage: React.FC = () => {
       (flagFilter === 'CRITICAL' && (s.safetyStatus === 'REVIEW' || s.qaFlag === 'ABOVE_RANGE')) ||
       (flagFilter === 'EXPIRED' && (s.expiryStatus === 'EXPIRED' || s.qaFlag === 'SEAL_BROKEN'));
 
-    return matchesSearch && matchesBlock && matchesFilter;
+    const matchesDoseBracket =
+      doseBracket === 'ALL' ||
+      (doseBracket === 'TRACE' && s.trueDosePpmH > 0 && s.trueDosePpmH <= 2.0) ||
+      (doseBracket === 'ACTION' && s.trueDosePpmH > 2.0 && s.trueDosePpmH <= 10.0) ||
+      (doseBracket === 'HIGH' && s.trueDosePpmH > 10.0) ||
+      (doseBracket === 'STRESS' && s.block !== 'A_core' && s.block !== 'I_shift_profile');
+
+    return matchesSearch && matchesBlock && matchesFilter && matchesDoseBracket;
+  }).sort((a, b) => {
+    let cmp = 0;
+    if (sortField === 'dose') cmp = a.trueDosePpmH - b.trueDosePpmH;
+    else if (sortField === 'agDeltaE') cmp = a.agZone.deltaE - b.agZone.deltaE;
+    else if (sortField === 'cuDeltaE') cmp = a.cuZone.deltaE - b.cuZone.deltaE;
+    else cmp = a.sampleId.localeCompare(b.sampleId);
+    return sortAsc ? cmp : -cmp;
   });
 
   const handleTestInScanner = (sample: CalibrationSample) => {
@@ -288,6 +304,63 @@ export const CalibrationPage: React.FC = () => {
         </div>
       </div>
 
+      {/* VISUAL DOSE-TO-COLOR PROGRESSION GUIDE */}
+      <div className="bg-white rounded-2xl p-5 border border-[#D8D0C2] shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[#D8D0C2] pb-3">
+          <div>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#71806B] font-bold flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span>Photometric Color Evolution Reference</span>
+            </span>
+            <h2 className="text-base font-bold text-[#292925] font-serif">
+              Dual-Zone Color Progression: Trace (0.125) to Severe Saturation (160 ppm·h)
+            </h2>
+          </div>
+          <div className="text-[11px] font-mono text-[#71806B] bg-[#EDE5D6] px-2.5 py-1 rounded-full">
+            Ag Zone (0.1–10 ppm·h) × Cu Zone (10–160 ppm·h)
+          </div>
+        </div>
+
+        {/* Color Stage Ramp */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+          {[
+            { dose: '0.125 ppm·h', label: 'Pristine (Fresh)', agHex: '#edece5', cuHex: '#aed3e8', desc: 'Baseline / Trace' },
+            { dose: '0.50 ppm·h', label: 'Trace Gas', agHex: '#e2e1dc', cuHex: '#abd0e4', desc: 'Sub-threshold' },
+            { dose: '2.00 ppm·h', label: 'Action Warn', agHex: '#bfbab4', cuHex: '#aacde0', desc: 'Ag starts gray' },
+            { dose: '5.00 ppm·h', label: 'Monitor Level', agHex: '#928d88', cuHex: '#a4c7d8', desc: 'Ag dark charcoal' },
+            { dose: '10.00 ppm·h', label: 'OSHA 8h PEL', agHex: '#68615c', cuHex: '#a3becc', desc: 'Ag black, Cu reacts' },
+            { dose: '20.00 ppm·h', label: 'Critical Shift', agHex: '#4d4741', cuHex: '#97a9b3', desc: 'Cu dusky slate' },
+            { dose: '40.00 ppm·h', label: 'Severe Alert', agHex: '#46423d', cuHex: '#848c8e', desc: 'Cu turns olive' },
+            { dose: '160.0 ppm·h', label: 'Saturation', agHex: '#463f3c', cuHex: '#5a4e44', desc: 'Both pitch dark' }
+          ].map((stage, idx) => (
+            <div key={idx} className="bg-[#F6F1E7] rounded-xl p-3 border border-[#D8D0C2] space-y-2 text-center shadow-2xs">
+              <div className="text-[10px] font-mono font-bold text-[#292925]">{stage.dose}</div>
+              <div className="flex items-center justify-center gap-2 py-1">
+                <div className="flex flex-col items-center">
+                  <div className="w-7 h-7 rounded-md border border-black/20 shadow-xs" style={{ backgroundColor: stage.agHex }} />
+                  <span className="text-[9px] font-mono text-[#5D5B53] mt-0.5 font-bold">Ag</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="w-7 h-7 rounded-md border border-black/20 shadow-xs" style={{ backgroundColor: stage.cuHex }} />
+                  <span className="text-[9px] font-mono text-[#5D5B53] mt-0.5 font-bold">Cu</span>
+                </div>
+              </div>
+              <div className="text-[10px] font-bold text-[#4F5D4B] leading-tight">{stage.label}</div>
+              <div className="text-[9px] text-[#5D5B53] leading-tight">{stage.desc}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Why Low Doses Look Similar Callout */}
+        <div className="p-3 bg-[#EDE5D6]/70 rounded-xl border border-[#D8D0C2] flex items-start gap-2.5 text-xs text-[#292925]">
+          <Info className="w-4 h-4 text-[#4F5D4B] shrink-0 mt-0.5" />
+          <p className="leading-relaxed">
+            <strong>Why do initial samples appear similar?</strong> In dual-zone passive dosimetry, 
+            Zone A (<span className="font-mono font-semibold">AgNO₃</span>) darkens continuously from 0.125 to 10 ppm·h, while Zone B (<span className="font-mono font-semibold">CuSO₄</span>) remains sky-blue at trace levels by design, only darkening to dusky slate and olive-brown at high concentrations (&gt;10 ppm·h). Click <strong>"High &amp; Saturation"</strong> or click the <strong>"Target Dose"</strong> column header below to sort and inspect the dark, saturated metal-sulfide samples.
+          </p>
+        </div>
+      </div>
+
       {/* FILTER & SEARCH BAR */}
       <div className="bg-[#EDE5D6]/40 p-4 rounded-xl border border-[#D8D0C2] shadow-xs space-y-3">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -326,6 +399,30 @@ export const CalibrationPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Dose Bracket Quick Filters */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#D8D0C2]/60 text-[11px]">
+          <span className="font-mono font-bold text-[#292925]/70 mr-1 uppercase">Dose Bracket:</span>
+          {[
+            { id: 'ALL', label: 'All Doses (303)' },
+            { id: 'TRACE', label: 'Trace: 0.1–2 ppm·h (Off-White → Slate)' },
+            { id: 'ACTION', label: 'Action: 2–10 ppm·h (Gray → Charcoal)' },
+            { id: 'HIGH', label: 'High: 10–160 ppm·h (Black + Olive CuS)' },
+            { id: 'STRESS', label: 'Stress: Temp/RH/Age Tests' }
+          ].map(d => (
+            <button
+              key={d.id}
+              onClick={() => setDoseBracket(d.id as any)}
+              className={`px-2.5 py-1 rounded-md font-mono text-[11px] transition-colors cursor-pointer ${
+                doseBracket === d.id
+                  ? 'bg-[#292925] text-[#F6F1E7] font-bold shadow-xs'
+                  : 'bg-[#F6F1E7] text-[#292925]/80 border border-[#D8D0C2] hover:bg-[#EDE5D6]'
+              }`}
+            >
+              {d.label}
+            </button>
+          ))}
+        </div>
+
         {/* Validation Block Filters */}
         <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#D8D0C2]/60 text-[11px]">
           <span className="font-mono font-bold text-[#292925]/60 mr-1 uppercase">Blocks:</span>
@@ -362,10 +459,74 @@ export const CalibrationPage: React.FC = () => {
           <table className="w-full text-left text-xs">
             <thead className="bg-[#EDE5D6] text-[#292925]/80 font-mono border-b border-[#D8D0C2]">
               <tr>
-                <th className="py-3 px-3 font-semibold">Sample ID &amp; Block</th>
-                <th className="py-3 px-3 font-semibold">Zone A (Ag)</th>
-                <th className="py-3 px-3 font-semibold">Zone B (Cu)</th>
-                <th className="py-3 px-3 font-semibold">Target Dose</th>
+                <th 
+                  onClick={() => {
+                    if (sortField === 'sampleId') setSortAsc(!sortAsc);
+                    else { setSortField('sampleId'); setSortAsc(true); }
+                  }}
+                  className="py-3 px-3 font-semibold cursor-pointer hover:bg-[#EDE5D6]/80 transition-colors select-none"
+                >
+                  <div className="flex items-center gap-1">
+                    <span>Sample ID &amp; Block</span>
+                    {sortField === 'sampleId' ? (
+                      sortAsc ? <ArrowUp className="w-3.5 h-3.5 text-[#4F5D4B]" /> : <ArrowDown className="w-3.5 h-3.5 text-[#4F5D4B]" />
+                    ) : (
+                      <ArrowUpDown className="w-3 h-3 text-[#292925]/40" />
+                    )}
+                  </div>
+                </th>
+
+                <th 
+                  onClick={() => {
+                    if (sortField === 'agDeltaE') setSortAsc(!sortAsc);
+                    else { setSortField('agDeltaE'); setSortAsc(false); }
+                  }}
+                  className="py-3 px-3 font-semibold cursor-pointer hover:bg-[#EDE5D6]/80 transition-colors select-none"
+                >
+                  <div className="flex items-center gap-1">
+                    <span>Zone A (Ag)</span>
+                    {sortField === 'agDeltaE' ? (
+                      sortAsc ? <ArrowUp className="w-3.5 h-3.5 text-[#4F5D4B]" /> : <ArrowDown className="w-3.5 h-3.5 text-[#4F5D4B]" />
+                    ) : (
+                      <ArrowUpDown className="w-3 h-3 text-[#292925]/40" />
+                    )}
+                  </div>
+                </th>
+
+                <th 
+                  onClick={() => {
+                    if (sortField === 'cuDeltaE') setSortAsc(!sortAsc);
+                    else { setSortField('cuDeltaE'); setSortAsc(false); }
+                  }}
+                  className="py-3 px-3 font-semibold cursor-pointer hover:bg-[#EDE5D6]/80 transition-colors select-none"
+                >
+                  <div className="flex items-center gap-1">
+                    <span>Zone B (Cu)</span>
+                    {sortField === 'cuDeltaE' ? (
+                      sortAsc ? <ArrowUp className="w-3.5 h-3.5 text-[#4F5D4B]" /> : <ArrowDown className="w-3.5 h-3.5 text-[#4F5D4B]" />
+                    ) : (
+                      <ArrowUpDown className="w-3 h-3 text-[#292925]/40" />
+                    )}
+                  </div>
+                </th>
+
+                <th 
+                  onClick={() => {
+                    if (sortField === 'dose') setSortAsc(!sortAsc);
+                    else { setSortField('dose'); setSortAsc(true); }
+                  }}
+                  className="py-3 px-3 font-semibold cursor-pointer hover:bg-[#EDE5D6]/80 transition-colors select-none"
+                >
+                  <div className="flex items-center gap-1">
+                    <span>Target Dose</span>
+                    {sortField === 'dose' ? (
+                      sortAsc ? <ArrowUp className="w-3.5 h-3.5 text-[#4F5D4B]" /> : <ArrowDown className="w-3.5 h-3.5 text-[#4F5D4B]" />
+                    ) : (
+                      <ArrowUpDown className="w-3 h-3 text-[#292925]/40" />
+                    )}
+                  </div>
+                </th>
+
                 <th className="py-3 px-3 font-semibold">Gas Conc / Duration</th>
                 <th className="py-3 px-3 font-semibold">Environment</th>
                 <th className="py-3 px-3 font-semibold">Seal Dot</th>
@@ -384,25 +545,31 @@ export const CalibrationPage: React.FC = () => {
                   
                   {/* Zone A Swatch (AgNO3 -> Ag2S) */}
                   <td className="py-2.5 px-3">
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-2">
                       <div
-                        className="w-4 h-4 rounded-xs border border-black/20 shadow-xs shrink-0"
+                        className="w-6 h-6 rounded-md border border-black/25 shadow-xs shrink-0"
                         style={{ backgroundColor: sample.agZone.hex }}
-                        title={`Zone A: L*=${sample.agZone.L}, a*=${sample.agZone.a}, b*=${sample.agZone.b}`}
+                        title={`Zone A: L*=${sample.agZone.L}, a*=${sample.agZone.a}, b*=${sample.agZone.b} | Hex: ${sample.agZone.hex}`}
                       />
-                      <span className="text-[10px] text-[#292925]/70">ΔE {sample.agZone.deltaE.toFixed(1)}</span>
+                      <div>
+                        <div className="text-[11px] font-bold text-[#292925]">ΔE {sample.agZone.deltaE.toFixed(1)}</div>
+                        <div className="text-[9px] text-[#292925]/60 font-mono">{sample.agZone.hex}</div>
+                      </div>
                     </div>
                   </td>
 
                   {/* Zone B Swatch (CuSO4 -> CuS) */}
                   <td className="py-2.5 px-3">
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-2">
                       <div
-                        className="w-4 h-4 rounded-xs border border-black/20 shadow-xs shrink-0"
+                        className="w-6 h-6 rounded-md border border-black/25 shadow-xs shrink-0"
                         style={{ backgroundColor: sample.cuZone.hex }}
-                        title={`Zone B: L*=${sample.cuZone.L}, a*=${sample.cuZone.a}, b*=${sample.cuZone.b}`}
+                        title={`Zone B: L*=${sample.cuZone.L}, a*=${sample.cuZone.a}, b*=${sample.cuZone.b} | Hex: ${sample.cuZone.hex}`}
                       />
-                      <span className="text-[10px] text-[#292925]/70">ΔE {sample.cuZone.deltaE.toFixed(1)}</span>
+                      <div>
+                        <div className="text-[11px] font-bold text-[#292925]">ΔE {sample.cuZone.deltaE.toFixed(1)}</div>
+                        <div className="text-[9px] text-[#292925]/60 font-mono">{sample.cuZone.hex}</div>
+                      </div>
                     </div>
                   </td>
 

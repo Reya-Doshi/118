@@ -483,13 +483,13 @@ export const ProjectOverviewPage: React.FC = () => {
       <section className="space-y-4">
         <div className="border-b border-[#D8D0C2] pb-3">
           <span className="text-[10px] font-mono uppercase tracking-widest text-[#71806B] font-bold">
-            Development History
+            Development History · SIH 2026 Sprint
           </span>
           <h2 className="text-2xl font-bold text-[#292925] font-serif">
-            Engineering Journey &amp; Milestones
+            Engineering Journey &amp; Rapid Sprint Milestones
           </h2>
           <p className="text-xs text-[#292925]/70 mt-0.5">
-            How Team RageB8 progressed from initial problem analysis to a fully integrated hardware, chemistry, and optical software system.
+            How Team RageB8 executed an intensive 14-day multidisciplinary engineering sprint from initial PS-118 problem release to a fully validated functional prototype and software platform.
           </p>
         </div>
 
@@ -500,12 +500,12 @@ export const ProjectOverviewPage: React.FC = () => {
             <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-[#4F5D4B] border-4 border-[#F6F1E7]" />
             <div className="bg-white rounded-2xl p-5 border border-[#D8D0C2] shadow-xs space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-mono font-bold text-[#4F5D4B] uppercase">Phase 1 · Problem Analysis &amp; Literature Survey</span>
-                <span className="text-[11px] font-mono text-[#878377] bg-[#EDE5D6] px-2 py-0.5 rounded">Weeks 1–2</span>
+                <span className="text-xs font-mono font-bold text-[#4F5D4B] uppercase">Phase 1 · Problem Deconstruction &amp; Literature Survey</span>
+                <span className="text-[11px] font-mono text-[#878377] bg-[#EDE5D6] px-2 py-0.5 rounded">Sprint Days 1–3</span>
               </div>
-              <h3 className="font-bold text-base text-[#292925]">Identifying the Critical Flaws of Existing Solutions</h3>
+              <h3 className="font-bold text-base text-[#292925]">Identifying Critical Flaws &amp; The Inorganic Chemistry Pivot</h3>
               <p className="text-xs text-[#5D5B53] leading-relaxed">
-                Evaluated current industrial monitoring tools: active electronic monitors (expensive, battery-dependent, ignore cumulative low-level dose) and commercial colorimetric badges. Discovered through <em>Engel et al. (2019)</em> that organic copper-PAN complexes reverse in atmospheric oxygen, proving that only permanent inorganic metal-sulfide precipitation meets safety standards.
+                Evaluated current industrial monitoring: active electronic monitors (expensive, battery-dependent, miss chronic sub-ppm cumulative dose) and commercial colorimetric badges. Discovered through <em>Engel et al. (2019)</em> that organic copper-PAN complexes reverse and bleach in ambient oxygen. Made the pivotal engineering decision to base SARVAS strictly on irreversible inorganic metal-sulfide precipitation.
               </p>
             </div>
           </div>
@@ -516,11 +516,11 @@ export const ProjectOverviewPage: React.FC = () => {
             <div className="bg-white rounded-2xl p-5 border border-[#D8D0C2] shadow-xs space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-xs font-mono font-bold text-[#4F5D4B] uppercase">Phase 2 · Dual-Zone Formulation &amp; Pre-Donning Guard</span>
-                <span className="text-[11px] font-mono text-[#878377] bg-[#EDE5D6] px-2 py-0.5 rounded">Weeks 3–4</span>
+                <span className="text-[11px] font-mono text-[#878377] bg-[#EDE5D6] px-2 py-0.5 rounded">Sprint Days 4–6</span>
               </div>
-              <h3 className="font-bold text-base text-[#292925]">Engineering the Dual-Zone Chemistry &amp; CuSO₄ Seal Indicator</h3>
+              <h3 className="font-bold text-base text-[#292925]">Dual-Zone Chemosensing &amp; Anhydrous CuSO₄ Seal Indicator</h3>
               <p className="text-xs text-[#5D5B53] leading-relaxed">
-                Formulated the Dual-Zone chemical architecture: Silver Nitrate (AgNO₃) for trace detection (0.1–2 ppm·h) and Copper Sulfate (CuSO₄) for extended dynamic range (up to 160 ppm·h). Engineered the physical anhydrous CuSO₄ moisture dot to address PS-118's requirement that workers verify the badge hasn't degraded prior to donning.
+                Formulated the Dual-Zone chemistry: Silver Nitrate (AgNO₃) for trace detection (0.1–2 ppm·h) and Copper Sulfate (CuSO₄) for extended high-dose tracking (up to 160 ppm·h). Formulated the physical anhydrous CuSO₄ moisture dot to address PS-118's requirement that workers verify the badge hasn't degraded prior to donning.
               </p>
             </div>
           </div>
@@ -530,12 +530,12 @@ export const ProjectOverviewPage: React.FC = () => {
             <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-[#4F5D4B] border-4 border-[#F6F1E7]" />
             <div className="bg-white rounded-2xl p-5 border border-[#D8D0C2] shadow-xs space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-mono font-bold text-[#4F5D4B] uppercase">Phase 3 · 303-Point Empirical Matrix &amp; Environmental Kinetics</span>
-                <span className="text-[11px] font-mono text-[#878377] bg-[#EDE5D6] px-2 py-0.5 rounded">Weeks 5–6</span>
+                <span className="text-xs font-mono font-bold text-[#4F5D4B] uppercase">Phase 3 · 303-Point Empirical Matrix &amp; Arrhenius Modeling</span>
+                <span className="text-[11px] font-mono text-[#878377] bg-[#EDE5D6] px-2 py-0.5 rounded">Sprint Days 7–9</span>
               </div>
-              <h3 className="font-bold text-base text-[#292925]">Arrhenius Compensation &amp; Multi-Factor Matrix Modeling</h3>
+              <h3 className="font-bold text-base text-[#292925]">Environmental Physics &amp; Multi-Factor Kinetics Engine</h3>
               <p className="text-xs text-[#5D5B53] leading-relaxed">
-                Built a 303-sample empirical matrix encompassing 9 test blocks: Core calibration (0.125–160 ppm·h), Temperature stress (15°C–50°C), Humidity stress (30%–90% RH), Interferences (SO₂, CO, NO₂), and Shelf-age degradation. Derived Arrhenius activation energy formulas (Ea = 28.4 kJ/mol) to mathematically normalize temperature variations back to 25°C STP.
+                Constructed the 303-sample empirical matrix encompassing 9 test blocks: Core calibration (0.125–160 ppm·h), Temperature stress (15°C–50°C), Humidity stress (30%–90% RH), Interferences (SO₂, CO, NO₂), and Shelf-age degradation. Derived Arrhenius activation energy formulas (Ea = 28.4 kJ/mol) to mathematically normalize temperature variations back to 25°C STP.
               </p>
             </div>
           </div>
@@ -545,12 +545,12 @@ export const ProjectOverviewPage: React.FC = () => {
             <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-[#4F5D4B] border-4 border-[#F6F1E7]" />
             <div className="bg-white rounded-2xl p-5 border border-[#D8D0C2] shadow-xs space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-mono font-bold text-[#4F5D4B] uppercase">Phase 4 · Colorimetry ML &amp; Printed Reference Scale</span>
-                <span className="text-[11px] font-mono text-[#878377] bg-[#EDE5D6] px-2 py-0.5 rounded">Weeks 7–8</span>
+                <span className="text-xs font-mono font-bold text-[#4F5D4B] uppercase">Phase 4 · Colorimetry ML &amp; Hardware CAD Prototyping</span>
+                <span className="text-[11px] font-mono text-[#878377] bg-[#EDE5D6] px-2 py-0.5 rounded">Sprint Days 10–12</span>
               </div>
-              <h3 className="font-bold text-base text-[#292925]">CIEDE2000 Optical Pipeline &amp; Lighting Invariance</h3>
+              <h3 className="font-bold text-base text-[#292925]">CIEDE2000 Optical Pipeline &amp; Ergonomic Silicone Housing</h3>
               <p className="text-xs text-[#5D5B53] leading-relaxed">
-                Implemented CIE L*a*b* conversion and the CIEDE2000 (ΔE₀₀) color difference metric. Integrated printed reference fiducial patches on the wristband for von Kries chromatic adaptation, ensuring that readings taken under direct outdoor sun, dim plant fixtures, or fluorescent lights yield identical calibrated dose values.
+                Implemented CIE L*a*b* conversion and the CIEDE2000 (ΔE₀₀) color difference metric with printed reference scale fiducial patches for von Kries chromatic adaptation. Designed 3D CAD ergonomic silicone wristband housing with recessed strip carriage and microporous PTFE gas diffusion membrane.
               </p>
             </div>
           </div>
@@ -561,11 +561,11 @@ export const ProjectOverviewPage: React.FC = () => {
             <div className="bg-white rounded-2xl p-5 border border-[#D8D0C2] shadow-xs space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-xs font-mono font-bold text-[#4F5D4B] uppercase">Phase 5 · Full-Stack Platform, Mobile Kiosk &amp; Verification</span>
-                <span className="text-[11px] font-mono text-[#878377] bg-[#EDE5D6] px-2 py-0.5 rounded">Weeks 9–10</span>
+                <span className="text-[11px] font-mono text-[#878377] bg-[#EDE5D6] px-2 py-0.5 rounded">Sprint Days 13–14</span>
               </div>
-              <h3 className="font-bold text-base text-[#292925]">Production Deployment, Native Android Build &amp; Testing</h3>
+              <h3 className="font-bold text-base text-[#292925]">Cross-Platform Deployment, Android Build &amp; Statutory Validation</h3>
               <p className="text-xs text-[#5D5B53] leading-relaxed">
-                Shipped the React 19 web application, FastAPI microservice, and Capacitor native Android build. Created automated test suites verifying all 303 samples, endpoint status codes, and cross-platform mobile synchronization.
+                Shipped the React 19 web application, FastAPI microservice, and Capacitor native Android build. Engineered shift check-in kiosk flow and comprehensive automated test suites verifying all 303 samples, endpoint status codes, and cross-platform synchronization.
               </p>
             </div>
           </div>
