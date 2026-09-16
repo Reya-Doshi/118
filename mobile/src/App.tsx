@@ -179,12 +179,18 @@ const MainAppContent: React.FC = () => {
         <HistoryView
           readings={role === 'WORKER' ? workerReadings : readings}
           onBack={() => setActiveTab('HOME')}
+          workerLanguage={workerLanguage}
         />
       );
     }
 
     if (activeTab === 'PROFILE') {
-      return <ProfileView onBack={() => setActiveTab('HOME')} />;
+      return (
+        <ProfileView 
+          onBack={() => setActiveTab('HOME')} 
+          workerLanguage={workerLanguage}
+        />
+      );
     }
 
     if (activeTab === 'WORKERS') {
@@ -460,6 +466,7 @@ const MainAppContent: React.FC = () => {
           targetWorker={targetWorker}
           inspectionLocation={inspectionLocation}
           officerNotes={officerNotes}
+          workerLanguage={workerLanguage}
           onSaveComplete={handleSaveComplete}
           onRetake={handleRetake}
         />

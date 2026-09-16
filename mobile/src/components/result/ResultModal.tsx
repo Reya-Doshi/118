@@ -27,6 +27,7 @@ interface ResultModalProps {
   targetWorker?: Worker | null;
   inspectionLocation?: string;
   officerNotes?: string;
+  workerLanguage?: 'hi' | 'en';
   onSaveComplete: (savedReading: Reading) => void;
   onRetake: () => void;
 }
@@ -39,6 +40,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
   targetWorker,
   inspectionLocation,
   officerNotes,
+  workerLanguage = 'en',
   onSaveComplete,
   onRetake
 }) => {
@@ -47,6 +49,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
   if (!isOpen || !apiResult) return null;
 
   const isWorkerRole = role === 'WORKER';
+  const isHindi = isWorkerRole && workerLanguage === 'hi';
   const resolvedWorker = targetWorker || (currentUser?.workerId ? repository.getWorkerById(currentUser.workerId) : null) || repository.getWorkers()[0];
   const bandId = sample?.bandId || resolvedWorker?.assignedBandId || 'DS-1088';
   const workerId = resolvedWorker?.workerId || 'EMP-9021';
@@ -88,7 +91,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
     if (expired) {
       return (
         <span className="px-3.5 py-1 rounded-md text-xs font-mono font-bold tracking-wider bg-[#9A6258]/25 text-[#7A342B] border border-[#9A6258]/50">
-          REJECTED (EXPIRED)
+          {isHindi ? 'अमान्य (समाप्त)' : 'REJECTED (EXPIRED)'}
         </span>
       );
     }
@@ -96,19 +99,19 @@ export const ResultModal: React.FC<ResultModalProps> = ({
       case 'NORMAL':
         return (
           <span className="px-3.5 py-1 rounded-md text-xs font-mono font-bold tracking-wider bg-[#5A7456]/20 text-[#385034] border border-[#5A7456]/40">
-            NORMAL
+            {isHindi ? 'सुरक्षित (सामान्य)' : 'NORMAL'}
           </span>
         );
       case 'MONITOR':
         return (
           <span className="px-3.5 py-1 rounded-md text-xs font-mono font-bold tracking-wider bg-[#B08A55]/25 text-[#795726] border border-[#B08A55]/50">
-            MONITOR
+            {isHindi ? 'सतर्क रहें (निगरानी)' : 'MONITOR'}
           </span>
         );
       case 'REVIEW':
         return (
           <span className="px-3.5 py-1 rounded-md text-xs font-mono font-bold tracking-wider bg-[#9A6258]/20 text-[#7A342B] border border-[#9A6258]/40">
-            REVIEW
+            {isHindi ? 'खतरा / समीक्षा' : 'REVIEW'}
           </span>
         );
     }
@@ -125,17 +128,19 @@ export const ResultModal: React.FC<ResultModalProps> = ({
       <div className="pt-1 pb-2 border-b border-[#D8D0C2]">
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#71806B] font-bold">
-            {isWorkerRole ? 'Personal Dosimeter Result' : 'Field Audit Inspection Result'}
+            {isHindi 
+              ? 'व्यक्तिगत डॉसिमीटर परिणाम' 
+              : (isWorkerRole ? 'Personal Dosimeter Result' : 'Field Audit Inspection Result')}
           </span>
           <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
             isWorkerRole ? 'bg-[#5A7456]/20 text-[#385034]' : 'bg-[#B08A55]/20 text-[#795726]'
           }`}>
-            {isWorkerRole ? 'OPERATOR SCAN' : 'INSPECTOR AUDIT'}
+            {isHindi ? 'संचालक स्कैन' : (isWorkerRole ? 'OPERATOR SCAN' : 'INSPECTOR AUDIT')}
           </span>
         </div>
         <div className="flex items-center justify-between mt-1">
           <h2 className="text-xl font-serif font-bold text-[#292925]">
-            Exposure Estimation
+            {isHindi ? 'एक्सपोजर अनुमान' : 'Exposure Estimation'}
           </h2>
           <span className="text-[10px] font-mono text-[#5D5B53] flex items-center gap-1">
             <Clock className="w-3 h-3 text-[#71806B]" /> {timestampDisplay}
@@ -150,10 +155,12 @@ export const ResultModal: React.FC<ResultModalProps> = ({
           <div className="bg-[#9A6258]/15 border border-[#9A6258] rounded-xl p-3 text-[#7A342B]">
             <div className="flex items-center gap-2 font-bold text-xs mb-1">
               <AlertCircle className="w-4 h-4 shrink-0" />
-              BAND EXPIRED (&gt;90 DAYS)
+              {isHindi ? 'बैंड की अवधि समाप्त (>६० दिन)' : 'BAND EXPIRED (>90 DAYS)'}
             </div>
             <p className="text-[11px] leading-relaxed">
-              Reading rejected because the sensing chemistry may have degraded. Re-issue fresh wristband immediately.
+              {isHindi 
+                ? 'रासायनिक संवेदनशीलता क्षीण हो सकती है। तुरंत नया रिस्टबैंड प्राप्त करें।' 
+                : 'Reading rejected because the sensing chemistry may have degraded. Re-issue fresh wristband immediately.'}
             </p>
           </div>
         )}
@@ -167,7 +174,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
             : 'card-glow-safe'
         }`}>
           <span className="text-[10px] font-mono tracking-widest uppercase text-gray-500 font-bold block mb-1">
-            Estimated Cumulative H₂S Exposure
+            {isHindi ? 'अनुमानित संचयी H₂S एक्सपोज़र' : 'Estimated Cumulative H₂S Exposure'}
           </span>
 
           <div className="flex items-baseline justify-center gap-1.5 my-1">
@@ -186,10 +193,10 @@ export const ResultModal: React.FC<ResultModalProps> = ({
           <div className="border-t border-gray-100 pt-2 text-xs text-gray-600 leading-relaxed font-medium">
             {apiResult.action_guideline || (
               apiResult.status === 'NORMAL' 
-                ? 'Safe working level. Within permissible 8-hr exposure limits.'
+                ? (isHindi ? 'सुरक्षित कार्य स्तर। ८ घंटे की निर्धारित सीमा के भीतर।' : 'Safe working level. Within permissible 8-hr exposure limits.')
                 : apiResult.status === 'MONITOR'
-                ? 'Action level reached. Limit further exposure and verify area ventilation.'
-                : 'Permissible exposure limit exceeded. Prompt medical triage and evacuation.'
+                ? (isHindi ? 'एक्शन स्तर तक पहुँचा। अतिरिक्त जोखिम सीमित करें एवं वेंटिलेशन जांचें।' : 'Action level reached. Limit further exposure and verify area ventilation.')
+                : (isHindi ? 'अनुमेय सीमा पार। तत्काल सुरक्षित क्षेत्र में जाएँ एवं प्राथमिक उपचार लें।' : 'Permissible exposure limit exceeded. Prompt medical triage and evacuation.')
             )}
           </div>
         </div>
@@ -331,18 +338,20 @@ export const ResultModal: React.FC<ResultModalProps> = ({
       <div className="pt-2 pb-3 space-y-2">
         <button
           onClick={handleSave}
-          className="w-full py-3.5 bg-[#292925] text-[#F6F1E7] rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:bg-[#1a1a17] active:scale-[0.98] transition-all shadow-md font-semibold"
+          className="w-full py-3.5 bg-[#292925] text-[#F6F1E7] rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:bg-[#1a1a17] active:scale-[0.98] transition-all shadow-md font-semibold cursor-pointer"
         >
           <Check className="w-4 h-4" />
-          {isWorkerRole ? 'Save to My Shift Log' : 'Save & Log Officer Inspection'}
+          {isHindi 
+            ? 'मेरी शिफ्ट लॉग में सुरक्षित करें' 
+            : (isWorkerRole ? 'Save to My Shift Log' : 'Save & Log Officer Inspection')}
         </button>
 
         <button
           onClick={onRetake}
-          className="w-full py-2.5 bg-[#EDE5D6] text-[#5D5B53] border border-[#D8D0C2] rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
+          className="w-full py-2.5 bg-[#EDE5D6] text-[#5D5B53] border border-[#D8D0C2] rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all cursor-pointer"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          Retake / Discard
+          {isHindi ? 'पुनः स्कैन करें / हटाएं' : 'Retake / Discard'}
         </button>
       </div>
     </div>

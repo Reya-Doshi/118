@@ -5,9 +5,11 @@ import { Clock, Filter, ArrowLeft, Thermometer, Droplets, ShieldCheck, MapPin, U
 interface HistoryViewProps {
   readings: Reading[];
   onBack: () => void;
+  workerLanguage?: 'hi' | 'en';
 }
 
-export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) => {
+export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack, workerLanguage = 'en' }) => {
+  const isHindi = workerLanguage === 'hi';
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [filterType, setFilterType] = useState<string>('ALL');
 
@@ -22,11 +24,11 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'NORMAL':
-        return <span className="subtle-badge badge-normal">NORMAL</span>;
+        return <span className="subtle-badge badge-normal font-bold">{isHindi ? 'सुरक्षित' : 'NORMAL'}</span>;
       case 'MONITOR':
-        return <span className="subtle-badge badge-monitor">MONITOR</span>;
+        return <span className="subtle-badge badge-monitor font-bold">{isHindi ? 'सतर्क रहें' : 'MONITOR'}</span>;
       case 'REVIEW':
-        return <span className="subtle-badge badge-review">REVIEW</span>;
+        return <span className="subtle-badge badge-review font-bold">{isHindi ? 'खतरा / समीक्षा' : 'REVIEW'}</span>;
       default:
         return null;
     }
@@ -44,10 +46,10 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
         </button>
         <div>
           <h1 className="text-xl font-serif font-bold text-[#292925]">
-            Exposure History
+            {isHindi ? 'एक्सपोजर इतिहास' : 'Exposure History'}
           </h1>
           <span className="text-[11px] font-mono text-[#71806B]">
-            All Quantitative Dosimeter Scans & Field Audits
+            {isHindi ? 'सभी डॉसिमीटर स्कैन एवं निरीक्षण रिकॉर्ड' : 'All Quantitative Dosimeter Scans & Field Audits'}
           </span>
         </div>
       </div>
@@ -55,17 +57,22 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
       {/* Filter Tabs */}
       <div className="space-y-2">
         <div className="flex gap-1.5 overflow-x-auto pb-1">
-          {['ALL', 'NORMAL', 'MONITOR', 'REVIEW'].map((status) => (
+          {[
+            { id: 'ALL', label: isHindi ? 'सभी' : 'ALL' },
+            { id: 'NORMAL', label: isHindi ? 'सुरक्षित' : 'NORMAL' },
+            { id: 'MONITOR', label: isHindi ? 'सतर्क' : 'MONITOR' },
+            { id: 'REVIEW', label: isHindi ? 'समीक्षा' : 'REVIEW' }
+          ].map((item) => (
             <button
-              key={status}
-              onClick={() => setFilterStatus(status)}
+              key={item.id}
+              onClick={() => setFilterStatus(item.id)}
               className={`px-3 py-1 rounded-lg text-xs font-mono font-medium transition-all shrink-0 ${
-                filterStatus === status
+                filterStatus === item.id
                   ? 'bg-[#292925] text-[#F6F1E7] shadow-xs'
                   : 'bg-[#EDE5D6] border border-[#D8D0C2] text-[#5D5B53]'
               }`}
             >
-              {status}
+              {item.label}
             </button>
           ))}
         </div>
@@ -78,7 +85,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
               filterType === 'ALL' ? 'bg-[#71806B] text-white' : 'bg-[#EDE5D6] text-[#5D5B53] border border-[#D8D0C2]'
             }`}
           >
-            All Scans ({readings.length})
+            {isHindi ? `सभी स्कैन (${readings.length})` : `All Scans (${readings.length})`}
           </button>
           <button
             onClick={() => setFilterType('PERSONAL')}
@@ -86,7 +93,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
               filterType === 'PERSONAL' ? 'bg-[#71806B] text-white' : 'bg-[#EDE5D6] text-[#5D5B53] border border-[#D8D0C2]'
             }`}
           >
-            Operator Self-Scans
+            {isHindi ? 'स्वयं स्कैन' : 'Operator Self-Scans'}
           </button>
           <button
             onClick={() => setFilterType('AUDIT')}
@@ -94,7 +101,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
               filterType === 'AUDIT' ? 'bg-[#71806B] text-white' : 'bg-[#EDE5D6] text-[#5D5B53] border border-[#D8D0C2]'
             }`}
           >
-            Inspector Audits
+            {isHindi ? 'सुरक्षा ऑडिट' : 'Inspector Audits'}
           </button>
         </div>
       </div>
@@ -103,7 +110,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
       <div className="space-y-3">
         {filtered.length === 0 ? (
           <div className="text-center py-12 text-[#878377] text-xs">
-            No readings found for selected filter criteria.
+            {isHindi ? 'चयनित फिल्टर के लिए कोई रिकॉर्ड नहीं मिला।' : 'No readings found for selected filter criteria.'}
           </div>
         ) : (
           filtered.map((reading) => (
@@ -145,7 +152,9 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ readings, onBack }) =>
                 <span className="text-2xl font-mono font-bold text-[#292925]">
                   {reading.estimatedDose.toFixed(2)}
                 </span>
-                <span className="text-xs text-[#5D5B53] font-serif">ppm·h estimated dose</span>
+                <span className="text-xs text-[#5D5B53] font-serif">
+                  {isHindi ? 'ppm·h अनुमानित एक्सपोज़र' : 'ppm·h estimated dose'}
+                </span>
               </div>
 
               {/* Ambient & Colorimetric Info */}
