@@ -290,6 +290,17 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
               </div>
               <div className="text-xs font-semibold text-white">{selectedDemoSample.label}</div>
               <div className="text-[11px] text-[#C9BFAE]">{selectedDemoSample.description}</div>
+              {selectedDemoSample.id === 'sample-5' ? (
+                <div className="mt-1.5 text-[10px] font-mono bg-cyan-950/80 border border-cyan-400 text-cyan-200 px-2.5 py-1 rounded-lg flex items-center gap-2 animate-pulse">
+                  <span className="w-2 h-2 rounded-full bg-[#1E70B8] border border-blue-900 shrink-0" />
+                  <span>MOISTURE SEAL BREACHED: Anhydrous CuSO₄ dot hydrated blue (#1E70B8). Rejection mandated.</span>
+                </div>
+              ) : (
+                <div className="mt-1.5 text-[10px] font-mono bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 px-2.5 py-1 rounded-lg flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-white border border-gray-400 shrink-0" />
+                  <span>MOISTURE SEAL INTACT: Anhydrous CuSO₄ dot is chalk white. Verified ready for shift.</span>
+                </div>
+              )}
               {selectedDemoSample.isExpired && (
                 <div className="mt-1 text-[10px] bg-[#9A6258]/30 border border-[#9A6258] text-[#F6E2DF] px-2 py-0.5 rounded">
                   ⚠️ Prototype Expiry (&gt;90d shelf age)

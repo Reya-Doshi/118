@@ -17,8 +17,9 @@ import {
   AlertTriangle,
   RotateCcw,
   Download,
-  Scissors,
-  Eye
+  Eye,
+  FlaskConical,
+  Layers
 } from 'lucide-react';
 
 export const SCANNABLE_BENCHMARK_BADGES = [
@@ -107,7 +108,7 @@ export const SCANNABLE_BENCHMARK_BADGES = [
 export const ScanPage: React.FC = () => {
   const { selectedSample, setLatestReading, setActivePage, workers, currentUser, selectedWorker, workerLanguage } = useApp();
   const isHindiWorker = currentUser?.role === 'WORKER' && workerLanguage === 'hi';
-  const [showDiyGuide, setShowDiyGuide] = useState(false);
+  const [showArchitectureGuide, setShowArchitectureGuide] = useState(true);
   
   const [activeSampleId, setActiveSampleId] = useState<string>(selectedSample.id || 'SIM-0030');
   const activeCalibration = CALIBRATION_DATASET.find(s => s.sampleId === activeSampleId) || CALIBRATION_DATASET[29] || CALIBRATION_DATASET[0];
@@ -1373,22 +1374,22 @@ export const ScanPage: React.FC = () => {
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-[#B08A55]" />
               <h3 className="text-base font-bold text-[#292925]">
-                {isHindiWorker ? '5 कैलिब्रेटेड टेस्ट बैज (तुरंत स्कैन और DIY पेपर क्राफ्ट)' : '5 Scannable Benchmark Badges (Camera Samples & DIY Test)'}
+                {isHindiWorker ? '5 कैलिब्रेटेड बेंचमार्क बैज (द्वि-क्षेत्रीय सत्यापन)' : '5 Calibrated Benchmark Badges (Dual-Zone Optical Verification)'}
               </h3>
             </div>
             <p className="text-xs text-[#292925]/70">
               {isHindiWorker
-                ? 'इन 5 नमूनों को सीधे स्कैनर में लोड करें, या घर पर रंगीन पेपर से बैज बनाकर फोन कैमरे से स्कैन करें।'
-                : 'Click "Test in Scanner" to instantly test any stage, or download PNG to scan with your phone camera.'}
+                ? 'कंप्यूटर विजन मॉडल में परीक्षण के लिए "Test Scan" पर क्लिक करें, या भौतिक परीक्षण के लिए PNG बैज डाउनलोड करें।'
+                : 'Click "Test Scan" to test in live computer vision engine, or download high-resolution PNG badges for optical verification.'}
             </p>
           </div>
 
           <button
-            onClick={() => setShowDiyGuide(!showDiyGuide)}
+            onClick={() => setShowArchitectureGuide(!showArchitectureGuide)}
             className="px-3 py-1.5 rounded-lg bg-[#4F5D4B] text-[#F6F1E7] text-xs font-bold hover:bg-[#3d493a] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
-            <Scissors className="w-3.5 h-3.5" />
-            <span>{showDiyGuide ? 'Hide Crafting Guide' : 'DIY Paper Crafting Guide'}</span>
+            <Layers className="w-3.5 h-3.5" />
+            <span>{showArchitectureGuide ? 'Hide Sensor Architecture' : '4-Zone Sensor Architecture & Materials'}</span>
           </button>
         </div>
 
@@ -1421,7 +1422,7 @@ export const ScanPage: React.FC = () => {
                 <p className="text-[10px] text-[#292925]/70 line-clamp-2 leading-relaxed">{badge.notes}</p>
 
                 {/* Swatches */}
-                <div className="pt-1.5 border-t border-[#D8D0C2]/60 space-y-1">
+                <div className="pt-1.5 border-t border-[#D8D0C2]/60 space-y-1.5">
                   <div className="flex items-center justify-between text-[10px] font-mono">
                     <span className="text-[#292925]/70">Zone A (Ag):</span>
                     <div className="flex items-center gap-1">
@@ -1438,7 +1439,17 @@ export const ScanPage: React.FC = () => {
                   </div>
                   <div className="flex items-center justify-between text-[10px] font-mono">
                     <span className="text-[#292925]/70">Seal Dot:</span>
-                    <span className="font-bold text-[9px] truncate max-w-[90px]">{badge.sealDot}</span>
+                    {badge.id === 'stage-5' ? (
+                      <span className="inline-flex items-center gap-1 font-bold text-[9px] text-cyan-900 bg-cyan-100/90 border border-cyan-400 px-1.5 py-0.5 rounded shadow-2xs animate-pulse">
+                        <span className="w-2 h-2 rounded-full bg-[#1E70B8] border border-blue-900 shrink-0" />
+                        <span>Azure Blue (BREACHED)</span>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 font-bold text-[9px] text-emerald-800 bg-emerald-50 border border-emerald-300/80 px-1.5 py-0.5 rounded shadow-2xs">
+                        <span className="w-2 h-2 rounded-full bg-white border border-gray-400 shrink-0" />
+                        <span>Chalk White (Intact)</span>
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1471,83 +1482,116 @@ export const ScanPage: React.FC = () => {
           ))}
         </div>
 
-        {/* DIY PAPER CRAFTING KIT (EXPANDABLE) */}
-        {showDiyGuide && (
+        {/* 4 FUNCTIONAL DOSIMETER ZONES & MATERIAL SPECIFICATIONS */}
+        {showArchitectureGuide && (
           <div className="p-4 sm:p-5 rounded-xl bg-[#F6F1E7] border border-[#D8D0C2] space-y-4 animate-in fade-in duration-200">
-            <div className="flex items-center justify-between border-b border-[#D8D0C2] pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#D8D0C2] pb-3">
               <div className="flex items-center gap-2">
-                <Scissors className="w-4 h-4 text-[#B08A55]" />
+                <FlaskConical className="w-4 h-4 text-[#B08A55]" />
                 <h4 className="text-sm font-bold text-[#292925] uppercase tracking-wide">
-                  DIY Paper Wristband Crafting &amp; Calibration Specification
+                  Dual-Zone Chemical Dosimeter Architecture &amp; Material Specifications
                 </h4>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EDE5D6] text-[#4F5D4B] font-bold">
-                At-Home Physical Verification
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EDE5D6] text-[#4F5D4B] font-bold border border-[#D8D0C2]/80">
+                4 Functional Industrial Zones · Zero Power · Permanent Stoichiometry
               </span>
             </div>
 
             <p className="text-xs text-[#292925]/80 leading-relaxed">
-              You can construct a functional physical test wristband prototype at home using colored craft paper or printouts. The SARVAS machine vision engine will automatically recognize the paper patch colors, convert to CIE L*a*b*, apply ambient lighting compensation, and estimate the exact cumulative H₂S dose.
+              Every SARVAS passive dosimeter wristband incorporates four distinct physical functional zones engineered to deliver permanent irreversible exposure tracking, false-alarm rejection, zero-power pre-donning QA, and dynamic environmental illumination normalization.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-              {/* Step 1: Band Dimensions */}
-              <div className="p-3.5 rounded-lg bg-[#EDE5D6]/50 border border-[#D8D0C2] space-y-2">
-                <div className="font-bold text-[#292925] flex items-center gap-1.5">
-                  <span className="w-4 h-4 rounded-full bg-[#4F5D4B] text-[#F6F1E7] text-[10px] font-mono flex items-center justify-center">1</span>
-                  <span>Physical Dimensions</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
+              {/* Zone 1: Zone A (AgNO3) */}
+              <div className="p-3.5 rounded-xl bg-[#EDE5D6]/60 border border-[#D8D0C2] space-y-2.5 flex flex-col justify-between hover:border-[#4F5D4B]/50 transition-colors">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                      ZONE 1 · PRIMARY SENSOR
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-[#4F5D4B]">0.125 – 10 ppm·h</span>
+                  </div>
+                  <h5 className="font-bold text-[#292925] text-xs">Zone A: AgNO₃ Sensitivity Strip</h5>
+                  <div className="text-[11px] text-[#292925]/85 space-y-1">
+                    <p><strong>Substrate &amp; Material:</strong> Analytical Grade Silver Nitrate (0.05 M AgNO₃) impregnated on Whatman Grade 1 ashless cellulose paper (pore size 11 μm) with 15% v/v glycerol humectant matrix.</p>
+                    <p><strong>Stoichiometric Reaction:</strong> <code className="text-[10px] font-mono text-[#292925] bg-black/5 px-1 rounded">2AgNO₃ + H₂S → Ag₂S↓ + 2HNO₃</code></p>
+                    <p><strong>Color Shift:</strong> Cream-White (#EDECE5) → Slate-Gray → Charcoal Black (#504A44).</p>
+                  </div>
                 </div>
-                <ul className="space-y-1 text-[#292925]/80 text-[11px] font-mono list-disc list-inside">
-                  <li><strong>Strap:</strong> 240 mm × 22 mm (Black/dark paper)</li>
-                  <li><strong>Housing:</strong> 42 mm × 26 mm (White cardstock)</li>
-                  <li><strong>Zone A Cutout:</strong> 18 mm × 18 mm (Left half)</li>
-                  <li><strong>Zone B Cutout:</strong> 18 mm × 18 mm (Right half)</li>
-                  <li><strong>Seal Dot:</strong> 5 mm circle on right side</li>
-                </ul>
-              </div>
-
-              {/* Step 2: Paper Color Matches */}
-              <div className="p-3.5 rounded-lg bg-[#EDE5D6]/50 border border-[#D8D0C2] space-y-2">
-                <div className="font-bold text-[#292925] flex items-center gap-1.5">
-                  <span className="w-4 h-4 rounded-full bg-[#4F5D4B] text-[#F6F1E7] text-[10px] font-mono flex items-center justify-center">2</span>
-                  <span>Paper Color Selection</span>
-                </div>
-                <div className="space-y-1 text-[11px]">
-                  <div className="flex items-center justify-between">
-                    <span><strong>Stage 1 (0.125 ppm·h):</strong></span>
-                    <span className="font-mono text-[10px] text-[#4F5D4B]">Off-White / Cream (#EDECE5)</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span><strong>Stage 2 (1.0 ppm·h):</strong></span>
-                    <span className="font-mono text-[10px] text-[#4F5D4B]">Light Gray Paper (#D8D4CD)</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span><strong>Stage 3 (5.0 ppm·h):</strong></span>
-                    <span className="font-mono text-[10px] text-[#B08A55]">Slate / Cement Gray (#928D88)</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span><strong>Stage 4 (20.0 ppm·h):</strong></span>
-                    <span className="font-mono text-[10px] text-rose-700">Charcoal / Black Paper (#504A44)</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span><strong>Zone B (All Badges):</strong></span>
-                    <span className="font-mono text-[10px] text-sky-700">Sky Blue Craft Paper (#AED3E8)</span>
-                  </div>
+                <div className="pt-2 border-t border-[#D8D0C2]/80">
+                  <p className="text-[10px] text-[#292925]/75 leading-snug">
+                    <strong className="text-[#292925]">Why this material:</strong> Ag₂S has an ultra-low solubility product (K<sub>sp</sub> ≈ 6×10⁻⁵¹), making color darkening completely permanent and irreversible under ambient sunlight or oxygen (eliminating the reversible fading flaw of organic Cu-PAN dyes).
+                  </p>
                 </div>
               </div>
 
-              {/* Step 3: Scanning Instructions */}
-              <div className="p-3.5 rounded-lg bg-[#EDE5D6]/50 border border-[#D8D0C2] space-y-2">
-                <div className="font-bold text-[#292925] flex items-center gap-1.5">
-                  <span className="w-4 h-4 rounded-full bg-[#4F5D4B] text-[#F6F1E7] text-[10px] font-mono flex items-center justify-center">3</span>
-                  <span>Testing with Scanner</span>
+              {/* Zone 2: Zone B (CuSO4) */}
+              <div className="p-3.5 rounded-xl bg-[#EDE5D6]/60 border border-[#D8D0C2] space-y-2.5 flex flex-col justify-between hover:border-[#4F5D4B]/50 transition-colors">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-sky-100 text-sky-900 border border-sky-300">
+                      ZONE 2 · VERIFICATION
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-sky-800">5 – 160+ ppm·h</span>
+                  </div>
+                  <h5 className="font-bold text-[#292925] text-xs">Zone B: CuSO₄ High-Dose Strip</h5>
+                  <div className="text-[11px] text-[#292925]/85 space-y-1">
+                    <p><strong>Substrate &amp; Material:</strong> Analytical Grade Copper(II) Sulfate Pentahydrate (0.10 M CuSO₄·5H₂O) on Whatman Grade 1 paper with trace acid stabilizer.</p>
+                    <p><strong>Stoichiometric Reaction:</strong> <code className="text-[10px] font-mono text-[#292925] bg-black/5 px-1 rounded">CuSO₄ + H₂S → CuS↓ + H₂SO₄</code></p>
+                    <p><strong>Color Shift:</strong> Pristine Sky Blue (#AED3E8) → Olive-Slate (#97ACB7).</p>
+                  </div>
                 </div>
-                <ol className="space-y-1 text-[#292925]/80 text-[11px] list-decimal list-inside">
-                  <li>Assemble the paper cutouts into the housing window.</li>
-                  <li>Click <strong>Take Photo</strong> or open the SARVAS mobile app.</li>
-                  <li>Align the paper band inside the reticle frame.</li>
-                  <li>Click <strong>Capture Photo</strong> and watch the 5-step analysis compute your exposure!</li>
-                </ol>
+                <div className="pt-2 border-t border-[#D8D0C2]/80">
+                  <p className="text-[10px] text-[#292925]/75 leading-snug">
+                    <strong className="text-[#292925]">Why this material:</strong> Slower precipitation threshold (K<sub>sp</sub> ≈ 6.3×10⁻³⁶). Stays sky blue at trace levels to rule out false positives (dirt/photolysis). When Zone A saturates at high doses (&gt;10 ppm·h), Zone B quantifies OSHA PEL (20 ppm·h) and IDLH emergency exposures.
+                  </p>
+                </div>
+              </div>
+
+              {/* Zone 3: Moisture Barrier / Seal Dot */}
+              <div className="p-3.5 rounded-xl bg-[#EDE5D6]/60 border border-[#D8D0C2] space-y-2.5 flex flex-col justify-between hover:border-[#4F5D4B]/50 transition-colors">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">
+                      ZONE 3 · PRE-DONNING QA
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-emerald-800">RH &gt; 65% Ingress</span>
+                  </div>
+                  <h5 className="font-bold text-[#292925] text-xs">Zone 3: Anhydrous Moisture Seal Dot</h5>
+                  <div className="text-[11px] text-[#292925]/85 space-y-1">
+                    <p><strong>Substrate &amp; Material:</strong> Oven-desiccated anhydrous copper sulfate (CuSO₄) matrix sealed beneath micro-perforated vapor barrier on blister pouch.</p>
+                    <p><strong>Hydration Reaction:</strong> <code className="text-[10px] font-mono text-[#292925] bg-black/5 px-1 rounded">CuSO₄ (White) + 5H₂O → CuSO₄·5H₂O (Blue)</code></p>
+                    <p><strong>Color Shift:</strong> Chalk White (Seal Intact) → Azure Blue (#1E70B8, Breached).</p>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-[#D8D0C2]/80">
+                  <p className="text-[10px] text-[#292925]/75 leading-snug">
+                    <strong className="text-[#292925]">Why this material:</strong> Zero-power pre-donning shelf-life QA. If blister pouch integrity is breached during warehouse storage or shipping, the dot turns blue. Workers and camera scanner immediately reject the compromised badge before unit entry.
+                  </p>
+                </div>
+              </div>
+
+              {/* Zone 4: Printed CMYK Fiducials */}
+              <div className="p-3.5 rounded-xl bg-[#EDE5D6]/60 border border-[#D8D0C2] space-y-2.5 flex flex-col justify-between hover:border-[#4F5D4B]/50 transition-colors">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-purple-100 text-purple-900 border border-purple-300">
+                      ZONE 4 · ILLUMINATION
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-purple-800">CIE L*a*b* / CAT</span>
+                  </div>
+                  <h5 className="font-bold text-[#292925] text-xs">Zone 4: CMYK Reference Scale &amp; Fiducials</h5>
+                  <div className="text-[11px] text-[#292925]/85 space-y-1">
+                    <p><strong>Substrate &amp; Material:</strong> Chemical-resistant synthetic cardstock printed with ISO 12647 certified 18% neutral gray, D65 white balance, deep black, and primary swatches + ArUco fiducials.</p>
+                    <p><strong>Optical Role:</strong> Homography planar rectification &amp; real-time <em>von Kries</em> chromatic adaptation matrix (M<sub>CAT</sub>).</p>
+                    <p><strong>Output:</strong> Sensor-invariant CIE L*a*b* coordinates &amp; CIEDE2000 ΔE₀₀.</p>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-[#D8D0C2]/80">
+                  <p className="text-[10px] text-[#292925]/75 leading-snug">
+                    <strong className="text-[#292925]">Why this material:</strong> Factory lighting varies between sodium lamps, 6500K LED floods, direct glare, and pipeline cast shadows. The AI normalizes against the 18% gray patch, eliminating white-balance distortion on any phone camera.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
