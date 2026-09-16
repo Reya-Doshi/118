@@ -296,27 +296,27 @@ const MainAppContent: React.FC = () => {
             </span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 shrink-0">
           <button
             onClick={() => setActiveTab('KIOSK')}
-            className={`py-1.5 px-3 rounded-lg text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all shadow-2xs cursor-pointer ${
+            className={`py-1 px-2 rounded-md text-[11px] font-semibold flex items-center gap-1 active:scale-95 transition-all shadow-2xs cursor-pointer ${
               activeTab === 'KIOSK'
                 ? 'bg-black text-white ring-1 ring-black'
                 : 'bg-[#292925] hover:bg-black text-white'
             }`}
-            title="Interactive Kiosk Flow (Start -> Scan -> Dose -> Close)"
+            title="Interactive Kiosk Flow"
           >
-            <Scan className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Kiosk Flow</span>
+            <Scan className="w-3 h-3 text-emerald-400" />
+            <span>Kiosk</span>
           </button>
 
           <button
             onClick={logout}
-            className="py-1.5 px-3 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-semibold flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer"
+            className="py-1 px-2 rounded-md bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[11px] font-medium flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
             title={isHindiWorker ? 'लॉग आउट' : 'Sign Out'}
           >
-            <LogOut className="w-3.5 h-3.5" />
-            <span className="text-xs font-bold">{isHindiWorker ? 'लॉग आउट' : 'Sign Out'}</span>
+            <LogOut className="w-3 h-3" />
+            <span>{isHindiWorker ? 'लॉग आउट' : 'Sign Out'}</span>
           </button>
         </div>
       </header>
