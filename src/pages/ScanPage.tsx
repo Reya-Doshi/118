@@ -262,6 +262,9 @@ export const ScanPage: React.FC = () => {
     actionFlag: string;
     confidence: number;
     closestSampleId: string;
+    bandDetected: boolean;
+    stripNotVisible: boolean;
+    diagnosticFailure?: string;
   } | null>(null);
 
   // Helper: Convert sRGB to CIE L*a*b* under D65
@@ -306,6 +309,9 @@ export const ScanPage: React.FC = () => {
     actionFlag: string;
     confidence: number;
     closestSampleId: string;
+    bandDetected: boolean;
+    stripNotVisible: boolean;
+    diagnosticFailure?: string;
   }> => {
     return new Promise((resolve) => {
       const img = new Image();
@@ -428,11 +434,28 @@ export const ScanPage: React.FC = () => {
             calculatedDose = calculatedDose / (tempComp * rhComp);
             calculatedDose = Math.max(0.0, parseFloat(calculatedDose.toFixed(2)));
 
+            // Non-dosimeter target detection
+            const chroma = Math.sqrt(Math.pow(lab.a, 2) + Math.pow(lab.b, 2));
+            const isSkinTone = (lab.a > 6.5 && lab.b > 10.0 && lab.L > 35 && lab.L < 85);
+            const isArbitraryObject = chroma > 24.0 || (lab.a > 9.0) || (lab.b > 20.0);
+            const isLocusOffTarget = isSkinTone || isArbitraryObject || (top3[0].dist > 28.0 && deltaE < 2.0);
+
+            let bandDetected = true;
+            let stripNotVisible = false;
+            let diagnosticFailure: string | undefined = undefined;
+
             const closest = top3[0].sample;
             let status: ExposureStatus = 'NORMAL';
             let actionFlag = 'Clean / Safe (< 0.5 ppm·h)';
 
-            if (isSealBreached || activeCalibration.shelfAge > 90 || activeCalibration.sealDot === 'BLUE') {
+            if (isLocusOffTarget) {
+              bandDetected = false;
+              stripNotVisible = true;
+              status = 'REVIEW';
+              actionFlag = 'WATCH NOT VISIBLE: Target dosimeter strip not detected in frame. Please align the SARVAS wristband within the camera reticle.';
+              diagnosticFailure = 'Target dosimeter wristband was not visible in frame.';
+              calculatedDose = 0.0;
+            } else if (isSealBreached || activeCalibration.shelfAge > 90 || activeCalibration.sealDot === 'BLUE') {
               status = 'REVIEW';
               actionFlag = 'SEAL BREACH / EXPIRED (Reject badge)';
               calculatedDose = 10.0;
@@ -458,8 +481,11 @@ export const ScanPage: React.FC = () => {
               estimatedDose: calculatedDose,
               status,
               actionFlag,
-              confidence: Math.max(78, Math.min(98, Math.round(100 - top3[0].dist * 1.2))),
-              closestSampleId: closest.sampleId
+              confidence: bandDetected ? Math.max(78, Math.min(98, Math.round(100 - top3[0].dist * 1.2))) : 10,
+              closestSampleId: closest.sampleId,
+              bandDetected,
+              stripNotVisible,
+              diagnosticFailure
             };
             setExtractedColorimetry(result);
             resolve(result);
@@ -479,7 +505,9 @@ export const ScanPage: React.FC = () => {
           status: 'MONITOR' as ExposureStatus,
           actionFlag: 'Action Level (2.5 - 10.0 ppm·h)',
           confidence: 88,
-          closestSampleId: 'SIM-0030'
+          closestSampleId: 'SIM-0030',
+          bandDetected: true,
+          stripNotVisible: false
         };
         setExtractedColorimetry(fallback);
         resolve(fallback);
@@ -623,10 +651,13 @@ export const ScanPage: React.FC = () => {
               compensatedDeltaE: apiJson.delta_e || colorData.deltaE,
               shelfAge: apiJson.shelf_age_days,
               actionFlag: apiJson.action_guideline || apiJson.status || colorData.actionFlag,
+              bandDetected: apiJson.band_detected !== undefined ? apiJson.band_detected : colorData.bandDetected,
+              stripNotVisible: apiJson.image_quality?.strip_not_visible !== undefined ? apiJson.image_quality?.strip_not_visible : colorData.stripNotVisible,
+              diagnosticFailure: apiJson.action_guideline || colorData.diagnosticFailure,
               calibrationMetrics: {
-                referenceCalibration: 98,
+                referenceCalibration: apiJson.band_detected === false ? 0 : 98,
                 colorExtraction: Math.round((apiJson.confidence?.score || 0.95) * 100),
-                lightingCorrection: apiJson.image_quality?.verdict === 'PASS' ? 96 : 88,
+                lightingCorrection: apiJson.image_quality?.verdict === 'PASS' ? 96 : 40,
                 doseEstimation: Math.round((apiJson.confidence?.score || 0.95) * 100)
               }
             };
@@ -673,10 +704,13 @@ export const ScanPage: React.FC = () => {
           compensatedDeltaE: colorData.deltaE,
           shelfAge: activeCalibration.shelfAge,
           actionFlag: colorData.actionFlag,
+          bandDetected: colorData.bandDetected,
+          stripNotVisible: colorData.stripNotVisible,
+          diagnosticFailure: colorData.diagnosticFailure,
           calibrationMetrics: {
-            referenceCalibration: 98,
-            colorExtraction: 95,
-            lightingCorrection: 92,
+            referenceCalibration: colorData.bandDetected === false ? 0 : 98,
+            colorExtraction: colorData.bandDetected === false ? 10 : 95,
+            lightingCorrection: colorData.bandDetected === false ? 40 : 92,
             doseEstimation: colorData.confidence
           }
         };

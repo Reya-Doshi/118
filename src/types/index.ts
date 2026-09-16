@@ -45,6 +45,9 @@ export interface ExposureReading {
   dose_ppm_h_zoneB?: number;
   seal_breach_detected?: boolean;
   light_exposure_warning?: boolean;
+  bandDetected?: boolean;
+  stripNotVisible?: boolean;
+  diagnosticFailure?: string;
 
   // Calibration dataset specific parameters
   lab?: { L: number; a: number; b: number };

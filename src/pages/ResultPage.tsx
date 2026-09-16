@@ -51,8 +51,13 @@ export const ResultPage: React.FC = () => {
     expiryStatus,
     actionFlag,
     tempCompensationFactor,
-    humidityCompensationFactor
+    humidityCompensationFactor,
+    bandDetected,
+    stripNotVisible,
+    diagnosticFailure
   } = latestReading;
+
+  const isWatchNotVisible = bandDetected === false || Boolean(stripNotVisible);
 
   // Visual marker position across 0 to 160 ppm·h scale
   let markerPercent = 50;
@@ -107,32 +112,66 @@ export const ResultPage: React.FC = () => {
           <StatusBadge status={status} size="lg" />
         </div>
 
-        {/* Big Dose Output Display */}
-        <div className="text-center space-y-2 py-5 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2]">
-          <span className="text-xs font-mono font-bold tracking-widest uppercase text-[#292925]/70">
-            CUMULATIVE EXPOSURE ESTIMATE
-          </span>
-          <div className="flex items-center justify-center gap-3">
-            <div
-              className="w-6 h-6 rounded-full border border-black/20 shadow-xs"
-              style={{ backgroundColor: stripColorHex }}
-              title="Detected Strip Color"
-            />
-            <div className="text-4xl sm:text-5xl md:text-6xl font-extrabold font-mono tracking-tight text-[#292925]">
-              {dosePpmH.toFixed(1)} <span className="text-xl sm:text-2xl md:text-3xl font-semibold text-[#292925]/70">ppm·h</span>
+        {/* Big Dose Output Display OR Watch Missing Rejection Banner */}
+        {isWatchNotVisible ? (
+          <div className="bg-[#9A6258]/15 border-2 border-[#9A6258] rounded-xl p-6 text-center space-y-4 shadow-sm">
+            <div className="w-12 h-12 rounded-full bg-[#9A6258]/20 flex items-center justify-center mx-auto text-[#7A342B]">
+              <ShieldAlert className="w-6 h-6 text-[#7A342B]" />
+            </div>
+            <div>
+              <h2 className="text-xl font-serif font-bold text-[#7A342B]">
+                Dosimeter Watch Not Visible in Frame
+              </h2>
+              <p className="text-xs text-[#7A342B]/90 mt-1 max-w-lg mx-auto leading-relaxed font-medium">
+                {actionFlag || diagnosticFailure || 'The optical vision system could not detect a valid SARVAS dosimeter watch or active sensing strip. Non-dosimeter images cannot be evaluated for toxic gas exposure.'}
+              </p>
+            </div>
+
+            <div className="bg-[#F6F1E7] border border-[#9A6258]/30 rounded-lg p-4 max-w-md mx-auto text-left space-y-2 text-xs">
+              <div className="font-mono font-bold text-[11px] text-[#292925] uppercase tracking-wider">
+                Optical QA Diagnostic Checklist
+              </div>
+              <div className="flex items-start gap-2 text-[#7A342B]">
+                <span className="font-bold">❌</span>
+                <span>Target sensing strip (Ag₂S/Cu-PAN) not detected in optical frame</span>
+              </div>
+              <div className="flex items-start gap-2 text-[#7A342B]">
+                <span className="font-bold">❌</span>
+                <span>Reference calibration housing / scale boundary missing</span>
+              </div>
+              <div className="flex items-start gap-2 text-[#5A7456]">
+                <span className="font-bold">💡</span>
+                <span>Position the SARVAS dosimeter watch directly inside the reticle under even lighting</span>
+              </div>
             </div>
           </div>
-          
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs font-mono pt-1">
-            <span className="text-[#4F5D4B] font-semibold">
-              Action Flag: <strong>{actionFlag || status}</strong>
+        ) : (
+          <div className="text-center space-y-2 py-5 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2]">
+            <span className="text-xs font-mono font-bold tracking-widest uppercase text-[#292925]/70">
+              CUMULATIVE EXPOSURE ESTIMATE
             </span>
-            <span>•</span>
-            <span className="text-[#292925]/70">
-              Algorithm Confidence: <strong>{confidenceScore}%</strong>
-            </span>
+            <div className="flex items-center justify-center gap-3">
+              <div
+                className="w-6 h-6 rounded-full border border-black/20 shadow-xs"
+                style={{ backgroundColor: stripColorHex }}
+                title="Detected Strip Color"
+              />
+              <div className="text-4xl sm:text-5xl md:text-6xl font-extrabold font-mono tracking-tight text-[#292925]">
+                {dosePpmH.toFixed(1)} <span className="text-xl sm:text-2xl md:text-3xl font-semibold text-[#292925]/70">ppm·h</span>
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs font-mono pt-1">
+              <span className="text-[#4F5D4B] font-semibold">
+                Action Flag: <strong>{actionFlag || status}</strong>
+              </span>
+              <span>•</span>
+              <span className="text-[#292925]/70">
+                Algorithm Confidence: <strong>{confidenceScore}%</strong>
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* HORIZONTAL RANGE SCALE (0 to 160 ppm·h) */}
         <div className="space-y-3 px-1 sm:px-2">
@@ -364,19 +403,25 @@ export const ResultPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-[#D8D0C2]">
           <button
             onClick={() => setActivePage('scan')}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] text-[#292925] text-xs font-semibold tracking-wide hover:bg-[#EDE5D6] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            className={`w-full sm:w-auto px-6 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-colors flex items-center justify-center gap-2 cursor-pointer ${
+              isWatchNotVisible 
+                ? 'bg-[#7A342B] text-[#F6F1E7] hover:bg-[#622922] shadow-sm' 
+                : 'bg-[#F6F1E7] border border-[#D8D0C2] text-[#292925] hover:bg-[#EDE5D6]'
+            }`}
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span>Scan Another Sample</span>
+            <span>{isWatchNotVisible ? 'Retake Scan (Align Watch)' : 'Scan Another Sample'}</span>
           </button>
 
-          <button
-            onClick={handleSave}
-            className="w-full sm:w-auto px-8 py-2.5 rounded-lg bg-[#4F5D4B] text-[#F6F1E7] text-xs font-semibold tracking-wide hover:bg-[#3d493a] transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <Save className="w-3.5 h-3.5 text-[#F6F1E7]" />
-            <span>Save Reading</span>
-          </button>
+          {!isWatchNotVisible && (
+            <button
+              onClick={handleSave}
+              className="w-full sm:w-auto px-8 py-2.5 rounded-lg bg-[#4F5D4B] text-[#F6F1E7] text-xs font-semibold tracking-wide hover:bg-[#3d493a] transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Save className="w-3.5 h-3.5 text-[#F6F1E7]" />
+              <span>Save Reading</span>
+            </button>
+          )}
         </div>
 
       </div>

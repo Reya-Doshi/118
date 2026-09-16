@@ -55,6 +55,10 @@ export const ResultModal: React.FC<ResultModalProps> = ({
   const workerId = resolvedWorker?.workerId || 'EMP-9021';
   const workerName = resolvedWorker?.name || 'Worker';
 
+  const isBandMissing = apiResult.band_detected === false || 
+    apiResult.image_quality?.verdict === 'FAIL' || 
+    Boolean(apiResult.image_quality?.strip_not_visible);
+
   const isExpired = Boolean(apiResult.shelf_age_days > 60 || (apiResult.status === 'REVIEW' && apiResult.action_guideline?.includes('expired')));
 
   const handleSave = () => {
@@ -179,54 +183,91 @@ export const ResultModal: React.FC<ResultModalProps> = ({
           </div>
         )}
 
-        {/* Primary Dose Card with Dynamic Status Glow */}
-        <div className={`p-4 text-center rounded-2xl ${
-          isExpired || apiResult.status === 'REVIEW'
-            ? 'card-glow-review'
-            : apiResult.status === 'MONITOR'
-            ? 'card-glow-monitor'
-            : 'card-glow-safe'
-        }`}>
-          <span className="text-[10px] font-mono tracking-widest uppercase text-gray-500 font-bold block mb-1">
-            {isHindi ? 'अनुमानित संचयी H₂S एक्सपोज़र' : 'Estimated Cumulative H₂S Exposure'}
-          </span>
+        {/* Watch Missing Diagnostic Card OR Primary Dose Card */}
+        {isBandMissing ? (
+          <div className="bg-[#9A6258]/15 border-2 border-[#9A6258] rounded-2xl p-5 text-[#7A342B] space-y-3.5 text-center shadow-sm">
+            <div className="w-12 h-12 rounded-full bg-[#9A6258]/20 flex items-center justify-center mx-auto text-[#7A342B]">
+              <AlertCircle className="w-7 h-7" />
+            </div>
+            <div>
+              <h3 className="text-lg font-serif font-bold text-[#7A342B]">
+                {isHindi ? 'रिस्टबैंड / वॉच नहीं मिली' : 'Dosimeter Watch Not Visible'}
+              </h3>
+              <p className="text-xs text-[#7A342B]/95 mt-1 font-medium leading-relaxed">
+                {apiResult.action_guideline || (isHindi 
+                  ? 'कैमरा फ्रेम में कोई SARVAS रिस्टबैंड या केमिकल स्ट्रिप नहीं दिखी। कृपया कैमरे को सीधे रिस्टबैंड पर संरेखित करें।'
+                  : 'No SARVAS wristband or chemical dosimeter was detected in the scanned frame. Please point camera directly at your wristband.')}
+              </p>
+            </div>
 
-          <div className="flex items-baseline justify-center gap-1.5 my-1">
-            <span className="text-5xl font-mono font-bold text-gray-900 tracking-tight">
-              {apiResult.estimated_exposure_ppm_h.toFixed(2)}
-            </span>
-            <span className="text-base font-serif text-gray-600 font-medium">
-              ppm·h
-            </span>
+            <div className="bg-[#F6F1E7] rounded-xl p-3.5 text-left space-y-2 border border-[#9A6258]/30">
+              <div className="font-bold text-[#292925] text-[11px] uppercase tracking-wider font-mono flex items-center gap-1.5">
+                <ShieldAlert className="w-3.5 h-3.5 text-[#9A6258]" />
+                {isHindi ? 'निदान जांच (Diagnostic Failure Analysis)' : 'Diagnostic Failure Analysis'}
+              </div>
+              <div className="flex items-start gap-2 text-[#7A342B] text-xs">
+                <span className="font-bold">❌</span>
+                <span>{isHindi ? 'सेंसिंग स्ट्रिप (Ag₂S/Cu-PAN) फ्रेम में नहीं मिली' : 'Target sensing strip not detected in frame'}</span>
+              </div>
+              <div className="flex items-start gap-2 text-[#7A342B] text-xs">
+                <span className="font-bold">❌</span>
+                <span>{isHindi ? 'रेफरेंस कलर स्केल या हाउसिंग गायब है' : 'Reference calibration scale / housing boundary missing'}</span>
+              </div>
+              <div className="flex items-start gap-2 text-[#5A7456] text-xs">
+                <span className="font-bold">💡</span>
+                <span>{isHindi ? 'कृपया वॉच डायल को सीधे गाइड फ्रेम के अंदर रखें एवं पर्याप्त रोशनी में स्कैन करें' : 'Align wristband directly inside the reticle under good ambient lighting'}</span>
+              </div>
+            </div>
           </div>
+        ) : (
+          <div className={`p-4 text-center rounded-2xl ${
+            isExpired || apiResult.status === 'REVIEW'
+              ? 'card-glow-review'
+              : apiResult.status === 'MONITOR'
+              ? 'card-glow-monitor'
+              : 'card-glow-safe'
+          }`}>
+            <span className="text-[10px] font-mono tracking-widest uppercase text-gray-500 font-bold block mb-1">
+              {isHindi ? 'अनुमानित संचयी H₂S एक्सपोज़र' : 'Estimated Cumulative H₂S Exposure'}
+            </span>
 
-          {/* Stated Accuracy & 95% CI Error Bounds (Problem Statement Mandate) */}
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/5 text-[11px] font-mono font-semibold text-gray-700 my-1">
-            <span>
-              {isHindi ? 'अनुमानित सटीकता:' : 'Estimated Range:'}
-            </span>
-            <span className="font-bold text-gray-900">
-              {apiResult.confidence?.ci_lower_ppm_h?.toFixed(2) ?? Math.max(0, apiResult.estimated_exposure_ppm_h - 0.12).toFixed(2)} – {apiResult.confidence?.ci_upper_ppm_h?.toFixed(2) ?? (apiResult.estimated_exposure_ppm_h + 0.12).toFixed(2)} ppm·h
-            </span>
-            <span className="text-[9px] text-[#2F6B38] font-bold bg-[#2F6B38]/10 px-1.5 py-0.5 rounded">
-              ±12% {isHindi ? 'सामान्य त्रुटि' : 'Typical Error'}
-            </span>
-          </div>
+            <div className="flex items-baseline justify-center gap-1.5 my-1">
+              <span className="text-5xl font-mono font-bold text-gray-900 tracking-tight">
+                {apiResult.estimated_exposure_ppm_h.toFixed(2)}
+              </span>
+              <span className="text-base font-serif text-gray-600 font-medium">
+                ppm·h
+              </span>
+            </div>
 
-          <div className="my-2">
-            {getStatusBadge(apiResult.status, isExpired)}
-          </div>
+            {/* Stated Accuracy & 95% CI Error Bounds (Problem Statement Mandate) */}
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/5 text-[11px] font-mono font-semibold text-gray-700 my-1">
+              <span>
+                {isHindi ? 'अनुमानित सटीकता:' : 'Estimated Range:'}
+              </span>
+              <span className="font-bold text-gray-900">
+                {apiResult.confidence?.ci_lower_ppm_h?.toFixed(2) ?? Math.max(0, apiResult.estimated_exposure_ppm_h - 0.12).toFixed(2)} – {apiResult.confidence?.ci_upper_ppm_h?.toFixed(2) ?? (apiResult.estimated_exposure_ppm_h + 0.12).toFixed(2)} ppm·h
+              </span>
+              <span className="text-[9px] text-[#2F6B38] font-bold bg-[#2F6B38]/10 px-1.5 py-0.5 rounded">
+                ±12% {isHindi ? 'सामान्य त्रुटि' : 'Typical Error'}
+              </span>
+            </div>
 
-          <div className="border-t border-gray-100 pt-2 text-xs text-gray-600 leading-relaxed font-medium">
-            {apiResult.action_guideline || (
-              apiResult.status === 'NORMAL' 
-                ? (isHindi ? 'सुरक्षित कार्य स्तर। ८ घंटे की निर्धारित सीमा के भीतर।' : 'Safe working level. Within permissible 8-hr exposure limits.')
-                : apiResult.status === 'MONITOR'
-                ? (isHindi ? 'एक्शन स्तर तक पहुँचा। अतिरिक्त जोखिम सीमित करें एवं वेंटिलेशन जांचें।' : 'Action level reached. Limit further exposure and verify area ventilation.')
-                : (isHindi ? 'अनुमेय सीमा पार। तत्काल सुरक्षित क्षेत्र में जाएँ एवं प्राथमिक उपचार लें।' : 'Permissible exposure limit exceeded. Prompt medical triage and evacuation.')
-            )}
+            <div className="my-2">
+              {getStatusBadge(apiResult.status, isExpired)}
+            </div>
+
+            <div className="border-t border-gray-100 pt-2 text-xs text-gray-600 leading-relaxed font-medium">
+              {apiResult.action_guideline || (
+                apiResult.status === 'NORMAL' 
+                  ? (isHindi ? 'सुरक्षित कार्य स्तर। ८ घंटे की निर्धारित सीमा के भीतर।' : 'Safe working level. Within permissible 8-hr exposure limits.')
+                  : apiResult.status === 'MONITOR'
+                  ? (isHindi ? 'एक्शन स्तर तक पहुँचा। अतिरिक्त जोखिम सीमित करें एवं वेंटिलेशन जांचें।' : 'Action level reached. Limit further exposure and verify area ventilation.')
+                  : (isHindi ? 'अनुमेय सीमा पार। तत्काल सुरक्षित क्षेत्र में जाएँ एवं प्राथमिक उपचार लें।' : 'Permissible exposure limit exceeded. Prompt medical triage and evacuation.')
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Actionable Precautionary Directives (Mandatory SOP) */}
         {apiResult.precautions && apiResult.precautions.length > 0 && (
@@ -363,23 +404,35 @@ export const ResultModal: React.FC<ResultModalProps> = ({
 
       {/* Action Footer */}
       <div className="pt-2 pb-3 space-y-2">
-        <button
-          onClick={handleSave}
-          className="w-full py-3.5 bg-[#292925] text-[#F6F1E7] rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:bg-[#1a1a17] active:scale-[0.98] transition-all shadow-md font-semibold cursor-pointer"
-        >
-          <Check className="w-4 h-4" />
-          {isHindi 
-            ? 'मेरी शिफ्ट लॉग में सुरक्षित करें' 
-            : (isWorkerRole ? 'Save to My Shift Log' : 'Save & Log Officer Inspection')}
-        </button>
+        {isBandMissing ? (
+          <button
+            onClick={onRetake}
+            className="w-full py-3.5 bg-[#7A342B] text-[#F6F1E7] rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#622922] active:scale-[0.98] transition-all shadow-md cursor-pointer"
+          >
+            <RotateCcw className="w-4 h-4" />
+            {isHindi ? 'पुनः स्कैन करें (वॉच संरेखित करें)' : 'Retake Scan (Align Watch)'}
+          </button>
+        ) : (
+          <>
+            <button
+              onClick={handleSave}
+              className="w-full py-3.5 bg-[#292925] text-[#F6F1E7] rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:bg-[#1a1a17] active:scale-[0.98] transition-all shadow-md font-semibold cursor-pointer"
+            >
+              <Check className="w-4 h-4" />
+              {isHindi 
+                ? 'मेरी शिफ्ट लॉग में सुरक्षित करें' 
+                : (isWorkerRole ? 'Save to My Shift Log' : 'Save & Log Officer Inspection')}
+            </button>
 
-        <button
-          onClick={onRetake}
-          className="w-full py-2.5 bg-[#EDE5D6] text-[#5D5B53] border border-[#D8D0C2] rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all cursor-pointer"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          {isHindi ? 'पुनः स्कैन करें / हटाएं' : 'Retake / Discard'}
-        </button>
+            <button
+              onClick={onRetake}
+              className="w-full py-2.5 bg-[#EDE5D6] text-[#5D5B53] border border-[#D8D0C2] rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all cursor-pointer"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              {isHindi ? 'पुनः स्कैन करें / हटाएं' : 'Retake / Discard'}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

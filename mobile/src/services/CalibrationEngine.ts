@@ -155,14 +155,25 @@ export class CalibrationEngine {
   } {
     const chroma = Math.sqrt(lab.a * lab.a + lab.b * lab.b);
 
-    // 1. Extreme chromatic saturation anomaly (bright neon highlighter / dye spills)
-    // Genuine Ag2S / CuS mineral precipitates maintain low-to-moderate chroma (< 34)
-    if (chroma > 36) {
+    // 1. Check if the color is consistent with the chemical dosimeter matrix
+    // Normal Dual-Zone dosimeter zones:
+    // - Zone A (AgNO3 -> Ag2S): desaturated cream to dark charcoal/black (L* from 18 to 95, chroma <= 14)
+    // - Zone B (CuSO4 -> CuS): light sky blue to olive-slate (b* < -6 or b* < 5, chroma <= 26)
+    
+    // Non-dosimeter scenes:
+    // - Human skin tones / faces: a* in [7, 26], b* in [10, 32]
+    // - Wooden desk / paper / wall: warm saturated orange/yellow with chroma > 18
+    // - Bright clothing / surroundings: chroma > 30
+    const isSkinTone = (lab.a > 6.5 && lab.b > 10.0 && lab.L > 35 && lab.L < 88);
+    const isSaturatedNonDosimeter = (chroma > 24 && !(lab.b < -6 && lab.L > 60)); // Allow sky blue CuSO4 only
+    const isExtremeWarmHue = (lab.a > 9.0 || (lab.b > 20.0 && lab.L < 85));
+
+    if (isSkinTone || isSaturatedNonDosimeter || isExtremeWarmHue) {
       return {
         isValid: false,
-        isContaminationAnomaly: true,
-        isOffTarget: false,
-        reason: 'CONTAMINATION_ANOMALY: High chromatic saturation detected outside Ag2S/CuS locus. Wipe strip surface.'
+        isContaminationAnomaly: false,
+        isOffTarget: true,
+        reason: 'Watch or dosimeter wristband was not visible in frame. Optical locus matched non-dosimeter surface.'
       };
     }
 
@@ -173,6 +184,16 @@ export class CalibrationEngine {
         isContaminationAnomaly: false,
         isOffTarget: true,
         reason: 'GLARE_DETECTED: Specular reflection. Tilt dosimeter slightly to prevent lens flash glare.'
+      };
+    }
+
+    // 3. Extreme chromatic saturation anomaly
+    if (chroma > 36) {
+      return {
+        isValid: false,
+        isContaminationAnomaly: true,
+        isOffTarget: false,
+        reason: 'CONTAMINATION_ANOMALY: High chromatic saturation detected outside Ag2S/CuS locus. Wipe strip surface.'
       };
     }
 
@@ -456,9 +477,39 @@ export class CalibrationEngine {
               status = 'REVIEW';
               guidelineNote = 'SEAL BREACHED: Anhydrous CuSO4 indicator turned azure blue (>65% RH ingress). Dosimeter invalidated; quarantine badge.';
             } else if (locus.isOffTarget) {
-              dose = 0.125;
-              status = 'NORMAL';
-              guidelineNote = locus.reason || 'Target alignment notice: Frame dosimeter within reticle.';
+              const rejectReason = locus.reason || 'Watch or dosimeter wristband was not visible in frame.';
+              resolve({
+                estimated_exposure_ppm_h: 0.0,
+                status: 'REVIEW',
+                confidence: {
+                  score: 0.05,
+                  uncertainty_95_ci_ppm_h: 0.0,
+                  ci_lower_ppm_h: 0.0,
+                  ci_upper_ppm_h: 0.0
+                },
+                rgb: { r: avgR, g: avgG, b: avgB, hex: `#${((1 << 24) + (avgR << 16) + (avgG << 8) + avgB).toString(16).slice(1)}` },
+                lab,
+                delta_e: 0.0,
+                temperature: temp,
+                humidity: rh,
+                shelf_age_days: shelfAgeDays,
+                image_quality: {
+                  verdict: 'FAIL',
+                  score: 0.05,
+                  is_too_dark: false,
+                  is_overexposed: false,
+                  is_blurry: false,
+                  strip_not_visible: true,
+                  reference_scale_missing: true,
+                  notes: rejectReason
+                },
+                band_detected: false,
+                action_guideline: `WATCH NOT DETECTED: ${rejectReason} Please position your SARVAS wristband directly within the reticle.`,
+                prototype: true,
+                vision_engine: 'On-Device Spatial & Colorimetric Quality Engine',
+                precautions: ['Align SARVAS wristband inside camera reticle', 'Ensure even ambient lighting', 'Retake scan']
+              });
+              return;
             } else if (locus.isContaminationAnomaly) {
               dose = 0.20;
               status = 'MONITOR';

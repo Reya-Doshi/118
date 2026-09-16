@@ -123,6 +123,67 @@ def process_wristband_analysis(
         strip_roi = pixel_boxes.get("sensing_strip")
         ref_roi = pixel_boxes.get("reference_scale")
 
+        # Early rejection if no wristband or watch was detected
+        if not band_detected or quality_data.get("strip_not_visible", False) or quality_data.get("quality_verdict") == "FAIL":
+            error_note = quality_data.get("quality_notes") or "Watch or dosimeter wristband was not visible in frame. Please align the SARVAS wristband inside the camera reticle."
+            return {
+                "estimated_exposure_ppm_h": 0.0,
+                "status": "REVIEW",
+                "safety_officer_alert": {
+                    "alert_generated": True,
+                    "alert_label": "Scan Rejected: No Dosimeter Detected",
+                    "safety_officer": "Mira Patel",
+                    "status": "REVIEW",
+                    "estimated_exposure_ppm_h": 0.0,
+                    "temperature": float(temperature),
+                    "humidity": float(humidity),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "action": f"SCAN REJECTED: {error_note}. Re-scan required with wristband centered in frame.",
+                    "regulatory_notice": "Image rejected during computer vision QA audit."
+                },
+                "threshold_meta": {
+                    "type": "PROTOTYPE_SIMULATED_CONSERVATIVE",
+                    "normal_limit_ppm_h": DOSE_NORMAL_MAX,
+                    "monitor_limit_ppm_h": DOSE_MONITOR_MAX,
+                    "regulatory_notice": "Image QA Failure: No dosimeter wristband identified."
+                },
+                "confidence": {
+                    "optical_quality_score": float(np.round(quality_data.get("quality_score", 0.05), 2)),
+                    "score": float(np.round(quality_data.get("quality_score", 0.05), 2)),
+                    "ensemble_std_ppm_h": 0.0,
+                    "uncertainty_spread_ppm_h": 0.0,
+                    "uncertainty_95_ci_ppm_h": 0.0,
+                    "ci_lower_ppm_h": 0.0,
+                    "ci_upper_ppm_h": 0.0,
+                    "uncertainty_method": "Scan rejected: Dosimeter wristband was not visible in frame."
+                },
+                "rgb": {"r": 0, "g": 0, "b": 0, "hex": "#000000"},
+                "lab": {"L": 0.0, "a": 0.0, "b": 0.0},
+                "delta_e": 0.0,
+                "temperature": float(temperature),
+                "humidity": float(humidity),
+                "shelf_age_days": float(shelf_age_days),
+                "image_quality": {
+                    "verdict": "FAIL",
+                    "score": float(np.round(quality_data.get("quality_score", 0.05), 2)),
+                    "is_too_dark": bool(quality_data.get("is_too_dark", False)),
+                    "is_overexposed": bool(quality_data.get("is_overexposed", False)),
+                    "is_blurry": bool(quality_data.get("is_blurry", False)),
+                    "strip_not_visible": True,
+                    "reference_scale_missing": True,
+                    "notes": error_note
+                },
+                "band_detected": False,
+                "localizations": {
+                    "sensing_strip_roi": None,
+                    "reference_scale_roi": None
+                },
+                "vision_engine": vision_engine,
+                "action_guideline": f"WATCH NOT VISIBLE: {error_note}. Please point the camera directly at your SARVAS wristband.",
+                "prototype": True,
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
+
         # 2. OpenCV Color Extraction
         rgb, strip_bbox, ref_bbox, housing_bbox, norm_img = detect_and_extract_sensing_strip(
             img_bgr,
