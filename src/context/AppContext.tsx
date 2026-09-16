@@ -30,6 +30,9 @@ interface AppContextType {
   logout: () => void;
   workerLanguage: 'en' | 'hi';
   setWorkerLanguage: (lang: 'en' | 'hi') => void;
+  autoScanPending: boolean;
+  setAutoScanPending: (val: boolean) => void;
+  loadAndScanSample: (sample: DemoSample) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -88,6 +91,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [workerLanguage, setWorkerLanguageState] = useState<'en' | 'hi'>('hi');
+  const [autoScanPending, setAutoScanPending] = useState(false);
+
+  const loadAndScanSample = (sample: DemoSample) => {
+    setSelectedSample(sample);
+    setAutoScanPending(true);
+    setActivePage('scan');
+  };
 
   const setWorkerLanguage = (lang: 'en' | 'hi') => {
     setWorkerLanguageState(lang);
@@ -239,7 +249,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         resetDemoData,
         logout,
         workerLanguage,
-        setWorkerLanguage
+        setWorkerLanguage,
+        autoScanPending,
+        setAutoScanPending,
+        loadAndScanSample
       }}
     >
       {children}

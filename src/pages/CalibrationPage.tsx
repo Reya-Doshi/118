@@ -2,17 +2,23 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { CALIBRATION_DATASET } from '../data/calibrationData';
 import type { CalibrationSample } from '../data/calibrationData';
-import { Download, Search, Database, ArrowRight, ShieldAlert, LineChart as ChartIcon, ArrowUpDown, ArrowUp, ArrowDown, Info, Sparkles } from 'lucide-react';
+import { Download, Search, Database, ArrowRight, ShieldAlert, LineChart as ChartIcon, ArrowUpDown, ArrowUp, ArrowDown, Info, Sparkles, CheckCircle2, X, Cpu, RotateCcw } from 'lucide-react';
 import { ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, Tooltip, CartesianGrid, ZAxis } from 'recharts';
 
 export const CalibrationPage: React.FC = () => {
-  const { setSelectedSample, setActivePage } = useApp();
+  const { setActivePage, setLatestReading, workers, loadAndScanSample } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [flagFilter, setFlagFilter] = useState<string>('ALL');
   const [selectedBlock, setSelectedBlock] = useState<string>('ALL');
   const [doseBracket, setDoseBracket] = useState<'ALL' | 'TRACE' | 'ACTION' | 'HIGH' | 'STRESS'>('ALL');
   const [sortField, setSortField] = useState<'sampleId' | 'dose' | 'agDeltaE' | 'cuDeltaE'>('sampleId');
   const [sortAsc, setSortAsc] = useState<boolean>(true);
+
+  // Live Optical AI Scan Modal State
+  const [activeScanSample, setActiveScanSample] = useState<CalibrationSample | null>(null);
+  const [scanStep, setScanStep] = useState<number>(0);
+  const [isScanning, setIsScanning] = useState<boolean>(false);
+  const [scanDone, setScanDone] = useState<boolean>(false);
 
   const filteredSamples = CALIBRATION_DATASET.filter(s => {
     const matchesSearch =
@@ -47,8 +53,27 @@ export const CalibrationPage: React.FC = () => {
     return sortAsc ? cmp : -cmp;
   });
 
+  const handleQuickScan = (sample: CalibrationSample) => {
+    setActiveScanSample(sample);
+    setIsScanning(true);
+    setScanDone(false);
+    setScanStep(1);
+
+    let step = 1;
+    const interval = setInterval(() => {
+      step++;
+      if (step <= 5) {
+        setScanStep(step);
+      } else {
+        clearInterval(interval);
+        setScanDone(true);
+        setIsScanning(false);
+      }
+    }, 550);
+  };
+
   const handleTestInScanner = (sample: CalibrationSample) => {
-    setSelectedSample({
+    loadAndScanSample({
       id: sample.sampleId,
       name: `${sample.sampleId} — Block ${sample.block}`,
       badgeId: sample.sampleId,
@@ -70,7 +95,56 @@ export const CalibrationPage: React.FC = () => {
       exposureTime: sample.durationH,
       shelfAge: sample.stripAgeDays
     });
-    setActivePage('scan');
+  };
+
+  const handleOpenFullResult = (sample: CalibrationSample) => {
+    const assignedWorker = workers[0] || { workerId: 'WRK-2048', name: 'Reya Doshi', department: 'Hydrocracker Unit 2' };
+    const now = new Date();
+    setLatestReading({
+      id: `rd-cal-${Date.now()}`,
+      timestamp: now.toISOString(),
+      timeAgo: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      workerId: assignedWorker.workerId,
+      workerName: assignedWorker.name,
+      badgeId: sample.sampleId,
+      sampleId: `Empirical Matrix (${sample.sampleId} · Block ${sample.block})`,
+      dosePpmH: sample.estDosePpmH,
+      status: sample.safetyStatus,
+      shift: 'Morning · 06:00–14:00',
+      confidenceScore: sample.qaFlag === 'OK' ? 96 : 84,
+      location: assignedWorker.department || 'Hydrocracker Unit 2',
+      tempC: sample.tempC,
+      humidityPercent: sample.rhPct,
+      stripColorHex: sample.hexColor,
+      zoneA_hexColor: sample.agZone.hex,
+      zoneB_hexColor: sample.cuZone.hex,
+      zoneA_deltaE: sample.agZone.deltaE,
+      zoneB_deltaE: sample.cuZone.deltaE,
+      dose_ppm_h_zoneA: sample.estAgZonePpmH ?? sample.estDosePpmH,
+      dose_ppm_h_zoneB: sample.estCuZonePpmH ?? sample.estDosePpmH,
+      seal_breach_detected: sample.sealDot.includes('BLUE'),
+      light_exposure_warning: sample.lightKluxH > 50,
+      isDemo: true,
+      lab: sample.lab,
+      rawColorString: `${sample.hexColor} (L*=${sample.lab.L}, a*=${sample.lab.a}, b*=${sample.lab.b})`,
+      rawDeltaE: sample.agZone.deltaE,
+      compensatedDeltaE: sample.agZone.deltaE,
+      gasConc: sample.h2sPpm,
+      exposureTime: sample.durationH,
+      shelfAge: sample.stripAgeDays,
+      expiryStatus: sample.expiryStatus,
+      actionFlag: sample.actionFlag,
+      bandDetected: true,
+      stripNotVisible: false,
+      calibrationMetrics: {
+        referenceCalibration: 98,
+        colorExtraction: 96,
+        lightingCorrection: 95,
+        doseEstimation: sample.qaFlag === 'OK' ? 96 : 84
+      }
+    });
+    setActiveScanSample(null);
+    setActivePage('result');
   };
 
   const handleDownloadCSV = () => {
@@ -532,7 +606,7 @@ export const CalibrationPage: React.FC = () => {
                 <th className="py-3 px-3 font-semibold">Seal Dot</th>
                 <th className="py-3 px-3 font-semibold">Estimated Dose (95% CI)</th>
                 <th className="py-3 px-3 font-semibold">QA Flag</th>
-                <th className="py-3 px-3 font-semibold text-right">Action</th>
+                <th className="py-3 px-3 font-semibold text-right">AI Optical Scan</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#D8D0C2]/70 font-mono">
@@ -620,14 +694,24 @@ export const CalibrationPage: React.FC = () => {
                   </td>
 
                   <td className="py-2.5 px-3 text-right font-sans">
-                    <button
-                      onClick={() => handleTestInScanner(sample)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#4F5D4B] text-[#F6F1E7] text-[10px] font-semibold hover:bg-[#3d493a] transition-colors cursor-pointer"
-                      title="Test this sample in the dosimeter scanner"
-                    >
-                      <span>Load</span>
-                      <ArrowRight className="w-3 h-3 text-[#F6F1E7]" />
-                    </button>
+                    <div className="inline-flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => handleQuickScan(sample)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#2F6B38] text-white text-[10px] font-bold hover:bg-[#25572d] transition-all shadow-xs cursor-pointer active:scale-95"
+                        title="Run live 5-step optical AI scan on this sample"
+                      >
+                        <Sparkles className="w-3 h-3 text-amber-300" />
+                        <span>Scan</span>
+                      </button>
+                      <button
+                        onClick={() => handleTestInScanner(sample)}
+                        className="inline-flex items-center gap-0.5 px-2 py-1 rounded-md bg-[#EDE5D6] border border-[#D8D0C2] text-[#292925] text-[10px] font-semibold hover:bg-[#D8D0C2] transition-colors cursor-pointer"
+                        title="Open in Scanner Kiosk and auto-analyze"
+                      >
+                        <span>Kiosk</span>
+                        <ArrowRight className="w-3 h-3 text-[#4F5D4B]" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -635,6 +719,181 @@ export const CalibrationPage: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* 5-Step ML Optical AI Analysis Modal */}
+      {activeScanSample && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-[#F6F1E7] border-2 border-[#D8D0C2] rounded-2xl max-w-xl w-full p-6 shadow-2xl text-[#292925] space-y-5 relative overflow-hidden">
+            
+            {/* Modal Header */}
+            <div className="flex items-start justify-between border-b border-[#D8D0C2] pb-3.5">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded bg-[#4F5D4B]/15 text-[#4F5D4B] text-[10px] font-mono font-bold uppercase tracking-wider">
+                    AI Optical Colorimetric Scanner
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-[#795726] bg-[#B08A55]/15 px-2 py-0.5 rounded">
+                    Block {activeScanSample.block} (r{activeScanSample.replicate})
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold font-serif text-[#292925] mt-1 flex items-center gap-2">
+                  <Cpu className="w-5 h-5 text-[#4F5D4B]" />
+                  <span>Sample Scan: {activeScanSample.sampleId}</span>
+                </h3>
+              </div>
+              <button
+                onClick={() => { setActiveScanSample(null); setIsScanning(false); }}
+                className="w-7 h-7 rounded-lg bg-[#EDE5D6] hover:bg-[#D8D0C2] flex items-center justify-center text-[#292925]/70 hover:text-[#292925] transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Dosimeter Visual Strip Swatch Bar */}
+            <div className="bg-[#EDE5D6] rounded-xl p-3 border border-[#D8D0C2] space-y-2">
+              <div className="text-[10px] font-mono font-bold text-[#5D5B53] uppercase tracking-wider flex items-center justify-between">
+                <span>Optical Surface Sensor Swatches</span>
+                <span className="text-[#2F6B38] font-bold">Target Dose: {activeScanSample.trueDosePpmH.toFixed(2)} ppm·h</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                {/* Zone A */}
+                <div className="p-2 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] flex flex-col items-center">
+                  <span className="text-[9px] font-mono text-[#5D5B53] uppercase">Zone A (Ag)</span>
+                  <div className="w-8 h-8 rounded-md border border-black/25 shadow-xs my-1" style={{ backgroundColor: activeScanSample.agZone.hex }} />
+                  <span className="text-[10px] font-mono font-bold text-[#292925]">ΔE {activeScanSample.agZone.deltaE.toFixed(1)}</span>
+                  <span className="text-[9px] font-mono text-[#878377]">{activeScanSample.agZone.hex}</span>
+                </div>
+                {/* Zone B */}
+                <div className="p-2 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] flex flex-col items-center">
+                  <span className="text-[9px] font-mono text-[#5D5B53] uppercase">Zone B (Cu)</span>
+                  <div className="w-8 h-8 rounded-md border border-black/25 shadow-xs my-1" style={{ backgroundColor: activeScanSample.cuZone.hex }} />
+                  <span className="text-[10px] font-mono font-bold text-[#292925]">ΔE {activeScanSample.cuZone.deltaE.toFixed(1)}</span>
+                  <span className="text-[9px] font-mono text-[#878377]">{activeScanSample.cuZone.hex}</span>
+                </div>
+                {/* Seal Dot */}
+                <div className="p-2 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] flex flex-col items-center justify-between">
+                  <span className="text-[9px] font-mono text-[#5D5B53] uppercase">Seal Barrier</span>
+                  <div className={`w-8 h-8 rounded-full border-2 shadow-xs my-1 flex items-center justify-center ${
+                    activeScanSample.sealDot.includes('BLUE') 
+                      ? 'bg-[#1E70B8] border-blue-900 text-white text-[9px] font-bold' 
+                      : 'bg-white border-stone-300 text-stone-500 text-[9px]'
+                  }`}>
+                    {activeScanSample.sealDot.includes('BLUE') ? '!' : '✓'}
+                  </div>
+                  <span className={`text-[10px] font-mono font-bold ${
+                    activeScanSample.sealDot.includes('BLUE') ? 'text-red-600' : 'text-emerald-700'
+                  }`}>
+                    {activeScanSample.sealDot.includes('BLUE') ? 'BREACHED' : 'INTACT'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Scanning Progress or Result */}
+            {isScanning && !scanDone ? (
+              <div className="p-4 bg-[#292925] text-[#F6F1E7] rounded-xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono font-bold text-[#71806B] tracking-wider uppercase flex items-center gap-2">
+                    <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                    STEP 0{scanStep} / 05
+                  </span>
+                  <span className="text-xs font-mono text-gray-400">{Math.round((scanStep / 5) * 100)}%</span>
+                </div>
+
+                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300"
+                    style={{ width: `${(scanStep / 5) * 100}%` }}
+                  />
+                </div>
+
+                <p className="text-xs font-mono text-gray-200 min-h-[32px] leading-relaxed">
+                  {scanStep === 1 && '1. Optical segmentation & QR localization: Detecting Zone A (Ag), Zone B (Cu), and reference fiducials…'}
+                  {scanStep === 2 && `2. Dual-zone CIEDE2000 colorimetry: Zone A ΔE=${activeScanSample.agZone.deltaE.toFixed(1)}, Zone B ΔE=${activeScanSample.cuZone.deltaE.toFixed(1)}…`}
+                  {scanStep === 3 && `3. Pre-donning moisture barrier QA: ${activeScanSample.sealDot.includes('BLUE') ? 'Moisture intrusion detected (>65% RH ingress)' : 'Anhydrous CuSO4 barrier intact'}…`}
+                  {scanStep === 4 && `4. Arrhenius thermal & humidity compensation: ${activeScanSample.tempC}°C (Ea=28.4 kJ/mol), ${activeScanSample.rhPct}% RH…`}
+                  {scanStep === 5 && `5. Inverse-variance dose estimation: ${activeScanSample.estDosePpmH.toFixed(2)} ppm·h with 95% CI error bounds…`}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Result Hero */}
+                <div className={`p-4 rounded-xl border text-center space-y-1.5 ${
+                  activeScanSample.sealDot.includes('BLUE') || activeScanSample.safetyStatus === 'REVIEW'
+                    ? 'bg-[#9A6258]/15 border-[#9A6258]'
+                    : activeScanSample.safetyStatus === 'MONITOR'
+                    ? 'bg-[#B08A55]/15 border-[#B08A55]'
+                    : 'bg-[#5A7456]/15 border-[#5A7456]'
+                }`}>
+                  <span className="text-[10px] font-mono tracking-widest uppercase font-bold text-gray-600 block">
+                    ESTIMATED CUMULATIVE DOSE
+                  </span>
+                  <div className="flex items-baseline justify-center gap-2">
+                    <span className="text-4xl font-mono font-bold text-[#292925] tracking-tight">
+                      {activeScanSample.estDosePpmH.toFixed(2)}
+                    </span>
+                    <span className="text-lg font-serif text-gray-600">ppm·h</span>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-black/5 text-[11px] font-mono font-semibold">
+                    <span>Target: {activeScanSample.trueDosePpmH.toFixed(2)} ppm·h</span>
+                    <span>•</span>
+                    <span className="text-emerald-700 font-bold">Error: {activeScanSample.estErrorPct.toFixed(1)}%</span>
+                    <span>•</span>
+                    <span>95% CI: [{activeScanSample.ci95Low.toFixed(2)} – {activeScanSample.ci95High.toFixed(2)}]</span>
+                  </div>
+                  <div className="pt-1 text-xs font-medium text-gray-700">
+                    {activeScanSample.actionFlag}
+                  </div>
+                </div>
+
+                {/* Environmental Context */}
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div className="p-2 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
+                    <span className="text-[9px] font-mono text-[#5D5B53] block">Gas Conc / Time</span>
+                    <span className="font-mono font-bold text-[#292925]">{activeScanSample.h2sPpm} ppm / {activeScanSample.durationH}h</span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
+                    <span className="text-[9px] font-mono text-[#5D5B53] block">Temperature</span>
+                    <span className="font-mono font-bold text-[#292925]">{activeScanSample.tempC}°C</span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
+                    <span className="text-[9px] font-mono text-[#5D5B53] block">Rel. Humidity</span>
+                    <span className="font-mono font-bold text-[#292925]">{activeScanSample.rhPct}% RH</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Modal Actions */}
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-2 border-t border-[#D8D0C2]">
+              <button
+                onClick={() => handleQuickScan(activeScanSample)}
+                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2] text-[#292925] text-xs font-semibold hover:bg-[#D8D0C2] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Re-Scan</span>
+              </button>
+
+              <button
+                onClick={() => handleTestInScanner(activeScanSample)}
+                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#B08A55] text-white text-xs font-semibold hover:bg-[#977343] transition-colors shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <ArrowRight className="w-3.5 h-3.5" />
+                <span>Open in Scanner Kiosk</span>
+              </button>
+
+              <button
+                onClick={() => handleOpenFullResult(activeScanSample)}
+                className="w-full sm:w-auto px-5 py-2 rounded-lg bg-[#2F6B38] text-white text-xs font-bold hover:bg-[#25572d] transition-colors shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>View Full Result Dossier</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );

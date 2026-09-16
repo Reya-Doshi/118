@@ -106,7 +106,7 @@ export const SCANNABLE_BENCHMARK_BADGES = [
 ];
 
 export const ScanPage: React.FC = () => {
-  const { selectedSample, setLatestReading, setActivePage, workers, currentUser, selectedWorker, workerLanguage } = useApp();
+  const { selectedSample, setLatestReading, setActivePage, workers, currentUser, selectedWorker, workerLanguage, autoScanPending, setAutoScanPending } = useApp();
   const isHindiWorker = currentUser?.role === 'WORKER' && workerLanguage === 'hi';
   const [showArchitectureGuide, setShowArchitectureGuide] = useState(true);
   
@@ -788,8 +788,29 @@ export const ScanPage: React.FC = () => {
     }, 700);
   };
 
+  useEffect(() => {
+    if (selectedSample?.id) {
+      setActiveSampleId(selectedSample.id);
+      setActiveTab('presets');
+      setCustomImage(null);
+      setCapturedPreview(null);
+      stopCamera();
+    }
+  }, [selectedSample]);
+
+  useEffect(() => {
+    if (autoScanPending && selectedSample?.id) {
+      setAutoScanPending(false);
+      setActiveSampleId(selectedSample.id);
+      setActiveTab('presets');
+      const timer = setTimeout(() => {
+        startAnalysis();
+      }, 250);
+      return () => clearTimeout(timer);
+    }
+  }, [autoScanPending, selectedSample]);
+
   const featuredSamples = [
-    { id: 'SIM-0001', label: 'Pristine Blank (0h)', dose: '0.0', deltaE: '0.0' },
     { id: 'SIM-0010', label: 'Zone A Trace (4h)', dose: '0.5', deltaE: '4.8' },
     { id: 'SIM-0030', label: 'Action Level (4h)', dose: '2.5', deltaE: '13.2' },
     { id: 'SIM-0060', label: 'OSHA 8h TWA (8h)', dose: '10.0', deltaE: '24.1' },
