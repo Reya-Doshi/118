@@ -101,13 +101,29 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
       }, 500);
 
     } catch (err: any) {
-      clearInterval(stepTimer);
-      if (!isMounted.current) return;
-
-      const message = err?.message || 'Unexpected analysis failure.';
-      const kind = err instanceof DosimeterApiError ? err.kind : 'SERVER_ERROR';
-      setErrorState(message);
-      setErrorKind(kind);
+      console.warn('DosimeterApiService caught error. Automatically executing On-Device AI Engine (Offline Safe):', err);
+      try {
+        const onDeviceResult = await CalibrationEngine.analyzeRawImageAsync(
+          imageUri,
+          ambientTemp,
+          ambientRh,
+          shelfAgeDays
+        );
+        clearInterval(stepTimer);
+        if (!isMounted.current) return;
+        setCurrentStep(5);
+        setProgressPercent(100);
+        setTimeout(() => {
+          if (isMounted.current) {
+            onAnalysisSuccess(onDeviceResult);
+          }
+        }, 500);
+      } catch (fallbackErr: any) {
+        clearInterval(stepTimer);
+        if (!isMounted.current) return;
+        setErrorState(fallbackErr?.message || 'Unable to analyze image.');
+        setErrorKind('INVALID_IMAGE');
+      }
     } finally {
       if (isMounted.current) {
         setIsProcessing(false);
