@@ -295,7 +295,6 @@ const MainAppContent: React.FC = () => {
           <div>
             <div className="flex items-center gap-1.5 leading-none">
               <span className="font-serif font-bold text-base text-[#292925] tracking-tight">SARVAS</span>
-              <span className="text-[9px] font-mono bg-[#4F5D4B]/15 text-[#2F6B38] px-1.5 py-0.5 rounded font-bold">by RageB8</span>
             </div>
             <span className="text-[9px] font-mono text-[#878377] block mt-0.5">
               {isHindiWorker ? 'स्मार्ट रिस्टबैंड डॉसिमीटर' : 'SIH 2026 · PS-118 Dosimeter'}
@@ -331,6 +330,19 @@ const MainAppContent: React.FC = () => {
       <main className="flex-1">
         {renderCurrentView()}
       </main>
+
+      {/* Subtle Mobile Brand Footer with Team Attribution */}
+      <footer className="text-center py-3 pb-20 text-[10px] font-mono text-[#878377] space-y-0.5">
+        <div>
+          <span className="font-bold text-[#292925]">SARVAS</span>
+          <span> · Built by </span>
+          <span className="font-bold text-[#2F6B38]">RageB8</span>
+          <span> (SIH 2026)</span>
+        </div>
+        <div className="text-[9px] text-[#A8A398]">
+          PS-118 · Real-Time H₂S Dosimeter
+        </div>
+      </footer>
 
       {/* Role-Specific Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#EDE5D6]/95 backdrop-blur-md border-t border-[#D8D0C2] px-3 py-2 flex items-center justify-around z-40 shadow-lg">
