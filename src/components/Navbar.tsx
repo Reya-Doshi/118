@@ -135,6 +135,17 @@ export const Navbar: React.FC = () => {
                   </button>
 
                   <button
+                    onClick={() => handleNavClick('calibration')}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'calibration'
+                        ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    Validation & Dataset
+                  </button>
+
+                  <button
                     onClick={() => handleNavClick('landing', 'faq')}
                     className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
                       isTransparentOnHero
