@@ -135,6 +135,17 @@ export const Navbar: React.FC = () => {
                   </button>
 
                   <button
+                    onClick={() => handleNavClick('overview')}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                      activePage === 'overview'
+                        ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    Project Dossier
+                  </button>
+
+                  <button
                     onClick={() => handleNavClick('calibration')}
                     className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
                       activePage === 'calibration'
@@ -481,6 +492,30 @@ export const Navbar: React.FC = () => {
                     className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold text-[#5D5B53] hover:bg-[#EDE5D6]/60 transition-colors cursor-pointer"
                   >
                     <span>How It Works (Workflow)</span>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('overview')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                      activePage === 'overview'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
+                    }`}
+                  >
+                    <span>Project Dossier (Team, Tech & Roadmap)</span>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('calibration')}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                      activePage === 'calibration'
+                        ? 'bg-[#4F5D4B] text-[#F6F1E7]'
+                        : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
+                    }`}
+                  >
+                    <span>Validation & Calibration Matrix</span>
                     <ChevronRight className="w-4 h-4 text-[#878377]" />
                   </button>
 

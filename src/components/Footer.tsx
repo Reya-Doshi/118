@@ -1,7 +1,15 @@
 import React from 'react';
-import { Info } from 'lucide-react';
+import { useApp } from '../context/AppContext';
+import { Info, Database, Scan, Sparkles, Clock, FileCheck2, BookOpen } from 'lucide-react';
 
 export const Footer: React.FC = () => {
+  const { setActivePage } = useApp();
+
+  const handleNav = (page: any) => {
+    setActivePage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <footer className="bg-[#292925] text-[#EDE5D6] border-t border-[#3E3C36] py-14 mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
@@ -19,6 +27,52 @@ export const Footer: React.FC = () => {
               <span className="text-base font-bold font-mono tracking-wider text-white">SARVAS <span className="text-xs text-[#C2CBBF]">by RageB8</span></span>
             </div>
             <p className="text-xs text-[#B8B2A4]">Passive exposure intelligence for safer shifts in petroleum operations.</p>
+          </div>
+
+          {/* Quick Links for Judges */}
+          <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+            <button
+              onClick={() => handleNav('overview')}
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[#F6F1E7] transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-[#B08A55]" />
+              <span>Project Dossier</span>
+            </button>
+            <button
+              onClick={() => handleNav('calibration')}
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[#F6F1E7] transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <Database className="w-3.5 h-3.5 text-emerald-400" />
+              <span>303 Calibration</span>
+            </button>
+            <button
+              onClick={() => handleNav('scan')}
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[#F6F1E7] transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <Scan className="w-3.5 h-3.5 text-sky-400" />
+              <span>Scanner</span>
+            </button>
+            <button
+              onClick={() => handleNav('kiosk')}
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[#F6F1E7] transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <Clock className="w-3.5 h-3.5 text-amber-400" />
+              <span>Kiosk</span>
+            </button>
+            <button
+              onClick={() => handleNav('explainability')}
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[#F6F1E7] transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-rose-400" />
+              <span>ML Pipeline</span>
+            </button>
+            <button
+              onClick={() => handleNav('faq')}
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[#F6F1E7] transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <FileCheck2 className="w-3.5 h-3.5 text-[#C2CBBF]" />
+              <span>Jury FAQ</span>
+            </button>
           </div>
 
           {/* RAGEBYTERS SIH 2026 Section */}

@@ -15,6 +15,7 @@ import { HistoryPage } from './pages/HistoryPage';
 import { KioskPage } from './pages/KioskPage';
 import { ExplainabilityPage } from './pages/ExplainabilityPage';
 import { FaqPage } from './pages/FaqPage';
+import { ProjectOverviewPage } from './pages/ProjectOverviewPage';
 import { CheckCircle } from 'lucide-react';
 
 const MainContent: React.FC = () => {
@@ -40,6 +41,7 @@ const MainContent: React.FC = () => {
           : 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-20 pb-8'
       }`}>
         {activePage === 'landing' && <LandingPage />}
+        {activePage === 'overview' && <ProjectOverviewPage />}
         {activePage === 'dashboard' && <DashboardPage />}
         {activePage === 'worker-dashboard' && <WorkerDashboardPage />}
         {activePage === 'scan' && <ScanPage />}
