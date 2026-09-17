@@ -437,7 +437,7 @@ export const ScanPage: React.FC = () => {
               }
             }
 
-            const isCupanMatch = bestCupanDist <= 24.0 && chroma >= 18.0;
+            const isCupanMatch = (chroma >= 30.0) && (bestCupanDist <= 14.0);
             const hasDualZoneCuSO4 = skyBluePixels >= 50;
             const isAuthenticDosimeter = hasDualZoneCuSO4 || isCupanMatch;
 

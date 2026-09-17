@@ -188,19 +188,20 @@ export class CalibrationEngine {
         matchedStage = st;
       }
     }
-    const isCupanMatch = bestDeltaE00 <= 22.0 && chroma >= 18.0;
+    // Genuine Cu-PAN dyes have high chroma (>= 30.0) and tight distance (<= 14.0)
+    const isCupanMatch = (chroma >= 30.0) && (bestDeltaE00 <= 14.0);
 
     const isAuthentic = hasDualZoneCuSO4 || isCupanMatch;
 
     if (!isAuthentic) {
       // Check if it's an electronic smartwatch, digital display, or neutral glass reflection:
-      const isAchromaticGlass = (chroma <= 16.0) &&
-        (Math.abs(r - g) <= 25) &&
-        (Math.abs(g - b) <= 25) &&
-        (Math.abs(r - b) <= 35);
-      const isDarkScreenOff = (lab.L < 28.0 && chroma < 10.0);
-      const isEmissiveScreen = (lab.L > 96.0 && chroma < 6.0);
-      const isSmartwatchOrScreen = isAchromaticGlass || isDarkScreenOff || isEmissiveScreen;
+      const isAchromaticGlass = (chroma <= 20.0) &&
+        (Math.abs(r - g) <= 30) &&
+        (Math.abs(g - b) <= 30) &&
+        (Math.abs(r - b) <= 40);
+      const isDarkScreenOff = (lab.L < 35.0 && chroma < 14.0);
+      const isEmissiveScreen = (lab.L > 94.0 && chroma < 8.0);
+      const isSmartwatchOrScreen = isAchromaticGlass || isDarkScreenOff || isEmissiveScreen || (chroma < 25.0);
 
       return {
         isAuthentic: false,
@@ -208,6 +209,7 @@ export class CalibrationEngine {
         rejectReason: isSmartwatchOrScreen
           ? 'SMARTWATCH / ELECTRONIC DISPLAY DETECTED: Scanned target is an electronic smartwatch, digital display, or reflective glass screen. SARVAS is a zero-power passive chemical dosimeter requiring calibrated colorimetric reagent chemistry. Exposure dose cannot be calculated.'
           : 'NON-DOSIMETER DETECTED: Scanned surface does not match authentic SARVAS or RageB8 colorimetric reagent chemistry. Please align your chemical dosimeter wristband within the reticle.',
+        matchedStage: undefined,
         bestDeltaE00
       };
     }
@@ -216,7 +218,7 @@ export class CalibrationEngine {
       isAuthentic: true,
       isSmartwatchOrScreen: false,
       rejectReason: '',
-      matchedStage: matchedStage || undefined,
+      matchedStage: isCupanMatch ? matchedStage : undefined,
       bestDeltaE00
     };
   }
@@ -452,7 +454,7 @@ export class CalibrationEngine {
       }
 
       let dose: number;
-      if (auth.matchedStage) {
+      if (auth.isAuthentic && auth.matchedStage) {
         dose = auth.matchedStage.dose;
       } else if (geminiStage === 'BASELINE_NORMAL') {
         dose = 0.15;
@@ -466,7 +468,7 @@ export class CalibrationEngine {
         dose = CalibrationEngine.estimateExposure(auth.bestDeltaE00, temp, rh, shelfAgeDays);
       }
 
-      let status: ExposureStatus = auth.matchedStage ? auth.matchedStage.status : 'NORMAL';
+      let status: ExposureStatus = (auth.isAuthentic && auth.matchedStage) ? auth.matchedStage.status : 'NORMAL';
       if (expiry.isExpired || dose >= 10.0) status = 'REVIEW';
       else if (dose >= 2.50) status = 'MONITOR';
 
@@ -642,8 +644,8 @@ export class CalibrationEngine {
             }
 
             // Authentic dosimeter calculation
-            const dose = auth.matchedStage ? auth.matchedStage.dose : CalibrationEngine.estimateExposure(auth.bestDeltaE00, temp, rh, shelfAgeDays);
-            let status: ExposureStatus = auth.matchedStage ? auth.matchedStage.status : 'NORMAL';
+            const dose = (auth.isAuthentic && auth.matchedStage) ? auth.matchedStage.dose : CalibrationEngine.estimateExposure(auth.bestDeltaE00, temp, rh, shelfAgeDays);
+            let status: ExposureStatus = (auth.isAuthentic && auth.matchedStage) ? auth.matchedStage.status : 'NORMAL';
 
             let guidelineNote = '';
             if (isSealBreached) {

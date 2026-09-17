@@ -29,7 +29,7 @@ export interface GeminiDirectAuditResult {
   raw_gemini_response?: any;
 }
 
-const DEFAULT_KEY = (import.meta as any).env?.VITE_GEMINI_API_KEY || 'AQ.Ab8RN6KMV6ZB7eEFc1YlLPytHtmHbiVPBT7aU-cGOiiwmMGL-w';
+const DEFAULT_KEY = (import.meta as any).env?.VITE_GEMINI_API_KEY || '';
 const STORAGE_KEY = 'RAGEB8_GEMINI_API_KEY';
 
 const GEMINI_PROMPT = `
@@ -132,7 +132,7 @@ export class GeminiVisionDirect {
 
   public static isKeyConfigured(): boolean {
     const key = this.getApiKey();
-    return Boolean(key && key.trim().length > 10);
+    return Boolean(key && key.trim().startsWith('AIzaSy') && key.trim().length > 20);
   }
 
   /**
@@ -246,28 +246,29 @@ export class GeminiVisionDirect {
       try {
         const { CalibrationEngine } = await import('./CalibrationEngine');
         const calib = await CalibrationEngine.analyzeRawImageAsync(imageDataUrlOrBase64);
-        if (!calib.band_detected) {
+        if (calib.band_detected) {
           return {
-            wristband_detected: false,
-            wristband_type: 'REJECTED_SMARTWATCH_OR_NON_DOSIMETER',
-            provider: 'On-Device AI Classifier (Strict Rejection)',
+            wristband_detected: true,
+            wristband_type: 'SARVAS Dual-Zone Ag/Cu Dosimeter (On-Device Verification)',
+            provider: 'On-Device Spatial Computer Vision',
             sensing_patch_color: {
-              hex: calib.rgb?.hex || '#000000',
-              stage: 'NOT_A_DOSIMETER',
-              color_name: 'Electronic Smartwatch / Screen'
+              hex: calib.rgb?.hex || '#EDECE5',
+              stage: 'BASELINE_NORMAL',
+              color_name: 'Calibrated Chemical Strip'
             },
             bounding_boxes: {
-              sensing_strip: [0, 0, 0, 0]
+              sensing_strip: [375, 425, 575, 575],
+              reference_scale: [610, 410, 710, 590]
             },
             image_quality: {
               is_too_dark: false,
               is_overexposed: false,
               is_blurry: false,
-              strip_not_visible: true,
-              reference_scale_missing: true,
-              quality_verdict: 'FAIL',
-              quality_score: 0.0,
-              quality_notes: calib.image_quality?.notes || 'REJECTED: Target is an electronic smartwatch or non-dosimeter surface.'
+              strip_not_visible: false,
+              reference_scale_missing: false,
+              quality_verdict: 'PASS',
+              quality_score: 0.95,
+              quality_notes: 'Authentic chemical dosimeter detected.'
             }
           };
         }
@@ -277,22 +278,26 @@ export class GeminiVisionDirect {
     }
 
     return {
-      wristband_detected: true,
-      wristband_type: 'SARVAS Dual-Zone Ag/Cu Dosimeter (On-Device Fallback)',
-      provider: 'On-Device Spatial Computer Vision',
+      wristband_detected: false,
+      wristband_type: 'REJECTED_SMARTWATCH_OR_NON_DOSIMETER',
+      provider: 'On-Device AI Classifier (Strict Rejection)',
+      sensing_patch_color: {
+        hex: '#000000',
+        stage: 'NOT_A_DOSIMETER',
+        color_name: 'Non-Dosimeter / Electronic Display'
+      },
       bounding_boxes: {
-        sensing_strip: [375, 425, 575, 575],
-        reference_scale: [610, 410, 710, 590]
+        sensing_strip: [0, 0, 0, 0]
       },
       image_quality: {
         is_too_dark: false,
         is_overexposed: false,
         is_blurry: false,
-        strip_not_visible: false,
-        reference_scale_missing: false,
-        quality_verdict: 'PASS',
-        quality_score: 0.92,
-        quality_notes: 'On-device contour localization applied successfully.'
+        strip_not_visible: true,
+        reference_scale_missing: true,
+        quality_verdict: 'FAIL',
+        quality_score: 0.0,
+        quality_notes: 'REJECTED: No authentic SARVAS chemical dosimeter detected in frame.'
       }
     };
   }
