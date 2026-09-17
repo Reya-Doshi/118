@@ -29,6 +29,22 @@ export const LandingPage: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Loop band_expand.mp4 precisely at 5.3 seconds
+  useEffect(() => {
+    let animId: number;
+    const checkTime = () => {
+      const video = videoRef.current;
+      if (video && !video.paused && video.currentTime >= 5.3) {
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      }
+      animId = requestAnimationFrame(checkTime);
+    };
+
+    animId = requestAnimationFrame(checkTime);
+    return () => cancelAnimationFrame(animId);
+  }, []);
+
   // IntersectionObserver to pause video when user scrolls past hero, resume when scrolled back
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -96,9 +112,18 @@ export const LandingPage: React.FC = () => {
             src={bandVideo}
             autoPlay
             muted
-            loop
             playsInline
             preload="metadata"
+            onTimeUpdate={(e) => {
+              if (e.currentTarget.currentTime >= 5.3) {
+                e.currentTarget.currentTime = 0;
+                e.currentTarget.play().catch(() => {});
+              }
+            }}
+            onEnded={(e) => {
+              e.currentTarget.currentTime = 0;
+              e.currentTarget.play().catch(() => {});
+            }}
             onError={() => setVideoError(true)}
             className="absolute inset-0 w-full h-full object-cover object-[center_38%] sm:object-center pointer-events-none"
           />
