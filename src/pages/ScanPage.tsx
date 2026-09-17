@@ -328,59 +328,20 @@ export const ScanPage: React.FC = () => {
           if (ctx) {
             ctx.drawImage(img, 0, 0, w, h);
 
-            // 0. Physical Hallmarks Verification for Authentic SARVAS Chemical Dosimeters:
-            // An authentic SARVAS dosimeter MUST possess:
-            // A) Dual-Zone Chemistry: Sky-blue CuSO4 Zone B indicator pad (B > R + 20, G > R + 6, B > 115)
-            // B) High-Contrast Reference Calibration Step-Wedge Scale (minLum < 50 and maxLum > 190)
-            const scanX = Math.floor(w * 0.25);
-            const scanY = Math.floor(h * 0.25);
-            const scanW = Math.floor(w * 0.50);
-            const scanH = Math.floor(h * 0.50);
-            const scanData = ctx.getImageData(scanX, scanY, scanW, scanH).data;
-
+            // 1. Scan for Dual-Zone Zone B CuSO4 sky-blue pixels
+            // Zone B CuSO4 requires strong cyan saturation: B > R + 25, G > R + 10, B >= 120
+            const fullScan = ctx.getImageData(0, 0, w, h).data;
             let skyBluePixels = 0;
-            let minLum = 255;
-            let maxLum = 0;
-
-            for (let i = 0; i < scanData.length; i += 4) {
-              const r = scanData[i];
-              const g = scanData[i + 1];
-              const b = scanData[i + 2];
-              if (b > r + 20 && g > r + 6 && b > 115) {
+            for (let i = 0; i < fullScan.length; i += 4) {
+              const r = fullScan[i];
+              const g = fullScan[i + 1];
+              const b = fullScan[i + 2];
+              if (b > r + 25 && g > r + 10 && b >= 120) {
                 skyBluePixels++;
               }
-              const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-              if (lum < minLum) minLum = lum;
-              if (lum > maxLum) maxLum = lum;
             }
 
-            const hasRefContrast = (maxLum - minLum > 140) && minLum < 50 && maxLum > 190;
-            const isAuthenticDosimeter = skyBluePixels >= 15 || hasRefContrast;
-
-            if (!isAuthenticDosimeter) {
-              const rejectReason = 'SMARTWATCH / NON-DOSIMETER DETECTED: Scanned target is an electronic smartwatch, dark screen, or non-dosimeter surface. SARVAS is a zero-power passive chemical dosimeter requiring dual-zone Ag/Cu reagent pads.';
-              const rejectedResult = {
-                r: 0,
-                g: 0,
-                b: 0,
-                hex: '#000000',
-                lab: { L: 0, a: 0, b: 0 },
-                deltaE: 0,
-                estimatedDose: 0.0,
-                status: 'REVIEW' as ExposureStatus,
-                actionFlag: rejectReason,
-                confidence: 5,
-                closestSampleId: 'NONE',
-                bandDetected: false,
-                stripNotVisible: true,
-                diagnosticFailure: rejectReason
-              };
-              setExtractedColorimetry(rejectedResult);
-              resolve(rejectedResult);
-              return;
-            }
-
-            // 1. Check for Moisture Seal Breach (Right quadrant: ~0.714w, ~0.433h)
+            // 2. Check for Moisture Seal Breach (Right quadrant: ~0.714w, ~0.433h)
             let isSealBreached = false;
             try {
               const dotX = Math.floor(w * 0.714);
@@ -401,7 +362,7 @@ export const ScanPage: React.FC = () => {
               // Ignore seal sampling error
             }
 
-            // 2. Check if this is a Full Dual-Zone Badge (Zone B sky blue at ~0.57w, ~0.51h)
+            // 3. Check if this is a Full Dual-Zone Badge (Zone B sky blue at ~0.57w, ~0.51h)
             let sampleTargetX = Math.floor(w / 2);
             try {
               const zbX = Math.floor(w * 0.57);
@@ -447,6 +408,64 @@ export const ScanPage: React.FC = () => {
             const avgB = Math.round(totalB / count);
 
             const lab = srgbToLab(avgR, avgG, avgB);
+            const chroma = Math.sqrt(Math.pow(lab.a, 2) + Math.pow(lab.b, 2));
+
+            // Smartwatch & Electronic Screen Detection:
+            const isAchromaticGlass = (chroma <= 16.0) &&
+              (Math.abs(avgR - avgG) <= 25) &&
+              (Math.abs(avgG - avgB) <= 25) &&
+              (Math.abs(avgR - avgB) <= 35);
+            const isDarkScreenOff = (lab.L < 28.0 && chroma < 10.0);
+            const isEmissiveScreen = (lab.L > 96.0 && chroma < 6.0);
+            const isSmartwatchOrScreen = isAchromaticGlass || isDarkScreenOff || isEmissiveScreen;
+
+            // Check Cu-PAN chemical stages
+            const CUPAN_STAGES = [
+              { name: 'Stage 1: Deep Violet / Purple', rgb: [92, 58, 122], dose: 0.15, status: 'NORMAL' as ExposureStatus },
+              { name: 'Stage 2: Reddish-Purple', rgb: [128, 68, 118], dose: 0.35, status: 'NORMAL' as ExposureStatus },
+              { name: 'Stage 3: New York Pink', rgb: [175, 85, 105], dose: 0.75, status: 'MONITOR' as ExposureStatus },
+              { name: 'Stage 4: Orange / Amber', rgb: [205, 110, 68], dose: 1.45, status: 'REVIEW' as ExposureStatus },
+              { name: 'Stage 5: Yellow Saturated', rgb: [235, 185, 42], dose: 2.80, status: 'REVIEW' as ExposureStatus }
+            ];
+
+            let bestCupanDist = 999;
+            for (const st of CUPAN_STAGES) {
+              const stLab = srgbToLab(st.rgb[0], st.rgb[1], st.rgb[2]);
+              const d = Math.sqrt(Math.pow(lab.L - stLab.L, 2) + Math.pow(lab.a - stLab.a, 2) + Math.pow(lab.b - stLab.b, 2));
+              if (d < bestCupanDist) {
+                bestCupanDist = d;
+              }
+            }
+
+            const isCupanMatch = bestCupanDist <= 24.0;
+            const hasDualZoneCuSO4 = skyBluePixels >= 50;
+            const isAuthenticDosimeter = !isSmartwatchOrScreen && (isCupanMatch || hasDualZoneCuSO4);
+
+            if (!isAuthenticDosimeter) {
+              const rejectReason = isSmartwatchOrScreen
+                ? 'SMARTWATCH / ELECTRONIC DISPLAY DETECTED: Scanned target is an electronic smartwatch, digital display, or reflective glass screen. SARVAS is a zero-power passive chemical dosimeter requiring calibrated colorimetric reagent chemistry. Exposure dose cannot be calculated.'
+                : 'NON-DOSIMETER DETECTED: Scanned surface does not match authentic SARVAS or RageB8 colorimetric reagent chemistry. Please align your chemical dosimeter wristband within the reticle.';
+              const rejectedResult = {
+                r: avgR,
+                g: avgG,
+                b: avgB,
+                hex: `#${((1 << 24) + (avgR << 16) + (avgG << 8) + avgB).toString(16).slice(1)}`,
+                lab,
+                deltaE: 0,
+                estimatedDose: 0.0,
+                status: 'REVIEW' as ExposureStatus,
+                actionFlag: rejectReason,
+                confidence: 5,
+                closestSampleId: 'NONE',
+                bandDetected: false,
+                stripNotVisible: true,
+                diagnosticFailure: rejectReason
+              };
+              setExtractedColorimetry(rejectedResult);
+              resolve(rejectedResult);
+              return;
+            }
+
             // Reference baseline unexposed Ag-zone values: L0*=90.0, a0*=-0.5, b0*=4.8
             const deltaE = parseFloat(
               Math.sqrt(
@@ -488,18 +507,9 @@ export const ScanPage: React.FC = () => {
             calculatedDose = Math.max(0.0, parseFloat(calculatedDose.toFixed(2)));
 
             // Non-dosimeter target detection
-            const chroma = Math.sqrt(Math.pow(lab.a, 2) + Math.pow(lab.b, 2));
             const isSkinTone = (lab.a > 6.5 && lab.b > 10.0 && lab.L > 35 && lab.L < 85);
             const isArbitraryObject = chroma > 24.0 || (lab.a > 9.0) || (lab.b > 20.0);
-            
-            // Smartwatch & Electronic Screen Detection:
-            // 1. Screen off / black OLED glass: L* < 22.0 (cellulose reagent strip is never this dark)
-            const isSmartwatchOrDarkGlass = (lab.L < 22.0 && chroma < 7.0);
-            // 2. Emissive screen display / white backlight glare: L* > 96.0
-            const isEmissiveDisplay = (lab.L > 96.0 && chroma < 5.0);
-            // 3. Non-dosimeter surface or glass reflection:
-            const isNonDosimeterGlass = (lab.L < 26.0 && top3[0].dist > 18.0);
-            const isLocusOffTarget = isSkinTone || isArbitraryObject || isSmartwatchOrDarkGlass || isEmissiveDisplay || isNonDosimeterGlass || (top3[0].dist > 28.0 && deltaE < 2.0);
+            const isLocusOffTarget = isSkinTone || isArbitraryObject || isSmartwatchOrScreen || (top3[0].dist > 28.0 && deltaE < 2.0);
 
             let bandDetected = true;
             let stripNotVisible = false;
@@ -513,11 +523,11 @@ export const ScanPage: React.FC = () => {
               bandDetected = false;
               stripNotVisible = true;
               status = 'REVIEW';
-              const rejectReason = isSmartwatchOrDarkGlass
+              const rejectReason = isSmartwatchOrScreen
                 ? 'SMARTWATCH DETECTED: Electronic smartwatch or digital display identified. SARVAS is a zero-power passive chemical dosimeter requiring dual-zone Ag/Cu reagent strips.'
                 : 'WATCH NOT VISIBLE: Target dosimeter strip not detected in frame. Please align the SARVAS wristband within the camera reticle.';
               actionFlag = rejectReason;
-              diagnosticFailure = isSmartwatchOrDarkGlass ? 'Electronic smartwatch or digital screen detected.' : 'Target dosimeter wristband was not visible in frame.';
+              diagnosticFailure = isSmartwatchOrScreen ? 'Electronic smartwatch or digital screen detected.' : 'Target dosimeter wristband was not visible in frame.';
               calculatedDose = 0.0;
             } else if (isSealBreached || activeCalibration.shelfAge > 90 || activeCalibration.sealDot === 'BLUE') {
               status = 'REVIEW';

@@ -199,12 +199,13 @@ def process_wristband_analysis(
 
         # Smartwatch & Non-dosimeter target detection safeguard
         chroma = np.sqrt(a_star**2 + b_star**2)
-        is_smartwatch_or_screen = (L_star < 22.0 and chroma < 7.0)
-        is_emissive_screen = (L_star > 96.0 and chroma < 5.0)
-        is_unnatural_surface = (chroma > 24.0 and not (b_star < -6.0 and L_star > 60.0))
+        is_achromatic_glass = (chroma <= 16.0) and (abs(r - g) <= 25) and (abs(g - b) <= 25) and (abs(r - b) <= 35)
+        is_dark_screen_off = (L_star < 28.0 and chroma < 10.0)
+        is_emissive_screen = (L_star > 96.0 and chroma < 6.0)
+        is_smartwatch_or_screen = (L_star < 22.0 and chroma < 7.0) or is_achromatic_glass or is_dark_screen_off
 
-        if is_smartwatch_or_screen or is_emissive_screen or is_unnatural_surface:
-            reject_msg = "Electronic smartwatch or digital display detected. SARVAS only quantifies passive chemical colorimetric dosimeters with dual-zone Ag/Cu reagent strips." if is_smartwatch_or_screen else "Target color locus does not match chemical dosimeter matrix."
+        if is_smartwatch_or_screen or is_emissive_screen:
+            reject_msg = "Electronic smartwatch or digital display detected. SARVAS only quantifies passive chemical colorimetric dosimeters with dual-zone Ag/Cu reagent strips."
             return {
                 "estimated_exposure_ppm_h": 0.0,
                 "status": "REVIEW",

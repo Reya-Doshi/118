@@ -167,7 +167,7 @@ export class DosimeterApiService {
       try {
         geminiAudit = await GeminiVisionDirect.analyzeImage(params.imageUri);
       } catch {
-        geminiAudit = GeminiVisionDirect.fallbackHeuristicAudit();
+        geminiAudit = await GeminiVisionDirect.fallbackHeuristicAudit(params.imageUri);
       }
 
       // 2. Run Calibrated Dual-Zone Ag/Cu Precipitation Engine with localization and color extraction

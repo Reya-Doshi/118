@@ -120,7 +120,7 @@ for sc in scenarios:
     alert_str = f"YES ({alert_label} -> {officer})" if alert_gen else "NO (Within Safe Shift Limits)"
 
     # Draw and save annotated inspection image
-    s_bbox = (strip_roi["x"], strip_roi["y"], strip_roi["w"], strip_roi["h"])
+    s_bbox = (strip_roi["x"], strip_roi["y"], strip_roi["w"], strip_roi["h"]) if strip_roi else (0, 0, 0, 0)
     r_bbox = (ref_roi["x"], ref_roi["y"], ref_roi["w"], ref_roi["h"]) if ref_roi else None
     
     dbg_img = draw_debug_inspection_image(

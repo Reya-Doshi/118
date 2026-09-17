@@ -154,7 +154,7 @@ export class GeminiVisionDirect {
 
     if (!apiKey) {
       console.warn('No Gemini API key available. Using on-device geometric fallback.');
-      return this.fallbackHeuristicAudit();
+      return await this.fallbackHeuristicAudit(imageDataUrlOrBase64);
     }
 
     const models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash'];
@@ -235,13 +235,47 @@ export class GeminiVisionDirect {
     }
 
     // If Gemini calls fail (network drop or key limit), safely return heuristic fallback
-    return this.fallbackHeuristicAudit();
+    return await this.fallbackHeuristicAudit(imageDataUrlOrBase64);
   }
 
   /**
    * On-device heuristic optical fallback when offline
    */
-  public static fallbackHeuristicAudit(): GeminiDirectAuditResult {
+  public static async fallbackHeuristicAudit(imageDataUrlOrBase64?: string): Promise<GeminiDirectAuditResult> {
+    if (imageDataUrlOrBase64) {
+      try {
+        const { CalibrationEngine } = await import('./CalibrationEngine');
+        const calib = await CalibrationEngine.analyzeRawImageAsync(imageDataUrlOrBase64);
+        if (!calib.band_detected) {
+          return {
+            wristband_detected: false,
+            wristband_type: 'REJECTED_SMARTWATCH_OR_NON_DOSIMETER',
+            provider: 'On-Device AI Classifier (Strict Rejection)',
+            sensing_patch_color: {
+              hex: calib.rgb?.hex || '#000000',
+              stage: 'NOT_A_DOSIMETER',
+              color_name: 'Electronic Smartwatch / Screen'
+            },
+            bounding_boxes: {
+              sensing_strip: [0, 0, 0, 0]
+            },
+            image_quality: {
+              is_too_dark: false,
+              is_overexposed: false,
+              is_blurry: false,
+              strip_not_visible: true,
+              reference_scale_missing: true,
+              quality_verdict: 'FAIL',
+              quality_score: 0.0,
+              quality_notes: calib.image_quality?.notes || 'REJECTED: Target is an electronic smartwatch or non-dosimeter surface.'
+            }
+          };
+        }
+      } catch (e) {
+        console.warn('Fallback audit error:', e);
+      }
+    }
+
     return {
       wristband_detected: true,
       wristband_type: 'SARVAS Dual-Zone Ag/Cu Dosimeter (On-Device Fallback)',
@@ -263,3 +297,4 @@ export class GeminiVisionDirect {
     };
   }
 }
+

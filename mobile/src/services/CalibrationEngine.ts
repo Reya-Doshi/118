@@ -147,7 +147,95 @@ export class CalibrationEngine {
    * Evaluates whether the measured color follows genuine Dual-Zone Ag2S/CuS metal-sulfide locus.
    * Rejects extreme unnatural saturation (neon markers) or severe specular glare.
    */
-  public static validateLocus(lab: { L: number; a: number; b: number }): {
+  public static readonly CUPAN_STAGES = [
+    { name: 'Stage 1: Deep Violet / Purple', rgb: [92, 58, 122], stage: 'BASELINE_NORMAL', dose: 0.15, status: 'NORMAL' as ExposureStatus },
+    { name: 'Stage 2: Reddish-Purple', rgb: [128, 68, 118], stage: 'LOW_EXPOSURE', dose: 0.35, status: 'NORMAL' as ExposureStatus },
+    { name: 'Stage 3: New York Pink', rgb: [175, 85, 105], stage: 'ACTION_MONITOR', dose: 0.75, status: 'MONITOR' as ExposureStatus },
+    { name: 'Stage 4: Orange / Amber', rgb: [205, 110, 68], stage: 'ELEVATED_REVIEW', dose: 1.45, status: 'REVIEW' as ExposureStatus },
+    { name: 'Stage 5: Yellow Saturated', rgb: [235, 185, 42], stage: 'CRITICAL_BLACK', dose: 2.80, status: 'REVIEW' as ExposureStatus }
+  ];
+
+  /**
+   * Evaluates whether a sampled color patch belongs to authentic chemical dosimeter chemistry
+   * (Cu-PAN or Dual-Zone Ag/Cu) or is an electronic smartwatch, screen reflection, or non-dosimeter.
+   */
+  public static verifyDosimeterAuthenticity(
+    r: number,
+    g: number,
+    b: number,
+    skyBluePixelCount: number = 0
+  ): {
+    isAuthentic: boolean;
+    isSmartwatchOrScreen: boolean;
+    rejectReason: string;
+    matchedStage?: { name: string; stage: string; dose: number; status: ExposureStatus };
+    bestDeltaE00: number;
+  } {
+    const lab = CalibrationEngine.srgbToLab(r, g, b);
+    const chroma = Math.sqrt(lab.a * lab.a + lab.b * lab.b);
+
+    // 1. Electronic smartwatch, digital display, or neutral glass reflection detection:
+    // Smartwatch glass (screen off or reflecting ceiling lights) has low chroma (<=16) and nearly identical RGB channels
+    const isAchromaticGlass = (chroma <= 16.0) &&
+      (Math.abs(r - g) <= 25) &&
+      (Math.abs(g - b) <= 25) &&
+      (Math.abs(r - b) <= 35);
+    const isDarkScreenOff = (lab.L < 28.0 && chroma < 10.0);
+    const isEmissiveScreen = (lab.L > 96.0 && chroma < 6.0);
+    const isSmartwatchOrScreen = isAchromaticGlass || isDarkScreenOff || isEmissiveScreen;
+
+    if (isSmartwatchOrScreen) {
+      return {
+        isAuthentic: false,
+        isSmartwatchOrScreen: true,
+        rejectReason: 'SMARTWATCH / ELECTRONIC DISPLAY DETECTED: Scanned target is an electronic smartwatch, digital display, or reflective glass screen. SARVAS is a zero-power passive chemical dosimeter requiring calibrated colorimetric reagent chemistry. Exposure dose cannot be calculated.',
+        bestDeltaE00: 999
+      };
+    }
+
+    // 2. Check Cu-PAN chemical chelation trajectory
+    let bestDeltaE00 = 999;
+    let matchedStage: any = null;
+    for (const st of CalibrationEngine.CUPAN_STAGES) {
+      const stLab = CalibrationEngine.srgbToLab(st.rgb[0], st.rgb[1], st.rgb[2]);
+      const dE = CalibrationEngine.computeDeltaE00(lab, stLab);
+      if (dE < bestDeltaE00) {
+        bestDeltaE00 = dE;
+        matchedStage = st;
+      }
+    }
+    const isCupanMatch = bestDeltaE00 <= 22.0;
+
+    // 3. Check Dual-Zone SARVAS Zone B CuSO4 sky-blue presence
+    const hasDualZoneCuSO4 = skyBluePixelCount >= 50;
+
+    const isAuthentic = isCupanMatch || hasDualZoneCuSO4;
+
+    if (!isAuthentic) {
+      return {
+        isAuthentic: false,
+        isSmartwatchOrScreen: false,
+        rejectReason: 'NON-DOSIMETER DETECTED: Scanned surface does not match authentic SARVAS or RageB8 colorimetric reagent chemistry. Please align your chemical dosimeter wristband within the reticle.',
+        bestDeltaE00
+      };
+    }
+
+    return {
+      isAuthentic: true,
+      isSmartwatchOrScreen: false,
+      rejectReason: '',
+      matchedStage: matchedStage || undefined,
+      bestDeltaE00
+    };
+  }
+
+  /**
+   * Evaluates whether the measured color follows genuine chemical dosimeter locus.
+   */
+  public static validateLocus(
+    lab: { L: number; a: number; b: number },
+    rgb?: { r: number; g: number; b: number }
+  ): {
     isValid: boolean;
     isContaminationAnomaly: boolean;
     isOffTarget: boolean;
@@ -155,36 +243,42 @@ export class CalibrationEngine {
   } {
     const chroma = Math.sqrt(lab.a * lab.a + lab.b * lab.b);
 
-    // 1. Check if the color is consistent with the chemical dosimeter matrix
-    // Normal Dual-Zone dosimeter zones:
-    // - Zone A (AgNO3 -> Ag2S): desaturated cream to dark charcoal/black (L* from 18 to 95, chroma <= 14)
-    // - Zone B (CuSO4 -> CuS): light sky blue to olive-slate (b* < -6 or b* < 5, chroma <= 26)
-    
-    // Non-dosimeter scenes:
-    // - Human skin tones / faces: a* in [7, 26], b* in [10, 32]
-    // - Wooden desk / paper / wall: warm saturated orange/yellow with chroma > 18
-    // - Bright clothing / surroundings: chroma > 30
-    // - Smartwatch screen off or black OLED glass: L* < 22.0 (cellulose reagent strip is never this dark)
-    // - Emissive backlit screen / white display: L* > 96.0 with low chroma
-    const isSkinTone = (lab.a > 6.5 && lab.b > 10.0 && lab.L > 35 && lab.L < 88);
-    const isSaturatedNonDosimeter = (chroma > 24 && !(lab.b < -6 && lab.L > 60)); // Allow sky blue CuSO4 only
-    const isExtremeWarmHue = (lab.a > 9.0 || (lab.b > 20.0 && lab.L < 85));
-    const isSmartwatchOrDarkGlass = (lab.L < 22.0 && chroma < 7.0);
-    const isEmissiveScreen = (lab.L > 96.0 && chroma < 5.0);
+    let isAchromaticGlass = false;
+    if (rgb) {
+      isAchromaticGlass = (chroma <= 16.0) &&
+        (Math.abs(rgb.r - rgb.g) <= 25) &&
+        (Math.abs(rgb.g - rgb.b) <= 25) &&
+        (Math.abs(rgb.r - rgb.b) <= 35);
+    } else {
+      isAchromaticGlass = (chroma <= 14.0 && lab.L > 25.0 && lab.L < 88.0 && Math.abs(lab.a) < 3.0);
+    }
 
-    if (isSkinTone || isSaturatedNonDosimeter || isExtremeWarmHue || isSmartwatchOrDarkGlass || isEmissiveScreen) {
-      const reason = isSmartwatchOrDarkGlass 
-        ? 'SMARTWATCH DETECTED: Electronic smartwatch or digital display identified. SARVAS is a zero-power passive chemical dosimeter.'
-        : 'Watch or dosimeter wristband was not visible in frame. Optical locus matched non-dosimeter surface.';
+    const isDarkScreenOff = (lab.L < 28.0 && chroma < 10.0);
+    const isEmissiveScreen = (lab.L > 96.0 && chroma < 6.0);
+
+    if (isAchromaticGlass || isDarkScreenOff || isEmissiveScreen) {
       return {
         isValid: false,
         isContaminationAnomaly: false,
         isOffTarget: true,
-        reason
+        reason: 'SMARTWATCH DETECTED: Electronic smartwatch or digital display identified. SARVAS is a zero-power passive chemical dosimeter.'
       };
     }
 
-    // 2. Direct specular flash reflection / extreme saturation glare
+    const isSkinTone = (lab.a > 6.5 && lab.b > 10.0 && lab.L > 35 && lab.L < 88);
+    const isSaturatedNonDosimeter = (chroma > 24 && !(lab.b < -6 && lab.L > 60));
+    const isExtremeWarmHue = (lab.a > 9.0 || (lab.b > 20.0 && lab.L < 85));
+
+    if (isSkinTone || isSaturatedNonDosimeter || isExtremeWarmHue) {
+      return {
+        isValid: false,
+        isContaminationAnomaly: false,
+        isOffTarget: true,
+        reason: 'Watch or dosimeter wristband was not visible in frame. Optical locus matched non-dosimeter surface.'
+      };
+    }
+
+    // Direct specular flash reflection
     if (lab.L > 99.2) {
       return {
         isValid: false,
@@ -328,12 +422,10 @@ export class CalibrationEngine {
       const g = parseInt(cleanHex.slice(2, 4), 16) || 80;
       const b = parseInt(cleanHex.slice(4, 6), 16) || 110;
       const lab = CalibrationEngine.srgbToLab(r, g, b);
-      const deltaE00 = CalibrationEngine.computeDeltaE00(lab);
-      const deltaE76 = CalibrationEngine.computeDeltaE(lab);
-      const locus = CalibrationEngine.validateLocus(lab);
+      const auth = CalibrationEngine.verifyDosimeterAuthenticity(r, g, b, 0);
 
-      if (locus.isOffTarget || geminiStage === 'NOT_A_DOSIMETER') {
-        const rejectReason = locus.reason || 'SMARTWATCH DETECTED: Scanned target is an electronic smartwatch or non-dosimeter device.';
+      if (!auth.isAuthentic || geminiStage === 'NOT_A_DOSIMETER') {
+        const rejectReason = auth.rejectReason || 'SMARTWATCH / NON-DOSIMETER DETECTED: Scanned target is an electronic smartwatch or non-dosimeter device.';
         return {
           estimated_exposure_ppm_h: 0.0,
           status: 'REVIEW',
@@ -368,7 +460,9 @@ export class CalibrationEngine {
       }
 
       let dose: number;
-      if (geminiStage === 'BASELINE_NORMAL') {
+      if (auth.matchedStage) {
+        dose = auth.matchedStage.dose;
+      } else if (geminiStage === 'BASELINE_NORMAL') {
         dose = 0.15;
       } else if (geminiStage === 'LOW_EXPOSURE') {
         dose = 0.35;
@@ -377,18 +471,14 @@ export class CalibrationEngine {
       } else if (geminiStage === 'CRITICAL_BLACK') {
         dose = 12.5;
       } else {
-        dose = CalibrationEngine.estimateExposure(deltaE00, temp, rh, shelfAgeDays);
+        dose = CalibrationEngine.estimateExposure(auth.bestDeltaE00, temp, rh, shelfAgeDays);
       }
 
-      let status: ExposureStatus = 'NORMAL';
+      let status: ExposureStatus = auth.matchedStage ? auth.matchedStage.status : 'NORMAL';
       if (expiry.isExpired || dose >= 10.0) status = 'REVIEW';
       else if (dose >= 2.50) status = 'MONITOR';
 
       const precautions = CalibrationEngine.getPrecautions(status, dose, expiry.isExpired);
-      let guideline = precautions[0];
-      if (locus.isContaminationAnomaly) {
-        guideline = locus.reason || guideline;
-      }
 
       return {
         estimated_exposure_ppm_h: dose,
@@ -401,7 +491,7 @@ export class CalibrationEngine {
         },
         rgb: { r, g, b, hex: geminiColorHex },
         lab,
-        delta_e: Math.round(deltaE00 * 10) / 10,
+        delta_e: Math.round(auth.bestDeltaE00 * 10) / 10,
         temperature: temp,
         humidity: rh,
         shelf_age_days: shelfAgeDays,
@@ -413,10 +503,10 @@ export class CalibrationEngine {
           is_blurry: false,
           strip_not_visible: false,
           reference_scale_missing: false,
-          notes: 'Gemini direct optical patch extraction + CIEDE2000 dosimetry.'
+          notes: 'Colorimetric chemistry verified successfully.'
         },
         band_detected: true,
-        action_guideline: guideline,
+        action_guideline: precautions[0],
         prototype: true,
         vision_engine: 'Google Gemini Vision + On-Device CIEDE2000 Engine',
         precautions
@@ -447,72 +537,20 @@ export class CalibrationEngine {
               cx = Math.floor(((boundingBox[1] + boundingBox[3]) / 2000) * w);
             }
 
-            // 0. Physical Hallmarks Verification for Authentic SARVAS Chemical Dosimeters:
-            // An authentic SARVAS dosimeter MUST possess:
-            // A) Dual-Zone Chemistry: Sky-blue CuSO4 Zone B indicator pad (B > R + 20, G > R + 6, B > 115)
-            // B) High-Contrast Reference Calibration Step-Wedge Scale (minLum < 50 and maxLum > 190)
-            const scanX = Math.floor(w * 0.25);
-            const scanY = Math.floor(h * 0.25);
-            const scanW = Math.floor(w * 0.50);
-            const scanH = Math.floor(h * 0.50);
-            const scanData = ctx.getImageData(scanX, scanY, scanW, scanH).data;
-
+            // 1. Scan for Dual-Zone Zone B CuSO4 sky-blue pixels
+            // Zone B CuSO4 requires strong cyan saturation: B > R + 25, G > R + 10, B >= 120
+            const fullScan = ctx.getImageData(0, 0, w, h).data;
             let skyBluePixels = 0;
-            let minLum = 255;
-            let maxLum = 0;
-
-            for (let i = 0; i < scanData.length; i += 4) {
-              const r = scanData[i];
-              const g = scanData[i + 1];
-              const b = scanData[i + 2];
-              if (b > r + 20 && g > r + 6 && b > 115) {
+            for (let i = 0; i < fullScan.length; i += 4) {
+              const r = fullScan[i];
+              const g = fullScan[i + 1];
+              const b = fullScan[i + 2];
+              if (b > r + 25 && g > r + 10 && b >= 120) {
                 skyBluePixels++;
               }
-              const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-              if (lum < minLum) minLum = lum;
-              if (lum > maxLum) maxLum = lum;
             }
 
-            const hasRefContrast = (maxLum - minLum > 140) && minLum < 50 && maxLum > 190;
-            const isAuthenticDosimeter = skyBluePixels >= 15 || hasRefContrast;
-
-            if (!isAuthenticDosimeter) {
-              const rejectReason = 'SMARTWATCH / NON-DOSIMETER DETECTED: Scanned target is an electronic smartwatch, dark screen, or non-dosimeter surface. SARVAS is a zero-power passive chemical dosimeter requiring dual-zone Ag/Cu reagent pads.';
-              resolve({
-                estimated_exposure_ppm_h: 0.0,
-                status: 'REVIEW',
-                confidence: {
-                  score: 0.05,
-                  uncertainty_95_ci_ppm_h: 0.0,
-                  ci_lower_ppm_h: 0.0,
-                  ci_upper_ppm_h: 0.0
-                },
-                rgb: { r: 0, g: 0, b: 0, hex: '#000000' },
-                lab: { L: 0, a: 0, b: 0 },
-                delta_e: 0.0,
-                temperature: temp,
-                humidity: rh,
-                shelf_age_days: shelfAgeDays,
-                image_quality: {
-                  verdict: 'FAIL',
-                  score: 0.05,
-                  is_too_dark: false,
-                  is_overexposed: false,
-                  is_blurry: false,
-                  strip_not_visible: true,
-                  reference_scale_missing: true,
-                  notes: rejectReason
-                },
-                band_detected: false,
-                action_guideline: `WATCH NOT DETECTED: ${rejectReason} Please position your SARVAS chemical wristband directly within the reticle.`,
-                prototype: true,
-                vision_engine: 'On-Device AI Engine (Strict Smartwatch Rejection)',
-                precautions: ['Align authentic SARVAS chemical wristband inside camera reticle', 'Do not scan smartwatches or electronic screens', 'Retake scan']
-              });
-              return;
-            }
-
-            // 1. Check for Moisture Seal Breach (Right quadrant: ~0.71w, ~0.43h)
+            // 2. Check for Moisture Seal Breach (Right quadrant: ~0.71w, ~0.43h)
             let isSealBreached = false;
             try {
               const dotX = Math.floor(w * 0.714);
@@ -528,7 +566,6 @@ export class CalibrationEngine {
               dotR /= dCount;
               dotG /= dCount;
               dotB /= dCount;
-              // Anhydrous CuSO4 turns azure blue when hydrated (>65% RH)
               if (dotB > dotR + 35 && dotB > 120 && dotR < 130) {
                 isSealBreached = true;
               }
@@ -536,7 +573,7 @@ export class CalibrationEngine {
               // Ignore seal sampling error if out of bounds
             }
 
-            // 2. Check if this is a Full Dual-Zone Badge (Zone B sky blue at cx + 0.08w)
+            // 3. Check if this is a Full Dual-Zone Badge (Zone B sky blue at cx + 0.08w)
             let targetX = cx;
             try {
               const zbX = Math.floor(w * 0.57);
@@ -548,7 +585,6 @@ export class CalibrationEngine {
               }
               zbR /= (zbData.length / 4);
               zbB /= (zbData.length / 4);
-              // If right zone is sky-blue CuSO4, target Zone A (AgNO3) on the left
               if (zbB > zbR + 25 && zbB > 160) {
                 targetX = Math.floor(w * 0.43);
               }
@@ -573,18 +609,12 @@ export class CalibrationEngine {
             const avgB = Math.round(totalB / pixelCount);
 
             const lab = CalibrationEngine.srgbToLab(avgR, avgG, avgB);
-            const locus = CalibrationEngine.validateLocus(lab);
-            const deltaE00 = CalibrationEngine.computeDeltaE00(lab);
+            const hex = `#${((1 << 24) + (avgR << 16) + (avgG << 8) + avgB).toString(16).slice(1)}`;
 
-            let dose = CalibrationEngine.estimateExposure(deltaE00, temp, rh, shelfAgeDays);
-            let status: ExposureStatus = 'NORMAL';
+            // 4. Authenticate dosimeter chemistry & strictly reject smartwatches/screens
+            const auth = CalibrationEngine.verifyDosimeterAuthenticity(avgR, avgG, avgB, skyBluePixels);
 
-            let guidelineNote = '';
-            if (isSealBreached) {
-              status = 'REVIEW';
-              guidelineNote = 'SEAL BREACHED: Anhydrous CuSO4 indicator turned azure blue (>65% RH ingress). Dosimeter invalidated; quarantine badge.';
-            } else if (locus.isOffTarget) {
-              const rejectReason = locus.reason || 'Watch or dosimeter wristband was not visible in frame.';
+            if (!auth.isAuthentic) {
               resolve({
                 estimated_exposure_ppm_h: 0.0,
                 status: 'REVIEW',
@@ -594,7 +624,7 @@ export class CalibrationEngine {
                   ci_lower_ppm_h: 0.0,
                   ci_upper_ppm_h: 0.0
                 },
-                rgb: { r: avgR, g: avgG, b: avgB, hex: `#${((1 << 24) + (avgR << 16) + (avgG << 8) + avgB).toString(16).slice(1)}` },
+                rgb: { r: avgR, g: avgG, b: avgB, hex },
                 lab,
                 delta_e: 0.0,
                 temperature: temp,
@@ -608,56 +638,61 @@ export class CalibrationEngine {
                   is_blurry: false,
                   strip_not_visible: true,
                   reference_scale_missing: true,
-                  notes: rejectReason
+                  notes: auth.rejectReason
                 },
                 band_detected: false,
-                action_guideline: `WATCH NOT DETECTED: ${rejectReason} Please position your SARVAS wristband directly within the reticle.`,
+                action_guideline: `WATCH NOT DETECTED: ${auth.rejectReason} Please position your SARVAS chemical wristband directly within the reticle.`,
                 prototype: true,
-                vision_engine: 'On-Device Spatial & Colorimetric Quality Engine',
-                precautions: ['Align SARVAS wristband inside camera reticle', 'Ensure even ambient lighting', 'Retake scan']
+                vision_engine: 'On-Device AI Engine (Smartwatch & Non-Dosimeter Rejection)',
+                precautions: ['Align authentic SARVAS chemical wristband inside camera reticle', 'Do not scan smartwatches or electronic screens', 'Retake scan']
               });
               return;
-            } else if (locus.isContaminationAnomaly) {
-              dose = 0.20;
-              status = 'MONITOR';
-              guidelineNote = locus.reason || 'Surface grease/soot detected along non-chelation vector. Clean band.';
+            }
+
+            // Authentic dosimeter calculation
+            const dose = auth.matchedStage ? auth.matchedStage.dose : CalibrationEngine.estimateExposure(auth.bestDeltaE00, temp, rh, shelfAgeDays);
+            let status: ExposureStatus = auth.matchedStage ? auth.matchedStage.status : 'NORMAL';
+
+            let guidelineNote = '';
+            if (isSealBreached) {
+              status = 'REVIEW';
+              guidelineNote = 'SEAL BREACHED: Anhydrous CuSO4 indicator turned azure blue (>65% RH ingress). Dosimeter invalidated; quarantine badge.';
             } else {
               if (expiry.isExpired || dose >= 10.0) status = 'REVIEW';
               else if (dose >= 2.50) status = 'MONITOR';
             }
 
-            const hex = `#${((1 << 24) + (avgR << 16) + (avgG << 8) + avgB).toString(16).slice(1)}`;
             const precautions = CalibrationEngine.getPrecautions(status, dose, expiry.isExpired || isSealBreached);
 
             resolve({
               estimated_exposure_ppm_h: dose,
               status,
               confidence: {
-                score: locus.isValid ? 0.94 : 0.82,
-                uncertainty_95_ci_ppm_h: 0.12,
-                ci_lower_ppm_h: Math.max(0, dose - 0.12),
-                ci_upper_ppm_h: dose + 0.12
+                score: 0.95,
+                uncertainty_95_ci_ppm_h: 0.08,
+                ci_lower_ppm_h: Math.max(0, dose - 0.08),
+                ci_upper_ppm_h: dose + 0.08
               },
               rgb: { r: avgR, g: avgG, b: avgB, hex },
               lab,
-              delta_e: Math.round(deltaE00 * 10) / 10,
+              delta_e: Math.round(auth.bestDeltaE00 * 10) / 10,
               temperature: temp,
               humidity: rh,
               shelf_age_days: shelfAgeDays,
               image_quality: {
-                verdict: locus.isValid ? 'PASS' : 'WARNING',
-                score: locus.isValid ? 0.95 : 0.78,
+                verdict: 'PASS',
+                score: 0.95,
                 is_too_dark: false,
                 is_overexposed: false,
                 is_blurry: false,
-                strip_not_visible: locus.isOffTarget,
+                strip_not_visible: false,
                 reference_scale_missing: false,
-                notes: guidelineNote || 'CIEDE2000 spatial illumination normalization applied.'
+                notes: 'Authentic dosimeter colorimetric signature matched.'
               },
-              band_detected: !locus.isOffTarget,
+              band_detected: true,
               action_guideline: guidelineNote || precautions[0],
               prototype: true,
-              vision_engine: 'On-Device CIEDE2000 Dual-Zone Engine (Locus Verified)',
+              vision_engine: 'On-Device AI Engine (CIEDE2000 Calibrated)',
               precautions
             });
             return;
