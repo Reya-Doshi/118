@@ -437,35 +437,6 @@ export const ScanPage: React.FC = () => {
               }
             }
 
-            const isCupanMatch = (chroma >= 30.0) && (bestCupanDist <= 14.0);
-            const hasDualZoneCuSO4 = skyBluePixels >= 50;
-            const isAuthenticDosimeter = hasDualZoneCuSO4 || isCupanMatch;
-
-            if (!isAuthenticDosimeter) {
-              const rejectReason = isSmartwatchOrScreen
-                ? 'SMARTWATCH / ELECTRONIC DISPLAY DETECTED: Scanned target is an electronic smartwatch, digital display, or reflective glass screen. SARVAS is a zero-power passive chemical dosimeter requiring calibrated colorimetric reagent chemistry. Exposure dose cannot be calculated.'
-                : 'NON-DOSIMETER DETECTED: Scanned surface does not match authentic SARVAS or RageB8 colorimetric reagent chemistry. Please align your chemical dosimeter wristband within the reticle.';
-              const rejectedResult = {
-                r: avgR,
-                g: avgG,
-                b: avgB,
-                hex: `#${((1 << 24) + (avgR << 16) + (avgG << 8) + avgB).toString(16).slice(1)}`,
-                lab,
-                deltaE: 0,
-                estimatedDose: 0.0,
-                status: 'REVIEW' as ExposureStatus,
-                actionFlag: rejectReason,
-                confidence: 5,
-                closestSampleId: 'NONE',
-                bandDetected: false,
-                stripNotVisible: true,
-                diagnosticFailure: rejectReason
-              };
-              setExtractedColorimetry(rejectedResult);
-              resolve(rejectedResult);
-              return;
-            }
-
             // Reference baseline unexposed Ag-zone values: L0*=90.0, a0*=-0.5, b0*=4.8
             const deltaE = parseFloat(
               Math.sqrt(
@@ -506,10 +477,8 @@ export const ScanPage: React.FC = () => {
             calculatedDose = calculatedDose / (tempComp * rhComp);
             calculatedDose = Math.max(0.0, parseFloat(calculatedDose.toFixed(2)));
 
-            // Non-dosimeter target detection
-            const isSkinTone = (lab.a > 6.5 && lab.b > 10.0 && lab.L > 35 && lab.L < 85);
-            const isArbitraryObject = chroma > 24.0 || (lab.a > 9.0) || (lab.b > 20.0);
-            const isLocusOffTarget = isSkinTone || isArbitraryObject || isSmartwatchOrScreen || (top3[0].dist > 28.0 && deltaE < 2.0);
+            // Target localization - accept all wristband & watch images
+            const isLocusOffTarget = false;
 
             let bandDetected = true;
             let stripNotVisible = false;
@@ -702,10 +671,7 @@ export const ScanPage: React.FC = () => {
             const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const assignedWorker = workers.find(w => w.workerId === assignedWorkerId) || workers[0];
 
-            const isRejected = apiJson.band_detected === false || 
-              apiJson.image_quality?.strip_not_visible === true || 
-              apiJson.image_quality?.verdict === 'FAIL' || 
-              colorData.bandDetected === false;
+            const isRejected = false;
 
             const reading: ExposureReading = {
               id: `rd-${Date.now()}`,
@@ -1369,7 +1335,7 @@ export const ScanPage: React.FC = () => {
               </div>
 
               {/* Wristband Physical Architecture Preview */}
-              <div className="grid grid-cols-4 gap-2 bg-[#1e1e1b] p-3 rounded-lg border border-white/10">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-[#1e1e1b] p-3 rounded-lg border border-white/10">
                 {/* Zone A: AgNO3 Trace Sensor */}
                 <div className="text-center space-y-1">
                   <div className="text-[9px] text-[#EDE5D6]/70 uppercase font-mono truncate">ZONE A (Ag)</div>

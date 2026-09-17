@@ -755,7 +755,7 @@ export const CalibrationPage: React.FC = () => {
                 <span>Optical Surface Sensor Swatches</span>
                 <span className="text-[#2F6B38] font-bold">Target Dose: {activeScanSample.trueDosePpmH.toFixed(2)} ppm·h</span>
               </div>
-              <div className="grid grid-cols-3 gap-2 text-center text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
                 {/* Zone A */}
                 <div className="p-2 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] flex flex-col items-center">
                   <span className="text-[9px] font-mono text-[#5D5B53] uppercase">Zone A (Ag)</span>
@@ -847,7 +847,7 @@ export const CalibrationPage: React.FC = () => {
                 </div>
 
                 {/* Environmental Context */}
-                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center text-xs">
                   <div className="p-2 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
                     <span className="text-[9px] font-mono text-[#5D5B53] block">Gas Conc / Time</span>
                     <span className="font-mono font-bold text-[#292925]">{activeScanSample.h2sPpm} ppm / {activeScanSample.durationH}h</span>

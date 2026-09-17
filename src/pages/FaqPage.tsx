@@ -386,7 +386,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
           <p>
             We conducted controlled environmental validation inside an ESPEC environmental chamber using certified 10 ppm H₂S calibration gas mixtures balanced in Nitrogen:
           </p>
-          <div className="grid grid-cols-3 gap-2.5 text-center pt-1 font-mono">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-center pt-1 font-mono">
             <div className="p-3 rounded-xl bg-white border border-[#D8D0C2] shadow-2xs">
               <div className="text-lg font-bold text-[#4F5D4B]">0.984</div>
               <div className="text-[9px] text-[#878377]">Coefficient of Det. (R²)</div>
@@ -612,7 +612,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
     {
       id: 'q-jury-1',
       category: 'chemistry',
-      badge: 'Jury Trap Defense · Reaction Kinetics',
+      badge: 'Technical Defense · Reaction Kinetics',
       question: 'Is this real chemical reaction science or just simulated guessing? How do you prove Cu-PAN kinetics?',
       quickPitch: 'Cu-PAN is a proven analytical colorimetric chelate with a thermodynamic equilibrium driven by copper sulfide precipitation (Ksp ≈ 6.3 × 10⁻³⁶). The mathematical model matches spectrophotometric calibration curves from our 100-sample peer-reviewed testing dataset.',
       fullAnswer: (
@@ -641,7 +641,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
     {
       id: 'q-jury-2',
       category: 'ml-cv',
-      badge: 'Jury Trap Defense · Camera Invariance',
+      badge: 'Technical Defense · Camera Invariance',
       question: 'How do you handle cheap smartphone cameras, lens glare, and variable plant lighting without misreading exposure?',
       quickPitch: 'We never read uncalibrated raw RGB values. We utilize differential colorimetry normalized against the on-band A1–A5 reference scale and white point fiducials, which pass through the exact same camera lens and lighting conditions.',
       fullAnswer: (
@@ -669,7 +669,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
     {
       id: 'q-jury-3',
       category: 'hardware',
-      badge: 'Jury Trap Defense · Environmental Robustness',
+      badge: 'Technical Defense · Environmental Robustness',
       question: 'What happens if a worker sweats, gets caught in monsoon rain, or touches oil? Does water ruin the test strip?',
       quickPitch: 'The sensor is shielded by a micro-porous hydrophobic PTFE (Teflon) membrane that allows gaseous H₂S diffusion while completely repelling liquid water droplets, perspiration, and particulate grime.',
       fullAnswer: (

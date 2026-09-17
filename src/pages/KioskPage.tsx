@@ -320,7 +320,7 @@ export const KioskPage: React.FC = () => {
 
       {/* 4-Step Interactive Breadcrumb Tracker */}
       <div className="bg-[#EDE5D6] p-2.5 rounded-xl border border-[#D8D0C2] shadow-xs">
-        <div className="grid grid-cols-4 gap-2 text-center text-xs font-semibold">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-semibold">
           {[
             { step: 1, label: '1. Start Shift', icon: UserCheck },
             { step: 2, label: '2. Scan Wristband', icon: Camera },

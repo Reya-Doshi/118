@@ -329,7 +329,7 @@ export const Navbar: React.FC = () => {
             {/* Interactive Kiosk Prototype Nav Button */}
             <button
               onClick={() => handleNavClick('kiosk')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95 ${
+              className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95 ${
                 activePage === 'kiosk'
                   ? 'bg-[#292925] text-white border-[#292925]'
                   : isTransparentOnHero
@@ -348,7 +348,7 @@ export const Navbar: React.FC = () => {
             {/* ML Explainability Video Nav Button */}
             <button
               onClick={() => handleNavClick('explainability')}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer shadow-xs active:scale-95 ${
+              className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer shadow-xs active:scale-95 ${
                 activePage === 'explainability'
                   ? 'bg-[#4F5D4B] text-white border-[#4F5D4B]'
                   : isTransparentOnHero
@@ -379,17 +379,17 @@ export const Navbar: React.FC = () => {
               </button>
             )}
 
-            {/* Top Login / Account Option (Desktop) */}
+            {/* Top Login / Account Option (Desktop & Mobile) */}
             <button
               onClick={openLoginModal}
-              className={`flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl border transition-all cursor-pointer shadow-xs active:scale-95 ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-2 py-1.5 rounded-xl border transition-all cursor-pointer shadow-xs active:scale-95 ${
                 isTransparentOnHero
                   ? 'border-white/35 bg-white/15 text-[#F6F1E7] hover:bg-white/25'
                   : 'border-[#D8D0C2] bg-white text-[#292925] hover:border-[#71806B]'
               }`}
               title="Click to Switch Account or Role (Worker, Safety Officer, Admin)"
             >
-              <div className={`w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold font-mono shadow-xs ${
+              <div className={`w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold font-mono shadow-xs shrink-0 ${
                 currentUser?.role === 'WORKER'
                   ? 'bg-[#B08A55] text-white'
                   : currentUser?.role === 'ADMIN'
@@ -398,7 +398,7 @@ export const Navbar: React.FC = () => {
               }`}>
                 {currentUser?.avatarText || 'OP'}
               </div>
-              <div className="text-left">
+              <div className="text-left hidden sm:block">
                 <div className={`text-xs font-bold leading-none flex items-center gap-1 ${isTransparentOnHero ? 'text-[#F6F1E7]' : 'text-[#292925]'}`}>
                   <span>{currentUser?.name || 'Sign In'}</span>
                 </div>

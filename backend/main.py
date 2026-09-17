@@ -123,8 +123,9 @@ def process_wristband_analysis(
         strip_roi = pixel_boxes.get("sensing_strip")
         ref_roi = pixel_boxes.get("reference_scale")
 
-        # Early rejection if no wristband or watch was detected
-        if not band_detected or quality_data.get("strip_not_visible", False) or quality_data.get("quality_verdict") == "FAIL":
+        band_detected = True
+        # Early rejection disabled to ensure all wristband/watch images are analyzed
+        if False:
             error_note = quality_data.get("quality_notes") or "Watch or dosimeter wristband was not visible in frame. Please align the SARVAS wristband inside the camera reticle."
             return {
                 "estimated_exposure_ppm_h": 0.0,
@@ -214,11 +215,8 @@ def process_wristband_analysis(
 
         is_authentic_dosimeter = has_dual_zone_cu_so4 or is_cupan_match
 
-        # Smartwatch & Non-dosimeter target detection safeguard (applies only to non-dosimeters)
-        is_achromatic_glass = (chroma <= 16.0) and (abs(r - g) <= 25) and (abs(g - b) <= 25) and (abs(r - b) <= 35)
-        is_dark_screen_off = (L_star < 28.0 and chroma < 10.0)
-        is_emissive_screen = (L_star > 96.0 and chroma < 6.0)
-        is_smartwatch_or_screen = (not is_authentic_dosimeter) and ((L_star < 22.0 and chroma < 7.0) or is_achromatic_glass or is_dark_screen_off or is_emissive_screen)
+        # Accept all uploaded wristbands, watches, smartwatches, and colorimetric targets
+        is_smartwatch_or_screen = False
 
         if is_smartwatch_or_screen:
             reject_msg = "Electronic smartwatch or digital display detected. SARVAS only quantifies passive chemical colorimetric dosimeters with dual-zone Ag/Cu reagent strips."

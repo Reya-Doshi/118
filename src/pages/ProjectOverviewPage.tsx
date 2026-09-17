@@ -467,7 +467,7 @@ export const ProjectOverviewPage: React.FC = () => {
             <ul className="text-xs text-[#5D5B53] space-y-1.5 list-disc list-inside">
               <li>Designed rigorous 4-stage controlled lab testing protocol with GC-FPD.</li>
               <li>Aligned system thresholds with OSHA 1910.1000 &amp; DGMS Indian mining standards.</li>
-              <li>Authored comprehensive SIH pitch presentation &amp; jury FAQ defense briefs.</li>
+              <li>Authored comprehensive SIH pitch presentation &amp; FAQ defense briefs.</li>
               <li>Calculated statistical error bounds (±12% error with 95% confidence interval).</li>
             </ul>
             <div className="pt-2 border-t border-[#D8D0C2]/60 text-[11px] font-mono text-[#292925] flex justify-between">
@@ -985,7 +985,7 @@ export const ProjectOverviewPage: React.FC = () => {
             className="px-5 py-3 rounded-xl bg-[#EDE5D6] hover:bg-[#E5DDCB] text-[#292925] text-xs font-bold transition-all border border-[#D8D0C2] flex items-center gap-2 cursor-pointer"
           >
             <FileCheck2 className="w-4 h-4 text-[#71806B]" />
-            <span>Read Jury FAQ</span>
+            <span>Read FAQ</span>
           </button>
         </div>
       </section>
