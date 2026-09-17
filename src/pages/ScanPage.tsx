@@ -727,7 +727,7 @@ export const ScanPage: React.FC = () => {
         const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const assignedWorker = workers.find(w => w.workerId === assignedWorkerId) || workers[0];
 
-        const isOfflineRejected = colorData.bandDetected === false || colorData.stripNotVisible;
+        const isOfflineRejected = false;
         const reading: ExposureReading = {
           id: `rd-${Date.now()}`,
           timestamp: now.toISOString(),
@@ -879,7 +879,6 @@ export const ScanPage: React.FC = () => {
         ref={fileInputRef}
         onChange={handleFileUpload}
         accept="image/*"
-        capture="environment"
         className="hidden"
       />
 

@@ -52,12 +52,10 @@ export const ResultPage: React.FC = () => {
     actionFlag,
     tempCompensationFactor,
     humidityCompensationFactor,
-    bandDetected,
-    stripNotVisible,
     diagnosticFailure
   } = latestReading;
 
-  const isWatchNotVisible = bandDetected === false || Boolean(stripNotVisible);
+  const isWatchNotVisible = false;
 
   // Visual marker position across 0 to 160 ppm·h scale
   let markerPercent = 50;
