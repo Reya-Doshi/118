@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
+import bandVideo from '../assets/band_expand.mp4';
 import { MetricCard } from '../components/MetricCard';
 import { StatusBadge } from '../components/StatusBadge';
 import { SHIFT_TREND_DATA } from '../data/mockData';
@@ -32,6 +33,15 @@ export const DashboardPage: React.FC = () => {
   const [scrubberActive, setScrubberActive] = useState(false);
   const [broadcastActive, setBroadcastActive] = useState(false);
   const [auditSigned, setAuditSigned] = useState(false);
+  const bandVideoRef = useRef<HTMLVideoElement>(null);
+
+  // Loop band_expand.mp4 precisely at 5.3 seconds
+  const handleBandTimeUpdate = () => {
+    if (bandVideoRef.current && bandVideoRef.current.currentTime >= 5.3) {
+      bandVideoRef.current.currentTime = 0;
+      bandVideoRef.current.play().catch(() => {});
+    }
+  };
 
   // Deliverable 3: Exposure Logs & Worker History state
   const [searchTerm, setSearchTerm] = useState('');
@@ -607,7 +617,23 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {/* Quick Scanner Shortcut Banner */}
-          <div className="bg-[#292925] text-[#EDE5D6] p-5 rounded-xl border border-[#3E3C36] space-y-3 shadow-xs">
+          <div className="bg-[#292925] text-[#EDE5D6] p-5 rounded-xl border border-[#3E3C36] space-y-3 shadow-xs overflow-hidden">
+            <div className="relative w-full h-28 rounded-lg overflow-hidden border border-[#555248] shadow-inner bg-black/40">
+              <video
+                ref={bandVideoRef}
+                src={bandVideo}
+                autoPlay
+                loop
+                muted
+                playsInline
+                onTimeUpdate={handleBandTimeUpdate}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/75 backdrop-blur-xs text-[9px] font-mono text-[#E4D7C5] border border-white/10 uppercase tracking-widest font-bold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#71806B] animate-pulse"></span>
+                <span>SARVAS DOSIMETER</span>
+              </div>
+            </div>
             <div className="flex items-center gap-2 text-[#C2CBBF] text-xs font-mono font-semibold">
               <Scan className="w-4 h-4" />
               <span>Safety Officer Tool</span>
@@ -618,9 +644,10 @@ export const DashboardPage: React.FC = () => {
             </p>
             <button
               onClick={() => setActivePage('scan')}
-              className="w-full py-2 rounded bg-[#4F5D4B] text-[#F6F1E7] text-xs font-medium hover:bg-[#3D493A] transition-colors"
+              className="w-full py-2.5 rounded-lg bg-[#4F5D4B] text-[#F6F1E7] text-xs font-semibold hover:bg-[#3D493A] transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
             >
-              Open Camera Scanner
+              <Scan className="w-3.5 h-3.5" />
+              <span>Open Camera Scanner</span>
             </button>
           </div>
 

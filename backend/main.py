@@ -197,14 +197,30 @@ def process_wristband_analysis(
         L_star, a_star, b_star = srgb_to_cielab(r, g, b)
         delta_e = compute_delta_e_cie76(L_star, a_star, b_star)
 
-        # Smartwatch & Non-dosimeter target detection safeguard
+        # Authenticity check: Genuine Chemical Dosimeter vs Smartwatch/Screen/Non-Dosimeter
+        # Check 1: Zone B CuSO4 presence in image (Dual-Zone Ag/Cu SARVAS Badge)
+        b_ch, g_ch, r_ch = cv2.split(img_bgr)
+        b_i = b_ch.astype(np.int32)
+        g_i = g_ch.astype(np.int32)
+        r_i = r_ch.astype(np.int32)
+        sky_mask = (b_i > r_i + 25) & (g_i > r_i + 10) & (b_i >= 120)
+        has_dual_zone_cu_so4 = int(np.sum(sky_mask)) >= 50
+
+        # Check 2: Cu-PAN Chelation trajectory
+        cupan_stages = [(92, 58, 122), (128, 68, 118), (175, 85, 105), (205, 110, 68), (235, 185, 42)]
+        min_cupan_dist = min(abs(r - cr) + abs(g - cg) + abs(b - cb) for cr, cg, cb in cupan_stages)
         chroma = np.sqrt(a_star**2 + b_star**2)
+        is_cupan_match = (min_cupan_dist <= 55) and (chroma >= 18.0)
+
+        is_authentic_dosimeter = has_dual_zone_cu_so4 or is_cupan_match
+
+        # Smartwatch & Non-dosimeter target detection safeguard (applies only to non-dosimeters)
         is_achromatic_glass = (chroma <= 16.0) and (abs(r - g) <= 25) and (abs(g - b) <= 25) and (abs(r - b) <= 35)
         is_dark_screen_off = (L_star < 28.0 and chroma < 10.0)
         is_emissive_screen = (L_star > 96.0 and chroma < 6.0)
-        is_smartwatch_or_screen = (L_star < 22.0 and chroma < 7.0) or is_achromatic_glass or is_dark_screen_off
+        is_smartwatch_or_screen = (not is_authentic_dosimeter) and ((L_star < 22.0 and chroma < 7.0) or is_achromatic_glass or is_dark_screen_off or is_emissive_screen)
 
-        if is_smartwatch_or_screen or is_emissive_screen:
+        if is_smartwatch_or_screen:
             reject_msg = "Electronic smartwatch or digital display detected. SARVAS only quantifies passive chemical colorimetric dosimeters with dual-zone Ag/Cu reagent strips."
             return {
                 "estimated_exposure_ppm_h": 0.0,

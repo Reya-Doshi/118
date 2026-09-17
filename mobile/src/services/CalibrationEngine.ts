@@ -174,24 +174,8 @@ export class CalibrationEngine {
     const lab = CalibrationEngine.srgbToLab(r, g, b);
     const chroma = Math.sqrt(lab.a * lab.a + lab.b * lab.b);
 
-    // 1. Electronic smartwatch, digital display, or neutral glass reflection detection:
-    // Smartwatch glass (screen off or reflecting ceiling lights) has low chroma (<=16) and nearly identical RGB channels
-    const isAchromaticGlass = (chroma <= 16.0) &&
-      (Math.abs(r - g) <= 25) &&
-      (Math.abs(g - b) <= 25) &&
-      (Math.abs(r - b) <= 35);
-    const isDarkScreenOff = (lab.L < 28.0 && chroma < 10.0);
-    const isEmissiveScreen = (lab.L > 96.0 && chroma < 6.0);
-    const isSmartwatchOrScreen = isAchromaticGlass || isDarkScreenOff || isEmissiveScreen;
-
-    if (isSmartwatchOrScreen) {
-      return {
-        isAuthentic: false,
-        isSmartwatchOrScreen: true,
-        rejectReason: 'SMARTWATCH / ELECTRONIC DISPLAY DETECTED: Scanned target is an electronic smartwatch, digital display, or reflective glass screen. SARVAS is a zero-power passive chemical dosimeter requiring calibrated colorimetric reagent chemistry. Exposure dose cannot be calculated.',
-        bestDeltaE00: 999
-      };
-    }
+    // 1. Check Dual-Zone SARVAS Zone B CuSO4 sky-blue presence
+    const hasDualZoneCuSO4 = skyBluePixelCount >= 50;
 
     // 2. Check Cu-PAN chemical chelation trajectory
     let bestDeltaE00 = 999;
@@ -204,18 +188,26 @@ export class CalibrationEngine {
         matchedStage = st;
       }
     }
-    const isCupanMatch = bestDeltaE00 <= 22.0;
+    const isCupanMatch = bestDeltaE00 <= 22.0 && chroma >= 18.0;
 
-    // 3. Check Dual-Zone SARVAS Zone B CuSO4 sky-blue presence
-    const hasDualZoneCuSO4 = skyBluePixelCount >= 50;
-
-    const isAuthentic = isCupanMatch || hasDualZoneCuSO4;
+    const isAuthentic = hasDualZoneCuSO4 || isCupanMatch;
 
     if (!isAuthentic) {
+      // Check if it's an electronic smartwatch, digital display, or neutral glass reflection:
+      const isAchromaticGlass = (chroma <= 16.0) &&
+        (Math.abs(r - g) <= 25) &&
+        (Math.abs(g - b) <= 25) &&
+        (Math.abs(r - b) <= 35);
+      const isDarkScreenOff = (lab.L < 28.0 && chroma < 10.0);
+      const isEmissiveScreen = (lab.L > 96.0 && chroma < 6.0);
+      const isSmartwatchOrScreen = isAchromaticGlass || isDarkScreenOff || isEmissiveScreen;
+
       return {
         isAuthentic: false,
-        isSmartwatchOrScreen: false,
-        rejectReason: 'NON-DOSIMETER DETECTED: Scanned surface does not match authentic SARVAS or RageB8 colorimetric reagent chemistry. Please align your chemical dosimeter wristband within the reticle.',
+        isSmartwatchOrScreen,
+        rejectReason: isSmartwatchOrScreen
+          ? 'SMARTWATCH / ELECTRONIC DISPLAY DETECTED: Scanned target is an electronic smartwatch, digital display, or reflective glass screen. SARVAS is a zero-power passive chemical dosimeter requiring calibrated colorimetric reagent chemistry. Exposure dose cannot be calculated.'
+          : 'NON-DOSIMETER DETECTED: Scanned surface does not match authentic SARVAS or RageB8 colorimetric reagent chemistry. Please align your chemical dosimeter wristband within the reticle.',
         bestDeltaE00
       };
     }

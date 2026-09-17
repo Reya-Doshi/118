@@ -106,7 +106,7 @@ export const SCANNABLE_BENCHMARK_BADGES = [
 ];
 
 export const ScanPage: React.FC = () => {
-  const { selectedSample, setLatestReading, setActivePage, workers, currentUser, selectedWorker, workerLanguage, autoScanPending, setAutoScanPending } = useApp();
+  const { selectedSample, setLatestReading, saveReading, setActivePage, workers, currentUser, selectedWorker, workerLanguage, autoScanPending, setAutoScanPending } = useApp();
   const isHindiWorker = currentUser?.role === 'WORKER' && workerLanguage === 'hi';
   const [showArchitectureGuide, setShowArchitectureGuide] = useState(true);
   
@@ -437,9 +437,9 @@ export const ScanPage: React.FC = () => {
               }
             }
 
-            const isCupanMatch = bestCupanDist <= 24.0;
+            const isCupanMatch = bestCupanDist <= 24.0 && chroma >= 18.0;
             const hasDualZoneCuSO4 = skyBluePixels >= 50;
-            const isAuthenticDosimeter = !isSmartwatchOrScreen && (isCupanMatch || hasDualZoneCuSO4);
+            const isAuthenticDosimeter = hasDualZoneCuSO4 || isCupanMatch;
 
             if (!isAuthenticDosimeter) {
               const rejectReason = isSmartwatchOrScreen
@@ -741,6 +741,7 @@ export const ScanPage: React.FC = () => {
               }
             };
 
+            saveReading(reading);
             setLatestReading(reading);
             setIsAnalyzing(false);
             setActivePage('result');
@@ -795,6 +796,7 @@ export const ScanPage: React.FC = () => {
           }
         };
 
+        saveReading(reading);
         setLatestReading(reading);
         setIsAnalyzing(false);
         setActivePage('result');
@@ -857,6 +859,7 @@ export const ScanPage: React.FC = () => {
               }
             };
 
+            saveReading(reading);
             setLatestReading(reading);
             setIsAnalyzing(false);
             setActivePage('result');

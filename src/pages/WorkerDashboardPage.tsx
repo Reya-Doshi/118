@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
+import bandVideo from '../assets/band_expand.mp4';
 import { StatusBadge } from '../components/StatusBadge';
 import { 
   Camera, 
@@ -31,6 +32,15 @@ export const WorkerDashboardPage: React.FC = () => {
   } = useApp();
 
   const [showColorScaleGuide, setShowColorScaleGuide] = useState(false);
+  const bandVideoRef = useRef<HTMLVideoElement>(null);
+
+  // Loop band_expand.mp4 precisely at 5.3 seconds
+  const handleBandTimeUpdate = () => {
+    if (bandVideoRef.current && bandVideoRef.current.currentTime >= 5.3) {
+      bandVideoRef.current.currentTime = 0;
+      bandVideoRef.current.play().catch(() => {});
+    }
+  };
 
   const isHindi = workerLanguage === 'hi';
 
@@ -307,29 +317,52 @@ export const WorkerDashboardPage: React.FC = () => {
       </div>
 
       {/* Big Unmissable Primary Action: Scan Wristband */}
-      <div className="bg-[#292925] text-[#F6F1E7] rounded-2xl p-5 sm:p-7 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-5 border border-[#3e3c36]">
-        <div className="space-y-1.5 text-center sm:text-left">
-          <div className="flex items-center justify-center sm:justify-start gap-2">
-            <span className="text-[10px] font-mono bg-[#71806B] text-[#F6F1E7] px-2 py-0.5 rounded font-bold uppercase tracking-wider">
-              {isHindi ? 'स्कैन के लिए तैयार' : 'Ready to Scan'}
-            </span>
-            <span className="text-[11px] font-mono text-[#D8D0C2]">
-              {activeWorker.badgeId} · {isHindi ? '६० दिन वैध' : '60d'}
-            </span>
+      <div className="bg-[#292925] text-[#F6F1E7] rounded-2xl p-5 sm:p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-[#3e3c36] overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-center gap-5 w-full md:w-auto">
+          {/* Looping Wristband Expand Video */}
+          <div className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-2xl overflow-hidden border border-[#555248] shadow-lg shrink-0 bg-black/40 group">
+            <video
+              ref={bandVideoRef}
+              src={bandVideo}
+              autoPlay
+              loop
+              muted
+              playsInline
+              onTimeUpdate={handleBandTimeUpdate}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/75 backdrop-blur-xs text-[9px] font-mono text-[#E4D7C5] border border-white/10 uppercase tracking-widest font-bold flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#71806B] animate-pulse"></span>
+              <span>SARVAS BAND</span>
+            </div>
+            <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-[#71806B]/90 backdrop-blur-xs text-[9px] font-mono text-white font-bold">
+              {activeWorker.badgeId}
+            </div>
           </div>
-          <h2 className="text-xl sm:text-2xl font-serif font-bold tracking-tight">
-            {isHindi ? 'कलाई का पट्टा अभी स्कैन करें' : 'Read My Wristband Now'}
-          </h2>
-          <p className="text-xs text-[#D8D0C2]/80 max-w-md font-serif">
-            {isHindi 
-              ? 'कैमरे से अपने रिस्टबैंड की फोटो लें ताकि रासायनिक रंग और गैस स्तर तुरंत पता चल सके।'
-              : 'Capture a clear photo of your wristband to extract optical strip absorbance and update your live dose.'}
-          </p>
+
+          <div className="space-y-2 text-center sm:text-left">
+            <div className="flex items-center justify-center sm:justify-start gap-2">
+              <span className="text-[10px] font-mono bg-[#71806B] text-[#F6F1E7] px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+                {isHindi ? 'स्कैन के लिए तैयार' : 'Ready to Scan'}
+              </span>
+              <span className="text-[11px] font-mono text-[#D8D0C2]">
+                {activeWorker.badgeId} · {isHindi ? '६० दिन वैध' : '60d Valid'}
+              </span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-serif font-bold tracking-tight">
+              {isHindi ? 'कलाई का पट्टा अभी स्कैन करें' : 'Read My Wristband Now'}
+            </h2>
+            <p className="text-xs text-[#D8D0C2]/80 max-w-md font-serif leading-relaxed">
+              {isHindi 
+                ? 'कैमरे से अपने 118 रासायनिक रिस्टबैंड की फोटो लें ताकि रासायनिक रंग और गैस स्तर तुरंत अपडेट हो सके।'
+                : 'Capture a clear photo of your dosimeter wristband to extract optical strip absorbance and update your shift dose.'}
+            </p>
+          </div>
         </div>
 
         <button
           onClick={handleOpenScan}
-          className="w-full sm:w-auto px-7 py-4 bg-[#71806B] hover:bg-[#5E6D58] text-[#F6F1E7] rounded-xl font-mono text-sm font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+          className="w-full md:w-auto px-8 py-4 bg-[#71806B] hover:bg-[#5E6D58] text-[#F6F1E7] rounded-xl font-mono text-sm font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all cursor-pointer whitespace-nowrap"
         >
           <Camera className="w-5 h-5" />
           <span>{isHindi ? 'कलाई का पट्टा स्कैन करें' : 'SCAN WRISTBAND'}</span>
@@ -516,7 +549,7 @@ export const WorkerDashboardPage: React.FC = () => {
                       ΔE: {reading.rawDeltaE ? reading.rawDeltaE.toFixed(1) : '24.2'}
                     </span>
                     <span className="text-[9px] font-mono text-[#4F5D4B] font-bold">
-                      {Math.round(reading.confidenceScore * 100)}% {isHindi ? 'सटीक' : 'Conf.'}
+                      {reading.confidenceScore > 1 ? Math.round(reading.confidenceScore) : Math.round(reading.confidenceScore * 100)}% {isHindi ? 'सटीक' : 'Conf.'}
                     </span>
                   </div>
                 </div>

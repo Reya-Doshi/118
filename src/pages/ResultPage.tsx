@@ -4,7 +4,7 @@ import { StatusBadge } from '../components/StatusBadge';
 import { ArrowLeft, Save, RefreshCw, Clock, User, Award, ShieldAlert, Cpu } from 'lucide-react';
 
 export const ResultPage: React.FC = () => {
-  const { latestReading, saveReading, setActivePage } = useApp();
+  const { latestReading, saveReading, setActivePage, currentUser, showToast } = useApp();
 
   if (!latestReading) {
     return (
@@ -71,7 +71,12 @@ export const ResultPage: React.FC = () => {
 
   const handleSave = () => {
     saveReading(latestReading);
-    setActivePage('dashboard');
+    showToast('Dosimeter reading saved to your shift profile.');
+    if (currentUser?.role === 'WORKER') {
+      setActivePage('worker-dashboard');
+    } else {
+      setActivePage('dashboard');
+    }
   };
 
   return (
