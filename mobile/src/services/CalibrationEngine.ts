@@ -164,16 +164,23 @@ export class CalibrationEngine {
     // - Human skin tones / faces: a* in [7, 26], b* in [10, 32]
     // - Wooden desk / paper / wall: warm saturated orange/yellow with chroma > 18
     // - Bright clothing / surroundings: chroma > 30
+    // - Smartwatch screen off or black OLED glass: L* < 22.0 (cellulose reagent strip is never this dark)
+    // - Emissive backlit screen / white display: L* > 96.0 with low chroma
     const isSkinTone = (lab.a > 6.5 && lab.b > 10.0 && lab.L > 35 && lab.L < 88);
     const isSaturatedNonDosimeter = (chroma > 24 && !(lab.b < -6 && lab.L > 60)); // Allow sky blue CuSO4 only
     const isExtremeWarmHue = (lab.a > 9.0 || (lab.b > 20.0 && lab.L < 85));
+    const isSmartwatchOrDarkGlass = (lab.L < 22.0 && chroma < 7.0);
+    const isEmissiveScreen = (lab.L > 96.0 && chroma < 5.0);
 
-    if (isSkinTone || isSaturatedNonDosimeter || isExtremeWarmHue) {
+    if (isSkinTone || isSaturatedNonDosimeter || isExtremeWarmHue || isSmartwatchOrDarkGlass || isEmissiveScreen) {
+      const reason = isSmartwatchOrDarkGlass 
+        ? 'SMARTWATCH DETECTED: Electronic smartwatch or digital display identified. SARVAS is a zero-power passive chemical dosimeter.'
+        : 'Watch or dosimeter wristband was not visible in frame. Optical locus matched non-dosimeter surface.';
       return {
         isValid: false,
         isContaminationAnomaly: false,
         isOffTarget: true,
-        reason: 'Watch or dosimeter wristband was not visible in frame. Optical locus matched non-dosimeter surface.'
+        reason
       };
     }
 
@@ -324,6 +331,41 @@ export class CalibrationEngine {
       const deltaE00 = CalibrationEngine.computeDeltaE00(lab);
       const deltaE76 = CalibrationEngine.computeDeltaE(lab);
       const locus = CalibrationEngine.validateLocus(lab);
+
+      if (locus.isOffTarget || geminiStage === 'NOT_A_DOSIMETER') {
+        const rejectReason = locus.reason || 'SMARTWATCH DETECTED: Scanned target is an electronic smartwatch or non-dosimeter device.';
+        return {
+          estimated_exposure_ppm_h: 0.0,
+          status: 'REVIEW',
+          confidence: {
+            score: 0.05,
+            uncertainty_95_ci_ppm_h: 0.0,
+            ci_lower_ppm_h: 0.0,
+            ci_upper_ppm_h: 0.0
+          },
+          rgb: { r, g, b, hex: geminiColorHex },
+          lab,
+          delta_e: 0.0,
+          temperature: temp,
+          humidity: rh,
+          shelf_age_days: shelfAgeDays,
+          image_quality: {
+            verdict: 'FAIL',
+            score: 0.05,
+            is_too_dark: false,
+            is_overexposed: false,
+            is_blurry: false,
+            strip_not_visible: true,
+            reference_scale_missing: true,
+            notes: rejectReason
+          },
+          band_detected: false,
+          action_guideline: `WATCH NOT DETECTED: ${rejectReason} Please position your SARVAS wristband directly within the reticle.`,
+          prototype: true,
+          vision_engine: 'On-Device AI Engine (Smartwatch & Non-Dosimeter Rejection)',
+          precautions: ['Align authentic SARVAS wristband inside camera reticle', 'Do not scan smartwatches or screens', 'Retake scan']
+        };
+      }
 
       let dose: number;
       if (geminiStage === 'BASELINE_NORMAL') {

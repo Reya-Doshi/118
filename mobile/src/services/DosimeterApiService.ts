@@ -182,20 +182,32 @@ export class DosimeterApiService {
       );
 
       // 3. Synthesize unified BackendAnalyzeResponse with metadata
+      const isRejected = geminiAudit?.wristband_detected === false || 
+        geminiAudit?.sensing_patch_color?.stage === 'NOT_A_DOSIMETER' || 
+        calibrationResult.band_detected === false || 
+        calibrationResult.image_quality?.strip_not_visible === true;
+
       return {
         ...calibrationResult,
+        estimated_exposure_ppm_h: isRejected ? 0.0 : calibrationResult.estimated_exposure_ppm_h,
+        status: isRejected ? 'REVIEW' : calibrationResult.status,
         vision_engine: calibrationResult.vision_engine || geminiAudit?.provider || 'On-Device AI Engine (Offline Safe · CIEDE2000)',
-        band_detected: geminiAudit?.wristband_detected ?? true,
+        band_detected: !isRejected,
         image_quality: {
-          verdict: geminiAudit?.image_quality?.quality_verdict ?? 'PASS',
-          score: geminiAudit?.image_quality?.quality_score ?? 0.95,
+          verdict: isRejected ? 'FAIL' : (geminiAudit?.image_quality?.quality_verdict ?? 'PASS'),
+          score: isRejected ? 0.05 : (geminiAudit?.image_quality?.quality_score ?? 0.95),
           is_too_dark: geminiAudit?.image_quality?.is_too_dark ?? false,
           is_overexposed: geminiAudit?.image_quality?.is_overexposed ?? false,
           is_blurry: geminiAudit?.image_quality?.is_blurry ?? false,
-          strip_not_visible: geminiAudit?.image_quality?.strip_not_visible ?? false,
-          reference_scale_missing: geminiAudit?.image_quality?.reference_scale_missing ?? false,
-          notes: geminiAudit?.image_quality?.quality_notes ?? 'On-device CIEDE2000 spatial localization applied.'
+          strip_not_visible: isRejected,
+          reference_scale_missing: isRejected,
+          notes: isRejected 
+            ? (geminiAudit?.image_quality?.quality_notes || calibrationResult.action_guideline || 'Electronic smartwatch or non-dosimeter detected.') 
+            : (geminiAudit?.image_quality?.quality_notes ?? 'On-device CIEDE2000 spatial localization applied.')
         },
+        action_guideline: isRejected
+          ? (geminiAudit?.image_quality?.quality_notes || calibrationResult.action_guideline || 'SMARTWATCH DETECTED: Electronic smartwatch or non-dosimeter identified. Please scan an authentic SARVAS wristband.')
+          : calibrationResult.action_guideline,
         prototype: true
       };
     } catch (err: any) {

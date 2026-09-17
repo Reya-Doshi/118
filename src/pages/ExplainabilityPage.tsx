@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import mlVideo from '../assets/ml.mp4';
+import mlVideo from '../assets/ml_pipeline.mp4';
 import {
   Play,
   Pause,

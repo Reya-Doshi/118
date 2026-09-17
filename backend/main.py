@@ -197,6 +197,72 @@ def process_wristband_analysis(
         L_star, a_star, b_star = srgb_to_cielab(r, g, b)
         delta_e = compute_delta_e_cie76(L_star, a_star, b_star)
 
+        # Smartwatch & Non-dosimeter target detection safeguard
+        chroma = np.sqrt(a_star**2 + b_star**2)
+        is_smartwatch_or_screen = (L_star < 22.0 and chroma < 7.0)
+        is_emissive_screen = (L_star > 96.0 and chroma < 5.0)
+        is_unnatural_surface = (chroma > 24.0 and not (b_star < -6.0 and L_star > 60.0))
+
+        if is_smartwatch_or_screen or is_emissive_screen or is_unnatural_surface:
+            reject_msg = "Electronic smartwatch or digital display detected. SARVAS only quantifies passive chemical colorimetric dosimeters with dual-zone Ag/Cu reagent strips." if is_smartwatch_or_screen else "Target color locus does not match chemical dosimeter matrix."
+            return {
+                "estimated_exposure_ppm_h": 0.0,
+                "status": "REVIEW",
+                "safety_officer_alert": {
+                    "alert_generated": True,
+                    "alert_label": "Scan Rejected: Smartwatch / Non-Dosimeter Target",
+                    "safety_officer": "Mira Patel",
+                    "status": "REVIEW",
+                    "estimated_exposure_ppm_h": 0.0,
+                    "temperature": float(temperature),
+                    "humidity": float(humidity),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "action": f"SCAN REJECTED: {reject_msg}. Please scan an authentic SARVAS wristband.",
+                    "regulatory_notice": "Image rejected during computer vision QA audit."
+                },
+                "threshold_meta": {
+                    "type": "PROTOTYPE_SIMULATED_CONSERVATIVE",
+                    "normal_limit_ppm_h": DOSE_NORMAL_MAX,
+                    "monitor_limit_ppm_h": DOSE_MONITOR_MAX,
+                    "regulatory_notice": "Image QA Failure: Target is not a SARVAS chemical dosimeter."
+                },
+                "confidence": {
+                    "optical_quality_score": 0.05,
+                    "score": 0.05,
+                    "ensemble_std_ppm_h": 0.0,
+                    "uncertainty_spread_ppm_h": 0.0,
+                    "uncertainty_95_ci_ppm_h": 0.0,
+                    "ci_lower_ppm_h": 0.0,
+                    "ci_upper_ppm_h": 0.0,
+                    "uncertainty_method": f"Scan rejected: {reject_msg}"
+                },
+                "rgb": {"r": int(r), "g": int(g), "b": int(b), "hex": f"#{int(r):02x}{int(g):02x}{int(b):02x}".upper()},
+                "lab": {"L": float(L_star), "a": float(a_star), "b": float(b_star)},
+                "delta_e": 0.0,
+                "temperature": float(temperature),
+                "humidity": float(humidity),
+                "shelf_age_days": float(shelf_age_days),
+                "image_quality": {
+                    "verdict": "FAIL",
+                    "score": 0.05,
+                    "is_too_dark": False,
+                    "is_overexposed": False,
+                    "is_blurry": False,
+                    "strip_not_visible": True,
+                    "reference_scale_missing": True,
+                    "notes": reject_msg
+                },
+                "band_detected": False,
+                "localizations": {
+                    "sensing_strip_roi": None,
+                    "reference_scale_roi": None
+                },
+                "vision_engine": vision_engine,
+                "action_guideline": f"WATCH NOT DETECTED: {reject_msg} Please point camera directly at your SARVAS wristband.",
+                "prototype": True,
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
+
         # 4. Feature Vector & Random Forest Estimation
         features = np.array([[
             L_star,

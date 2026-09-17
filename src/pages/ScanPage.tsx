@@ -438,7 +438,15 @@ export const ScanPage: React.FC = () => {
             const chroma = Math.sqrt(Math.pow(lab.a, 2) + Math.pow(lab.b, 2));
             const isSkinTone = (lab.a > 6.5 && lab.b > 10.0 && lab.L > 35 && lab.L < 85);
             const isArbitraryObject = chroma > 24.0 || (lab.a > 9.0) || (lab.b > 20.0);
-            const isLocusOffTarget = isSkinTone || isArbitraryObject || (top3[0].dist > 28.0 && deltaE < 2.0);
+            
+            // Smartwatch & Electronic Screen Detection:
+            // 1. Screen off / black OLED glass: L* < 22.0 (cellulose reagent strip is never this dark)
+            const isSmartwatchOrDarkGlass = (lab.L < 22.0 && chroma < 7.0);
+            // 2. Emissive screen display / white backlight glare: L* > 96.0
+            const isEmissiveDisplay = (lab.L > 96.0 && chroma < 5.0);
+            // 3. Non-dosimeter surface or glass reflection:
+            const isNonDosimeterGlass = (lab.L < 26.0 && top3[0].dist > 18.0);
+            const isLocusOffTarget = isSkinTone || isArbitraryObject || isSmartwatchOrDarkGlass || isEmissiveDisplay || isNonDosimeterGlass || (top3[0].dist > 28.0 && deltaE < 2.0);
 
             let bandDetected = true;
             let stripNotVisible = false;
@@ -452,8 +460,11 @@ export const ScanPage: React.FC = () => {
               bandDetected = false;
               stripNotVisible = true;
               status = 'REVIEW';
-              actionFlag = 'WATCH NOT VISIBLE: Target dosimeter strip not detected in frame. Please align the SARVAS wristband within the camera reticle.';
-              diagnosticFailure = 'Target dosimeter wristband was not visible in frame.';
+              const rejectReason = isSmartwatchOrDarkGlass
+                ? 'SMARTWATCH DETECTED: Electronic smartwatch or digital display identified. SARVAS is a zero-power passive chemical dosimeter requiring dual-zone Ag/Cu reagent strips.'
+                : 'WATCH NOT VISIBLE: Target dosimeter strip not detected in frame. Please align the SARVAS wristband within the camera reticle.';
+              actionFlag = rejectReason;
+              diagnosticFailure = isSmartwatchOrDarkGlass ? 'Electronic smartwatch or digital screen detected.' : 'Target dosimeter wristband was not visible in frame.';
               calculatedDose = 0.0;
             } else if (isSealBreached || activeCalibration.shelfAge > 90 || activeCalibration.sealDot === 'BLUE') {
               status = 'REVIEW';
@@ -628,6 +639,11 @@ export const ScanPage: React.FC = () => {
             const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const assignedWorker = workers.find(w => w.workerId === assignedWorkerId) || workers[0];
 
+            const isRejected = apiJson.band_detected === false || 
+              apiJson.image_quality?.strip_not_visible === true || 
+              apiJson.image_quality?.verdict === 'FAIL' || 
+              colorData.bandDetected === false;
+
             const reading: ExposureReading = {
               id: `rd-${Date.now()}`,
               timestamp: now.toISOString(),
@@ -636,10 +652,10 @@ export const ScanPage: React.FC = () => {
               workerName: assignedWorker.name,
               badgeId: `DS-${assignedWorker.workerId.replace('WRK-', '')}`,
               sampleId: 'Live Camera/Upload Scan',
-              dosePpmH: apiJson.estimated_exposure_ppm_h,
-              status: apiJson.status as any,
+              dosePpmH: isRejected ? 0.0 : apiJson.estimated_exposure_ppm_h,
+              status: isRejected ? 'REVIEW' : (apiJson.status as any),
               shift: assignedWorker.shift || 'Morning · 06:00–14:00',
-              confidenceScore: Math.round((apiJson.confidence?.score || 0.95) * 100),
+              confidenceScore: isRejected ? 5 : Math.round((apiJson.confidence?.score || 0.95) * 100),
               location: assignedWorker.department || 'Hydrocracker Unit 2',
               tempC: apiJson.temperature,
               humidityPercent: apiJson.humidity,
@@ -647,18 +663,18 @@ export const ScanPage: React.FC = () => {
               isDemo: false,
               lab: apiJson.lab || colorData.lab,
               rawColorString: `${apiJson.rgb?.hex || colorData.hex} (L*=${apiJson.lab?.L || colorData.lab.L}, a*=${apiJson.lab?.a || colorData.lab.a}, b*=${apiJson.lab?.b || colorData.lab.b})`,
-              rawDeltaE: apiJson.delta_e || colorData.deltaE,
-              compensatedDeltaE: apiJson.delta_e || colorData.deltaE,
+              rawDeltaE: isRejected ? 0.0 : (apiJson.delta_e || colorData.deltaE),
+              compensatedDeltaE: isRejected ? 0.0 : (apiJson.delta_e || colorData.deltaE),
               shelfAge: apiJson.shelf_age_days,
-              actionFlag: apiJson.action_guideline || apiJson.status || colorData.actionFlag,
-              bandDetected: apiJson.band_detected !== undefined ? apiJson.band_detected : colorData.bandDetected,
-              stripNotVisible: apiJson.image_quality?.strip_not_visible !== undefined ? apiJson.image_quality?.strip_not_visible : colorData.stripNotVisible,
-              diagnosticFailure: apiJson.action_guideline || colorData.diagnosticFailure,
+              actionFlag: isRejected ? (apiJson.action_guideline || colorData.actionFlag) : (apiJson.action_guideline || apiJson.status || colorData.actionFlag),
+              bandDetected: !isRejected,
+              stripNotVisible: isRejected,
+              diagnosticFailure: isRejected ? (apiJson.action_guideline || colorData.diagnosticFailure || 'Electronic smartwatch or non-dosimeter target detected.') : undefined,
               calibrationMetrics: {
-                referenceCalibration: apiJson.band_detected === false ? 0 : 98,
-                colorExtraction: Math.round((apiJson.confidence?.score || 0.95) * 100),
-                lightingCorrection: apiJson.image_quality?.verdict === 'PASS' ? 96 : 40,
-                doseEstimation: Math.round((apiJson.confidence?.score || 0.95) * 100)
+                referenceCalibration: isRejected ? 0 : 98,
+                colorExtraction: isRejected ? 10 : Math.round((apiJson.confidence?.score || 0.95) * 100),
+                lightingCorrection: isRejected ? 30 : (apiJson.image_quality?.verdict === 'PASS' ? 96 : 40),
+                doseEstimation: isRejected ? 5 : Math.round((apiJson.confidence?.score || 0.95) * 100)
               }
             };
 
@@ -681,6 +697,7 @@ export const ScanPage: React.FC = () => {
         const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const assignedWorker = workers.find(w => w.workerId === assignedWorkerId) || workers[0];
 
+        const isOfflineRejected = colorData.bandDetected === false || colorData.stripNotVisible;
         const reading: ExposureReading = {
           id: `rd-${Date.now()}`,
           timestamp: now.toISOString(),
@@ -689,10 +706,10 @@ export const ScanPage: React.FC = () => {
           workerName: assignedWorker.name,
           badgeId: `DS-${assignedWorker.workerId.replace('WRK-', '')}`,
           sampleId: `Wristband Optical Scan (${colorData.closestSampleId})`,
-          dosePpmH: colorData.estimatedDose,
-          status: colorData.status,
+          dosePpmH: isOfflineRejected ? 0.0 : colorData.estimatedDose,
+          status: isOfflineRejected ? 'REVIEW' : colorData.status,
           shift: assignedWorker.shift || 'Morning · 06:00–14:00',
-          confidenceScore: colorData.confidence,
+          confidenceScore: isOfflineRejected ? 5 : colorData.confidence,
           location: assignedWorker.department || 'Hydrocracker Unit 2',
           tempC: activeCalibration.tempC,
           humidityPercent: activeCalibration.rh,
@@ -700,18 +717,18 @@ export const ScanPage: React.FC = () => {
           isDemo: false,
           lab: colorData.lab,
           rawColorString: `${colorData.hex} (L*=${colorData.lab.L}, a*=${colorData.lab.a}, b*=${colorData.lab.b})`,
-          rawDeltaE: colorData.deltaE,
-          compensatedDeltaE: colorData.deltaE,
+          rawDeltaE: isOfflineRejected ? 0.0 : colorData.deltaE,
+          compensatedDeltaE: isOfflineRejected ? 0.0 : colorData.deltaE,
           shelfAge: activeCalibration.shelfAge,
           actionFlag: colorData.actionFlag,
-          bandDetected: colorData.bandDetected,
-          stripNotVisible: colorData.stripNotVisible,
+          bandDetected: !isOfflineRejected,
+          stripNotVisible: isOfflineRejected,
           diagnosticFailure: colorData.diagnosticFailure,
           calibrationMetrics: {
-            referenceCalibration: colorData.bandDetected === false ? 0 : 98,
-            colorExtraction: colorData.bandDetected === false ? 10 : 95,
-            lightingCorrection: colorData.bandDetected === false ? 40 : 92,
-            doseEstimation: colorData.confidence
+            referenceCalibration: isOfflineRejected ? 0 : 98,
+            colorExtraction: isOfflineRejected ? 10 : 95,
+            lightingCorrection: isOfflineRejected ? 40 : 92,
+            doseEstimation: isOfflineRejected ? 5 : colorData.confidence
           }
         };
 

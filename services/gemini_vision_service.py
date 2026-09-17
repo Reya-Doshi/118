@@ -62,15 +62,38 @@ CRITICAL SAFETY DIRECTIVE:
 You must NEVER predict chemical concentration, gas dose, or ppm·h. Quantitative dosing is handled by a separate calibrated physics model.
 
 YOUR PRIMARY QUALITY & DETECTION DIRECTIVE:
-1. DETECT WHETHER A VALID DOSIMETER WRISTBAND, WATCH HOUSING, OR BENCHMARK TEST CARD IS CLEARLY PRESENT IN THE FRAME.
-   - If the image shows ANYTHING ELSE (e.g. a face, person, room, laptop, desk, wall, vehicle, coffee cup, animal, or random scene where NO wristband/watch is present or visible):
-     You MUST set "wristband_detected": false.
-     Set "bounding_boxes": {"sensing_strip": null, "reference_scale": null}.
-     Set "strip_not_visible": true, "reference_scale_missing": true, "quality_verdict": "FAIL", "quality_score": 0.05.
-     Set "quality_notes": "Watch or dosimeter wristband was not visible in frame. Please align your SARVAS wristband within the camera reticle."
+1. DETECT WHETHER AN AUTHENTIC SARVAS PASSIVE CHEMICAL DOSIMETER WRISTBAND OR BENCHMARK TEST CARD IS PRESENT.
+   - An authentic SARVAS dosimeter is a ZERO-POWER PASSIVE CHEMICAL BADGE containing:
+     * A transparent central capsule with a two-part colorimetric paper strip (Zone A silver nitrate and Zone B copper sulfate).
+     * A printed grayscale/color calibration reference scale bar printed adjacent to the strip.
+     * A chemical moisture seal dot.
+     * A matte silicone wrist strap.
 
-2. If a valid wristband or test card IS present:
+2. STRICT REJECTION OF SMARTWATCHES, DIGITAL WATCHES, ELECTRONIC DISPLAYS & ARBITRARY OBJECTS:
+   - If the image shows:
+     * An electronic smartwatch (e.g. Apple Watch, Samsung Galaxy Watch, Garmin, Fitbit, Android watch)
+     * A digital display, OLED/LCD screen, smart band with screen, glowing display, illuminated UI, clock face, digital numerals, or app icons
+     * An analog mechanical/quartz watch with metal hands, glass crystal dial, or bezel
+     * A smartphone screen, tablet, laptop, computer monitor, desk, human face, skin without badge, or arbitrary background
+   You MUST REJECT IT IMMEDIATELY:
+     - Set "wristband_detected": false
+     - Set "wristband_type": "REJECTED_SMARTWATCH_OR_NON_DOSIMETER"
+     - Set "bounding_boxes": {"sensing_strip": null, "reference_scale": null}
+     - Set "image_quality": {
+         "is_too_dark": false,
+         "is_overexposed": false,
+         "is_blurry": false,
+         "strip_not_visible": true,
+         "reference_scale_missing": true,
+         "quality_verdict": "FAIL",
+         "quality_score": 0.0,
+         "quality_notes": "REJECTED: Electronic smartwatch or non-dosimeter watch detected. SARVAS is a zero-power passive chemical dosimeter requiring dual-zone Ag/Cu reagent pads. Electronic smartwatches cannot be scanned for chemical dosage."
+       }
+   DO NOT mark a smartwatch, electronic device, or ordinary watch as a detected dosimeter!
+
+3. If an authentic SARVAS chemical dosimeter wristband or benchmark test card IS present:
    - "wristband_detected": true
+   - "wristband_type": "SARVAS Dual-Zone Dosimeter"
    - Localize the colorimetric sensing strip bounding box in normalized coordinates [ymin, xmin, ymax, xmax] on a 0 to 1000 integer scale.
    - Localize the printed reference color scale bounding box in normalized coordinates [ymin, xmin, ymax, xmax] on a 0 to 1000 integer scale.
    - Perform an optical quality audit:
@@ -99,7 +122,7 @@ Return strictly valid JSON with no preamble or markdown ticks:
     "reference_scale_missing": false,
     "quality_verdict": "PASS",
     "quality_score": 0.95,
-    "quality_notes": "Clean lighting, wristband clearly identified."
+    "quality_notes": "Clean lighting, authentic SARVAS chemical strip and reference scale identified."
   }
 }
 """
@@ -182,8 +205,32 @@ def _opencv_fallback_detection(img_bgr, filename=""):
             hx, hy, hw, hh = housing_bbox
             strip_pixel_box = (int(hx + hw * 0.30), int(hy + hh * 0.20), int(hw * 0.35), int(hh * 0.60))
             ref_pixel_box = (int(hx + hw * 0.05), int(hy + hh * 0.18), int(hw * 0.20), int(hh * 0.64))
-            band_detected = True
-            notes = "SARVAS dosimeter housing localized via geometric contour analysis."
+
+            # Smartwatch & Non-Dosimeter Screen Check:
+            # An electronic smartwatch has a dark glass screen or OLED display without a chemical reagent strip.
+            sx, sy, sw, sh = strip_pixel_box
+            candidate_patch = img_bgr[sy:sy+sh, sx:sx+sw]
+            if candidate_patch.size > 0:
+                patch_mean = np.mean(candidate_patch, axis=(0, 1))
+                patch_brightness = float(np.mean(patch_mean))
+                
+                # Check reference scale area for stepped calibration marks
+                rx, ry, rw, rh = ref_pixel_box
+                ref_patch = img_bgr[ry:ry+rh, rx:rx+rw]
+                ref_contrast = float(np.std(ref_patch)) if ref_patch.size > 0 else 0.0
+
+                # Electronic smartwatch screen off / dark glass: brightness < 30.0 or (brightness < 45.0 and ref_contrast < 12.0)
+                if patch_brightness < 28.0 or (patch_brightness < 45.0 and ref_contrast < 12.0):
+                    band_detected = False
+                    strip_pixel_box = (int(W * 0.4), int(H * 0.4), int(W * 0.2), int(H * 0.2))
+                    ref_pixel_box = None
+                    notes = "REJECTED: Electronic smartwatch or non-dosimeter dark glass screen detected. No SARVAS chemical sensing strip or reference scale identified."
+                else:
+                    band_detected = True
+                    notes = "SARVAS dosimeter housing localized via geometric contour analysis."
+            else:
+                band_detected = True
+                notes = "SARVAS dosimeter housing localized via geometric contour analysis."
 
     # Basic optical metrics
     gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
@@ -306,6 +353,17 @@ def analyze_wristband_with_gemini(image_path, api_key=None):
 
                 parsed = json.loads(raw_text.strip())
                 parsed["provider"] = f"Gemini Vision API ({model_name})"
+
+                if not parsed.get("wristband_detected", True):
+                    parsed["wristband_detected"] = False
+                    if "image_quality" not in parsed:
+                        parsed["image_quality"] = {}
+                    parsed["image_quality"]["strip_not_visible"] = True
+                    parsed["image_quality"]["reference_scale_missing"] = True
+                    parsed["image_quality"]["quality_verdict"] = "FAIL"
+                    parsed["image_quality"]["quality_score"] = 0.0
+                    if not parsed["image_quality"].get("quality_notes"):
+                        parsed["image_quality"]["quality_notes"] = "REJECTED: Electronic smartwatch or non-dosimeter object detected."
 
                 s_norm = parsed.get("bounding_boxes", {}).get("sensing_strip")
                 r_norm = parsed.get("bounding_boxes", {}).get("reference_scale")

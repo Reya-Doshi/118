@@ -39,24 +39,40 @@ CRITICAL SAFETY DIRECTIVE:
 You must NEVER predict chemical concentration, gas dose, or ppm·h. Quantitative dosing is handled by a separate calibrated physics model.
 
 YOUR PRIMARY DETECTION DIRECTIVE:
-1. DETECT WHETHER A VALID DOSIMETER WRISTBAND, WATCH HOUSING, OR BENCHMARK TEST CARD IS PRESENT IN THE FRAME.
-   - If the image shows ANYTHING ELSE (such as a person's face, room, desk, computer, animal, coffee cup, blank wall, clothing, or random object where no wristband/watch is visible):
-     You MUST set "wristband_detected": false.
-     Set "wristband_type": "NONE_DETECTED".
-     Set "sensing_patch_color": null.
-     Set "bounding_boxes": {"sensing_strip": null, "reference_scale": null}.
-     Set "image_quality": {
-       "is_too_dark": false,
-       "is_overexposed": false,
-       "is_blurry": false,
-       "strip_not_visible": true,
-       "reference_scale_missing": true,
-       "quality_verdict": "FAIL",
-       "quality_score": 0.05,
-       "quality_notes": "Watch or dosimeter wristband was not visible in frame. Chemical sensing strip missing."
-     }.
+1. DETECT WHETHER AN AUTHENTIC SARVAS CHEMICAL DOSIMETER WRISTBAND OR BENCHMARK TEST CARD IS PRESENT:
+   - An authentic SARVAS dosimeter is a zero-power passive chemical badge containing:
+     * A transparent central capsule with a two-part colorimetric paper strip (Zone A silver nitrate and Zone B copper sulfate).
+     * A printed reference calibration step-wedge scale beside the strip.
+     * A chemical moisture seal dot.
+     * A matte silicone wrist strap.
 
-2. If a valid wristband or test card IS present:
+2. STRICT REJECTION OF SMARTWATCHES, DIGITAL WATCHES, SCREENS & NON-DOSIMETER OBJECTS:
+   - If the image shows:
+     * An electronic smartwatch (e.g. Apple Watch, Samsung Galaxy Watch, Garmin, Fitbit, Android watch)
+     * An electronic OLED/LCD screen, smart band with screen, glowing display, illuminated UI, clock face, digital numerals, or app icons
+     * An analog mechanical/quartz watch with metal hands, glass crystal dial, or bezel
+     * A phone screen, tablet, laptop, computer monitor, desk, human face, skin without badge, or arbitrary background
+   You MUST REJECT IT IMMEDIATELY:
+     - Set "wristband_detected": false
+     - Set "wristband_type": "REJECTED_SMARTWATCH_OR_NON_DOSIMETER"
+     - Set "sensing_patch_color": {
+         "hex": "#000000",
+         "stage": "NOT_A_DOSIMETER",
+         "color_name": "Non-Dosimeter / Electronic Display"
+       }
+     - Set "bounding_boxes": {"sensing_strip": null, "reference_scale": null}
+     - Set "image_quality": {
+         "is_too_dark": false,
+         "is_overexposed": false,
+         "is_blurry": false,
+         "strip_not_visible": true,
+         "reference_scale_missing": true,
+         "quality_verdict": "FAIL",
+         "quality_score": 0.0,
+         "quality_notes": "REJECTED: Electronic smartwatch or non-dosimeter device detected. SARVAS only quantifies passive chemical colorimetric dosimeters."
+       }
+
+3. If an authentic SARVAS chemical dosimeter wristband or benchmark test card IS present:
    - "wristband_detected": true
    - "wristband_type": "SARVAS Dual-Zone Dosimeter"
    - Localize the colorimetric sensing strip bounding box in normalized coordinates [ymin, xmin, ymax, xmax] on a 0 to 1000 integer scale.
@@ -186,24 +202,28 @@ export class GeminiVisionDirect {
           if (rawText) {
             const cleaned = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
             const parsed = JSON.parse(cleaned);
+            const isDetected = parsed.wristband_detected !== false && 
+              !parsed.wristband_type?.toLowerCase().includes('reject') &&
+              parsed.sensing_patch_color?.stage !== 'NOT_A_DOSIMETER';
+
             return {
-              wristband_detected: parsed.wristband_detected ?? true,
-              wristband_type: parsed.wristband_type ?? 'SARVAS Dual-Zone Ag/Cu Dosimeter',
+              wristband_detected: isDetected,
+              wristband_type: parsed.wristband_type ?? (isDetected ? 'SARVAS Dual-Zone Ag/Cu Dosimeter' : 'REJECTED_NON_DOSIMETER'),
               provider: `Google Gemini Vision (${model} Direct)`,
               sensing_patch_color: parsed.sensing_patch_color || undefined,
               bounding_boxes: {
-                sensing_strip: parsed.bounding_boxes?.sensing_strip || [380, 420, 580, 580],
-                reference_scale: parsed.bounding_boxes?.reference_scale || [620, 400, 720, 600]
+                sensing_strip: isDetected ? (parsed.bounding_boxes?.sensing_strip || [380, 420, 580, 580]) : [0, 0, 0, 0],
+                reference_scale: isDetected ? (parsed.bounding_boxes?.reference_scale || [620, 400, 720, 600]) : undefined
               },
               image_quality: {
                 is_too_dark: parsed.image_quality?.is_too_dark ?? false,
                 is_overexposed: parsed.image_quality?.is_overexposed ?? false,
                 is_blurry: parsed.image_quality?.is_blurry ?? false,
-                strip_not_visible: parsed.image_quality?.strip_not_visible ?? false,
-                reference_scale_missing: parsed.image_quality?.reference_scale_missing ?? false,
-                quality_verdict: parsed.image_quality?.quality_verdict ?? 'PASS',
-                quality_score: parsed.image_quality?.quality_score ?? 0.94,
-                quality_notes: parsed.image_quality?.quality_notes ?? 'Direct Gemini inspection completed.'
+                strip_not_visible: !isDetected || (parsed.image_quality?.strip_not_visible ?? false),
+                reference_scale_missing: !isDetected || (parsed.image_quality?.reference_scale_missing ?? false),
+                quality_verdict: isDetected ? (parsed.image_quality?.quality_verdict ?? 'PASS') : 'FAIL',
+                quality_score: isDetected ? (parsed.image_quality?.quality_score ?? 0.94) : 0.0,
+                quality_notes: parsed.image_quality?.quality_notes ?? (isDetected ? 'Direct Gemini inspection completed.' : 'Electronic smartwatch or non-dosimeter detected.')
               },
               raw_gemini_response: parsed
             };

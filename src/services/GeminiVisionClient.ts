@@ -32,37 +32,68 @@ const DEFAULT_KEY = (import.meta as any).env?.VITE_GEMINI_API_KEY || 'AQ.Ab8RN6K
 const STORAGE_KEY = 'RAGEB8_GEMINI_API_KEY';
 
 const GEMINI_PROMPT = `
-You are a precision computer-vision localization and quality-inspection assistant for an industrial passive chemical dosimeter wristband (RageB8 Cu-PAN H2S Dosimeter).
+You are a precision computer-vision localization and quality-inspection assistant for an industrial passive chemical dosimeter wristband (SARVAS Dual-Zone H2S Dosimeter).
 
 CRITICAL SAFETY DIRECTIVE:
 You must NEVER predict chemical concentration, gas dose, or ppm·h. Quantitative dosing is handled by a separate calibrated physics model.
 
-YOUR SOLE TASKS:
-1. Detect whether a valid dosimeter wristband or test card is present.
-2. Localize the colorimetric sensing strip bounding box in normalized coordinates [ymin, xmin, ymax, xmax] on a 0 to 1000 integer scale.
-3. Localize the printed reference color scale bounding box in normalized coordinates [ymin, xmin, ymax, xmax] on a 0 to 1000 integer scale.
-4. Perform an optical quality audit:
-   - is_too_dark (boolean): insufficient lighting or heavy shadow
-   - is_overexposed (boolean): specular glare or washed out white
-   - is_blurry (boolean): camera out of focus or motion blur
-   - strip_not_visible (boolean): strip obstructed, clipped, or missing
-   - reference_scale_missing (boolean): reference color scale cannot be seen
-   - quality_verdict: "PASS", "WARNING", or "FAIL"
-   - quality_score: float between 0.0 and 1.0
-   - quality_notes: brief explanation
-5. Optical patch color extraction:
-   - sensing_patch_color: Extract dominant hex color of the chemical sensing strip (e.g., "#5C3A7A" fresh violet, "#8C5874" low-dose mauve, "#7A5B43" action amber, "#3D2B1F" elevated brown, "#1E1A17" critical black).
-   - stage: "BASELINE_NORMAL" | "LOW_EXPOSURE" | "ACTION_MONITOR" | "ELEVATED_REVIEW" | "CRITICAL_BLACK" | "NOT_A_DOSIMETER"
-   - color_name: human description
+YOUR PRIMARY QUALITY & DETECTION DIRECTIVE:
+1. DETECT WHETHER AN AUTHENTIC SARVAS CHEMICAL DOSIMETER WRISTBAND OR TEST CARD IS PRESENT:
+   - Authentic SARVAS dosimeters are zero-power passive badges with:
+     * A transparent capsule containing a chemical strip with two distinct colorimetric zones (Zone A silver nitrate and Zone B copper sulfate).
+     * A printed reference calibration step-wedge scale beside the strip.
+     * A chemical moisture seal dot.
+     * A silicone wrist strap.
+
+2. STRICT REJECTION OF SMARTWATCHES, DIGITAL WATCHES, SCREENS & NON-DOSIMETER OBJECTS:
+   - If the image contains:
+     * An electronic smartwatch (Apple Watch, Samsung Galaxy Watch, Fitbit, Garmin, etc.)
+     * An electronic OLED/LCD screen, smart band with screen, glowing display, illuminated UI, clock face, digital numerals, or app icons
+     * An analog quartz/mechanical watch dial with metal hands or glass bezel
+     * A phone screen, tablet, laptop, computer monitor, desk, human face, skin without badge, or arbitrary background
+   You MUST REJECT IT IMMEDIATELY:
+     - Set "wristband_detected": false
+     - Set "wristband_type": "REJECTED_SMARTWATCH_OR_NON_DOSIMETER"
+     - Set "sensing_patch_color": {
+         "hex": "#000000",
+         "stage": "NOT_A_DOSIMETER",
+         "color_name": "Non-Dosimeter / Electronic Display"
+       }
+     - Set "bounding_boxes": {"sensing_strip": null, "reference_scale": null}
+     - Set "image_quality": {
+         "is_too_dark": false,
+         "is_overexposed": false,
+         "is_blurry": false,
+         "strip_not_visible": true,
+         "reference_scale_missing": true,
+         "quality_verdict": "FAIL",
+         "quality_score": 0.0,
+         "quality_notes": "REJECTED: Electronic smartwatch or non-dosimeter device detected. SARVAS only quantifies passive chemical colorimetric dosimeters."
+       }
+
+3. If an authentic SARVAS chemical dosimeter wristband or benchmark test card IS present:
+   - "wristband_detected": true
+   - "wristband_type": "SARVAS Dual-Zone Dosimeter"
+   - Localize the colorimetric sensing strip bounding box in normalized coordinates [ymin, xmin, ymax, xmax] on a 0 to 1000 integer scale.
+   - Localize the printed reference color scale bounding box in normalized coordinates [ymin, xmin, ymax, xmax] on a 0 to 1000 integer scale.
+   - Optical patch color extraction on Zone A sensing strip:
+     * hex: dominant hex color code of Zone A (e.g. "#EDECE5" fresh baseline, "#D8D4CD" trace, "#928D88" action slate, "#504A44" critical black).
+     * stage: "BASELINE_NORMAL" | "LOW_EXPOSURE" | "ACTION_MONITOR" | "ELEVATED_REVIEW" | "CRITICAL_BLACK"
+     * color_name: description
+   - Optical quality audit:
+     * is_too_dark (boolean), is_overexposed (boolean), is_blurry (boolean), strip_not_visible (boolean), reference_scale_missing (boolean)
+     * quality_verdict: "PASS", "WARNING", or "FAIL"
+     * quality_score: float between 0.0 and 1.0
+     * quality_notes: explanation
 
 Return strictly valid JSON with no markdown backticks:
 {
   "wristband_detected": true,
-  "wristband_type": "RageB8 Cu-PAN Dosimeter",
+  "wristband_type": "SARVAS Dual-Zone Dosimeter",
   "sensing_patch_color": {
-    "hex": "#5C3A7A",
+    "hex": "#EDECE5",
     "stage": "BASELINE_NORMAL",
-    "color_name": "Pristine Violet Baseline"
+    "color_name": "Pristine Baseline"
   },
   "bounding_boxes": {
     "sensing_strip": [ymin, xmin, ymax, xmax],
@@ -76,7 +107,7 @@ Return strictly valid JSON with no markdown backticks:
     "reference_scale_missing": false,
     "quality_verdict": "PASS",
     "quality_score": 0.95,
-    "quality_notes": "Clean lighting, strip and reference scale clearly visible."
+    "quality_notes": "Clean lighting, authentic SARVAS chemical strip identified."
   }
 }
 `;
@@ -160,24 +191,28 @@ export class GeminiVisionClient {
           if (rawText) {
             const cleaned = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
             const parsed = JSON.parse(cleaned);
+            const isDetected = parsed.wristband_detected !== false && 
+              !parsed.wristband_type?.toLowerCase().includes('reject') &&
+              parsed.sensing_patch_color?.stage !== 'NOT_A_DOSIMETER';
+
             return {
-              wristband_detected: parsed.wristband_detected ?? true,
-              wristband_type: parsed.wristband_type ?? 'RageB8 Cu-PAN Dosimeter',
+              wristband_detected: isDetected,
+              wristband_type: parsed.wristband_type ?? (isDetected ? 'SARVAS Dual-Zone Dosimeter' : 'REJECTED_NON_DOSIMETER'),
               provider: `Google Gemini Vision (${model} Direct)`,
               sensing_patch_color: parsed.sensing_patch_color || undefined,
               bounding_boxes: {
-                sensing_strip: parsed.bounding_boxes?.sensing_strip || [380, 420, 580, 580],
-                reference_scale: parsed.bounding_boxes?.reference_scale || [620, 400, 720, 600]
+                sensing_strip: isDetected ? (parsed.bounding_boxes?.sensing_strip || [380, 420, 580, 580]) : [0, 0, 0, 0],
+                reference_scale: isDetected ? (parsed.bounding_boxes?.reference_scale || [620, 400, 720, 600]) : undefined
               },
               image_quality: {
                 is_too_dark: parsed.image_quality?.is_too_dark ?? false,
                 is_overexposed: parsed.image_quality?.is_overexposed ?? false,
                 is_blurry: parsed.image_quality?.is_blurry ?? false,
-                strip_not_visible: parsed.image_quality?.strip_not_visible ?? false,
-                reference_scale_missing: parsed.image_quality?.reference_scale_missing ?? false,
-                quality_verdict: parsed.image_quality?.quality_verdict ?? 'PASS',
-                quality_score: parsed.image_quality?.quality_score ?? 0.94,
-                quality_notes: parsed.image_quality?.quality_notes ?? 'Direct Gemini inspection completed.'
+                strip_not_visible: !isDetected || (parsed.image_quality?.strip_not_visible ?? false),
+                reference_scale_missing: !isDetected || (parsed.image_quality?.reference_scale_missing ?? false),
+                quality_verdict: isDetected ? (parsed.image_quality?.quality_verdict ?? 'PASS') : 'FAIL',
+                quality_score: isDetected ? (parsed.image_quality?.quality_score ?? 0.94) : 0.05,
+                quality_notes: parsed.image_quality?.quality_notes ?? (isDetected ? 'Direct Gemini inspection completed.' : 'Electronic smartwatch or non-dosimeter detected.')
               }
             };
           }
@@ -193,7 +228,7 @@ export class GeminiVisionClient {
   public static fallbackHeuristicAudit(): GeminiClientAuditResult {
     return {
       wristband_detected: true,
-      wristband_type: 'RageB8 Cu-PAN Dosimeter (On-Device Fallback)',
+      wristband_type: 'SARVAS Dual-Zone Dosimeter (On-Device Fallback)',
       provider: 'On-Device Spatial Colorimetry',
       bounding_boxes: {
         sensing_strip: [375, 425, 575, 575],
