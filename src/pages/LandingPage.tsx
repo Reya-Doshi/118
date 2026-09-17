@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
-import bandVideo from '../assets/band.mp4';
+import bandVideo from '../assets/band_expand.mp4';
 import bandDesignImg from '../assets/sarvas_anatomy.jpg';
 import {
   ArrowRight,
