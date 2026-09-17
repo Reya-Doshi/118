@@ -1,11 +1,12 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import type { PageView } from '../types';
 import { Info, Database, Scan, Sparkles, Clock, FileCheck2, BookOpen } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { setActivePage } = useApp();
 
-  const handleNav = (page: any) => {
+  const handleNav = (page: PageView) => {
     setActivePage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

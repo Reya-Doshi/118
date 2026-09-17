@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
+import type { Worker } from '../types';
 import bandVideo from '../assets/band_expand.mp4';
 import { MetricCard } from '../components/MetricCard';
 import { StatusBadge } from '../components/StatusBadge';
@@ -46,7 +47,7 @@ export const DashboardPage: React.FC = () => {
   // Deliverable 3: Exposure Logs & Worker History state
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'NORMAL' | 'MONITOR' | 'REVIEW'>('ALL');
-  const [inspectorWorker, setInspectorWorker] = useState<any | null>(null);
+  const [inspectorWorker, setInspectorWorker] = useState<Worker | null>(null);
 
   const isAdmin = currentUser?.role === 'ADMIN';
 

@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "backend:dev": "python backend/main.py",
+    "backend:train": "python scripts/train_cupan_model.py",
     "backend:test": "python backend/test_backend_api.py",
     "mobile:dev": "npm --prefix mobile run dev",
     "mobile:build": "npm --prefix mobile run build",

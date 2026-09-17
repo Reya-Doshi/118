@@ -57,13 +57,22 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS Middleware (permits local web dashboard, Vite dev servers, and mobile webviews)
+# CORS Middleware — explicit origins required when allow_credentials=True
+# (browsers block wildcard + credentials per CORS spec)
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",   # Vite dev server
+    "http://localhost:4173",   # Vite preview
+    "http://localhost:8080",   # Android WebView / Capacitor
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:4173",
+    "https://reya-doshi.github.io",  # GitHub Pages production
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
 )
 
 

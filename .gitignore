@@ -32,3 +32,8 @@ dist-ssr
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Mobile compiled Android APK assets — these bake in VITE_ env vars at build time
+# and must NOT be committed to version control
+mobile/android/app/src/main/assets/public/
+mobile/dist/

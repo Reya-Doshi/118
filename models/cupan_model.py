@@ -138,28 +138,54 @@ HighPrecisionTree = DecisionTreeRegressor
 
 
 def load_cupan_model(model_path):
-    """Load serialized model with robust class resolution."""
+    """Load serialized model with robust class resolution. Auto-trains if missing."""
     if not os.path.exists(model_path):
-        raise FileNotFoundError(f"Model file not found: {model_path}")
+        print(f"Model file not found at {model_path}. Auto-generating model from calibration dataset...")
+        possible_csvs = [
+            os.path.join(os.path.dirname(__file__), "..", "src", "data", "calibration_dataset.csv"),
+            os.path.join(os.path.dirname(__file__), "..", "calibration_dataset.csv"),
+            os.path.join(os.getcwd(), "src", "data", "calibration_dataset.csv")
+        ]
+        csv_path = None
+        for p in possible_csvs:
+            if os.path.exists(p):
+                csv_path = os.path.abspath(p)
+                break
+        if csv_path:
+            os.makedirs(os.path.dirname(model_path), exist_ok=True)
+            return train_dualzone_model(csv_path, model_path)
+        else:
+            raise FileNotFoundError(f"Neither model file {model_path} nor calibration dataset CSV found.")
+
     with open(model_path, "rb") as f:
         try:
             return _CuPanUnpickler(f).load()
-        except Exception:
+        except Exception as e:
+            print(f"Warning: custom unpickler failed ({e}), falling back to standard pickle.")
             f.seek(0)
             return pickle.load(f)
 
 
 def train_dualzone_model(csv_path, save_path):
-    """Trains the Dual-Zone Random Forest Regressor on the validated dataset and saves it."""
+    """Trains the True Dual-Zone (Ag + Cu) Random Forest Regressor on the validated dataset and saves it."""
     import pandas as pd
     df = pd.read_csv(csv_path)
-    X = df[["agZone_L", "agZone_a", "agZone_b", "agZone_dE", "temp_C", "rh_pct", "strip_age_days"]].values
+
+    # Use both Zone A (Ag) and Zone B (Cu) features for genuine dual-zone regression
+    feature_cols = [
+        "agZone_L", "agZone_a", "agZone_b", "agZone_dE",   # Ag-zone colorimetric
+        "cuZone_L", "cuZone_a", "cuZone_b", "cuZone_dE",   # Cu-zone colorimetric
+        "temp_C", "rh_pct", "strip_age_days"                # Environmental
+    ]
+    # Only use columns that exist in the dataset (graceful for partial CSVs)
+    available_cols = [c for c in feature_cols if c in df.columns]
+    X = df[available_cols].values
     y = df["true_dose_ppmh"].values
 
     rf = RandomForestRegressorModel(n_estimators=80, max_depth=10, min_samples_split=2, random_state=42)
     rf.fit(X, y)
     with open(save_path, "wb") as f:
         pickle.dump(rf, f)
-    print(f"Dual-Zone Random Forest model trained on {len(df)} samples and saved to {save_path}")
+    print(f"Dual-Zone Random Forest model trained on {len(df)} samples using {len(available_cols)} features and saved to {save_path}")
     return rf
 

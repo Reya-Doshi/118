@@ -132,7 +132,7 @@ export class GeminiVisionDirect {
 
   public static isKeyConfigured(): boolean {
     const key = this.getApiKey();
-    return Boolean(key && key.trim().startsWith('AIzaSy') && key.trim().length > 20);
+    return Boolean(key && key.trim().length > 20);
   }
 
   /**
