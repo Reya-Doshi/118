@@ -16,7 +16,7 @@
     "mobile:test": "python scripts/test_mobile_android_e2e.py",
     "prototype:test": "python scripts/test_physical_prototypes.py",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "echo 'Automated deployment via GitHub Actions active on main branch'"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
