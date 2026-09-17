@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import bandVideo from '../assets/band_expand.mp4';
+import hardwareMotionVideo from '../assets/hardware_motion.mp4';
 import bandDesignImg from '../assets/sarvas_anatomy.jpg';
 import {
   ArrowRight,
@@ -372,7 +373,7 @@ export const LandingPage: React.FC = () => {
         <div className="bg-[#292925] rounded-xl p-6 border border-[#3E3C36] space-y-6">
           <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-[#3E3C36] bg-[#1C1C19]">
             <video
-              src={bandVideo}
+              src={hardwareMotionVideo}
               autoPlay
               muted
               loop
