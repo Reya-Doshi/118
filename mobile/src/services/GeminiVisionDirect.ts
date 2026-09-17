@@ -188,7 +188,7 @@ export class GeminiVisionDirect {
             const parsed = JSON.parse(cleaned);
             return {
               wristband_detected: parsed.wristband_detected ?? true,
-              wristband_type: parsed.wristband_type ?? 'RageB8 Cu-PAN Dosimeter',
+              wristband_type: parsed.wristband_type ?? 'SARVAS Dual-Zone Ag/Cu Dosimeter',
               provider: `Google Gemini Vision (${model} Direct)`,
               sensing_patch_color: parsed.sensing_patch_color || undefined,
               bounding_boxes: {
@@ -224,7 +224,7 @@ export class GeminiVisionDirect {
   public static fallbackHeuristicAudit(): GeminiDirectAuditResult {
     return {
       wristband_detected: true,
-      wristband_type: 'RageB8 Cu-PAN Dosimeter (On-Device Fallback)',
+      wristband_type: 'SARVAS Dual-Zone Ag/Cu Dosimeter (On-Device Fallback)',
       provider: 'On-Device Spatial Computer Vision',
       bounding_boxes: {
         sensing_strip: [375, 425, 575, 575],

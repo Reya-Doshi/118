@@ -170,7 +170,7 @@ export class DosimeterApiService {
         geminiAudit = GeminiVisionDirect.fallbackHeuristicAudit();
       }
 
-      // 2. Run Calibrated Cu-PAN Chelation Engine with localization and color extraction
+      // 2. Run Calibrated Dual-Zone Ag/Cu Precipitation Engine with localization and color extraction
       const calibrationResult = await CalibrationEngine.analyzeRawImageAsync(
         params.imageUri,
         params.temperature ?? 25.0,

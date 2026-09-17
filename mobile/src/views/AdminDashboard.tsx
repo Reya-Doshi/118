@@ -418,7 +418,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <div>
               <div className="font-bold text-gray-900 text-[11px]">Chemical Matrix Lifecycle &amp; Batch Quarantine</div>
               <p className="text-[10px] text-gray-600 mt-0.5 leading-relaxed font-medium">
-                Decommission and physically quarantine any Cu-PAN wristband older than 90 days or showing bleaching/matrix degradation.
+                Decommission and physically quarantine any dual-zone Ag/Cu wristband older than 90 days or showing seal breach (blue indicator dot).
               </p>
             </div>
           </div>

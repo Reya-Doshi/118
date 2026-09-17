@@ -79,7 +79,7 @@ export class CalibrationEngine {
   }
 
   /**
-   * Computes ISO/CIE 11664-6 (CIEDE2000) color difference from baseline unexposed Cu-PAN strip.
+   * Computes ISO/CIE 11664-6 (CIEDE2000) color difference from baseline unexposed dual-zone Ag/Cu strip.
    */
   public static computeDeltaE00(
     lab1: { L: number; a: number; b: number },
@@ -295,7 +295,7 @@ export class CalibrationEngine {
       expiryWarning: expiry.warning,
       actionRecommendation: precautions[0],
       precautions,
-      notes: 'Cu-PAN Chelation Matrix · Calibrated Physical Reference'
+      notes: 'Dual-Zone Ag/Cu Matrix · Calibrated Physical Reference'
     };
   }
 

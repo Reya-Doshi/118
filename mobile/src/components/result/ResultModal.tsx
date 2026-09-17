@@ -207,7 +207,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
               </div>
               <div className="flex items-start gap-2 text-[#7A342B] text-xs">
                 <span className="font-bold">❌</span>
-                <span>{isHindi ? 'सेंसिंग स्ट्रिप (Ag₂S/Cu-PAN) फ्रेम में नहीं मिली' : 'Target sensing strip not detected in frame'}</span>
+                <span>{isHindi ? 'सेंसिंग स्ट्रिप (Ag₂S/CuS) फ्रेम में नहीं मिली' : 'Target sensing strip not detected in frame'}</span>
               </div>
               <div className="flex items-start gap-2 text-[#7A342B] text-xs">
                 <span className="font-bold">❌</span>
@@ -325,7 +325,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
             <span className="text-[10px] font-mono font-bold uppercase text-[#71806B] flex items-center gap-1">
               <Palette className="w-3 h-3 text-[#71806B]" /> Colorimetric Parameters
             </span>
-            <span className="text-[10px] font-mono text-[#5D5B53]">Cu-PAN Chelation Matrix</span>
+            <span className="text-[10px] font-mono text-[#5D5B53]">Dual-Zone Ag₂S + CuS Matrix</span>
           </div>
 
           <div className="grid grid-cols-3 gap-2 text-center pt-1">
@@ -397,7 +397,7 @@ export const ResultModal: React.FC<ResultModalProps> = ({
             *** SIMULATED / PROTOTYPE READING ***
           </span>
           <p className="text-[10px] text-[#5D5B53] mt-0.5">
-            Colorimetry modeled for Cu-PAN test strip. Thresholds (Safe &lt;0.50, Action 0.50–1.00, Review &gt;1.00 ppm·h) are prototype conventions, not official OSHA regulatory limits.
+            Colorimetry calibrated for Dual-Zone Ag₂S + CuS dosimeter. Thresholds: Safe &lt;8.0 ppm·h (ACGIH TLV-TWA), Action 8.0–20.0 ppm·h, Review &gt;20.0 ppm·h (OSHA PEL ceiling).
           </p>
         </div>
       </div>
