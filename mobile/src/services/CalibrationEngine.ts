@@ -447,6 +447,71 @@ export class CalibrationEngine {
               cx = Math.floor(((boundingBox[1] + boundingBox[3]) / 2000) * w);
             }
 
+            // 0. Physical Hallmarks Verification for Authentic SARVAS Chemical Dosimeters:
+            // An authentic SARVAS dosimeter MUST possess:
+            // A) Dual-Zone Chemistry: Sky-blue CuSO4 Zone B indicator pad (B > R + 20, G > R + 6, B > 115)
+            // B) High-Contrast Reference Calibration Step-Wedge Scale (minLum < 50 and maxLum > 190)
+            const scanX = Math.floor(w * 0.25);
+            const scanY = Math.floor(h * 0.25);
+            const scanW = Math.floor(w * 0.50);
+            const scanH = Math.floor(h * 0.50);
+            const scanData = ctx.getImageData(scanX, scanY, scanW, scanH).data;
+
+            let skyBluePixels = 0;
+            let minLum = 255;
+            let maxLum = 0;
+
+            for (let i = 0; i < scanData.length; i += 4) {
+              const r = scanData[i];
+              const g = scanData[i + 1];
+              const b = scanData[i + 2];
+              if (b > r + 20 && g > r + 6 && b > 115) {
+                skyBluePixels++;
+              }
+              const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+              if (lum < minLum) minLum = lum;
+              if (lum > maxLum) maxLum = lum;
+            }
+
+            const hasRefContrast = (maxLum - minLum > 140) && minLum < 50 && maxLum > 190;
+            const isAuthenticDosimeter = skyBluePixels >= 15 || hasRefContrast;
+
+            if (!isAuthenticDosimeter) {
+              const rejectReason = 'SMARTWATCH / NON-DOSIMETER DETECTED: Scanned target is an electronic smartwatch, dark screen, or non-dosimeter surface. SARVAS is a zero-power passive chemical dosimeter requiring dual-zone Ag/Cu reagent pads.';
+              resolve({
+                estimated_exposure_ppm_h: 0.0,
+                status: 'REVIEW',
+                confidence: {
+                  score: 0.05,
+                  uncertainty_95_ci_ppm_h: 0.0,
+                  ci_lower_ppm_h: 0.0,
+                  ci_upper_ppm_h: 0.0
+                },
+                rgb: { r: 0, g: 0, b: 0, hex: '#000000' },
+                lab: { L: 0, a: 0, b: 0 },
+                delta_e: 0.0,
+                temperature: temp,
+                humidity: rh,
+                shelf_age_days: shelfAgeDays,
+                image_quality: {
+                  verdict: 'FAIL',
+                  score: 0.05,
+                  is_too_dark: false,
+                  is_overexposed: false,
+                  is_blurry: false,
+                  strip_not_visible: true,
+                  reference_scale_missing: true,
+                  notes: rejectReason
+                },
+                band_detected: false,
+                action_guideline: `WATCH NOT DETECTED: ${rejectReason} Please position your SARVAS chemical wristband directly within the reticle.`,
+                prototype: true,
+                vision_engine: 'On-Device AI Engine (Strict Smartwatch Rejection)',
+                precautions: ['Align authentic SARVAS chemical wristband inside camera reticle', 'Do not scan smartwatches or electronic screens', 'Retake scan']
+              });
+              return;
+            }
+
             // 1. Check for Moisture Seal Breach (Right quadrant: ~0.71w, ~0.43h)
             let isSealBreached = false;
             try {

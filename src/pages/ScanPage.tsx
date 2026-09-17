@@ -327,6 +327,59 @@ export const ScanPage: React.FC = () => {
 
           if (ctx) {
             ctx.drawImage(img, 0, 0, w, h);
+
+            // 0. Physical Hallmarks Verification for Authentic SARVAS Chemical Dosimeters:
+            // An authentic SARVAS dosimeter MUST possess:
+            // A) Dual-Zone Chemistry: Sky-blue CuSO4 Zone B indicator pad (B > R + 20, G > R + 6, B > 115)
+            // B) High-Contrast Reference Calibration Step-Wedge Scale (minLum < 50 and maxLum > 190)
+            const scanX = Math.floor(w * 0.25);
+            const scanY = Math.floor(h * 0.25);
+            const scanW = Math.floor(w * 0.50);
+            const scanH = Math.floor(h * 0.50);
+            const scanData = ctx.getImageData(scanX, scanY, scanW, scanH).data;
+
+            let skyBluePixels = 0;
+            let minLum = 255;
+            let maxLum = 0;
+
+            for (let i = 0; i < scanData.length; i += 4) {
+              const r = scanData[i];
+              const g = scanData[i + 1];
+              const b = scanData[i + 2];
+              if (b > r + 20 && g > r + 6 && b > 115) {
+                skyBluePixels++;
+              }
+              const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+              if (lum < minLum) minLum = lum;
+              if (lum > maxLum) maxLum = lum;
+            }
+
+            const hasRefContrast = (maxLum - minLum > 140) && minLum < 50 && maxLum > 190;
+            const isAuthenticDosimeter = skyBluePixels >= 15 || hasRefContrast;
+
+            if (!isAuthenticDosimeter) {
+              const rejectReason = 'SMARTWATCH / NON-DOSIMETER DETECTED: Scanned target is an electronic smartwatch, dark screen, or non-dosimeter surface. SARVAS is a zero-power passive chemical dosimeter requiring dual-zone Ag/Cu reagent pads.';
+              const rejectedResult = {
+                r: 0,
+                g: 0,
+                b: 0,
+                hex: '#000000',
+                lab: { L: 0, a: 0, b: 0 },
+                deltaE: 0,
+                estimatedDose: 0.0,
+                status: 'REVIEW' as ExposureStatus,
+                actionFlag: rejectReason,
+                confidence: 5,
+                closestSampleId: 'NONE',
+                bandDetected: false,
+                stripNotVisible: true,
+                diagnosticFailure: rejectReason
+              };
+              setExtractedColorimetry(rejectedResult);
+              resolve(rejectedResult);
+              return;
+            }
+
             // 1. Check for Moisture Seal Breach (Right quadrant: ~0.714w, ~0.433h)
             let isSealBreached = false;
             try {
