@@ -546,7 +546,7 @@ export const LandingPage: React.FC = () => {
       )}
 
       {/* 07 — FINAL CTA */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 mt-12 sm:mt-16 relative z-0">
         <div className="bg-[#292925] text-[#EDE5D6] rounded-xl p-6 sm:p-10 md:p-12 text-center space-y-6 border border-[#3E3C36] shadow-sm">
           <div className="space-y-2 max-w-2xl mx-auto">
             <span className="text-xs font-mono font-semibold uppercase tracking-widest text-[#C2CBBF]">

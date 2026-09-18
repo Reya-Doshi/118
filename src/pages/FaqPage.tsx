@@ -836,7 +836,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Left Column: Clean Question Selector List */}
-          <div className="lg:col-span-5 space-y-2 max-h-[640px] lg:overflow-y-auto pr-1">
+          <div className="lg:col-span-5 space-y-2 h-auto min-h-fit lg:max-h-[640px] lg:overflow-y-auto pr-1 relative z-0">
             <div className="text-[10px] font-mono uppercase tracking-wider text-[#878377] px-1 font-bold">
               Questions ({filteredFaq.length})
             </div>
@@ -1002,7 +1002,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
       )}
 
       {/* Clean Bottom Principles Strip */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#D8D0C2] shadow-2xs">
+      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#D8D0C2] shadow-2xs mt-8 sm:mt-10 relative z-0">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-[#5D5B53]">
           <div className="flex items-start gap-2.5">
             <span className="font-mono font-bold text-[#4F5D4B] text-sm">01</span>
