@@ -18,6 +18,7 @@
   }
 
   html {
+    font-size: 104%;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
   }
@@ -28,7 +29,26 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-size: 0.9375rem;
+    line-height: 1.5;
   }
+}
+
+/* Subtle Global Legibility Scale Boost */
+.text-\[9px\] {
+  font-size: 10.5px !important;
+}
+
+.text-\[10px\] {
+  font-size: 11.5px !important;
+}
+
+.text-\[11px\] {
+  font-size: 12.5px !important;
+}
+
+.text-xs {
+  font-size: 0.8125rem !important;
 }
 
 /* 10x Brighter Luminous Palette Overrides */
