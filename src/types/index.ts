@@ -108,7 +108,7 @@ export interface AlertItem {
   humidityPercent?: number;
 }
 
-export type PageView = 'landing' | 'dashboard' | 'worker-dashboard' | 'scan' | 'result' | 'workers' | 'history' | 'calibration' | 'kiosk' | 'explainability' | 'faq' | 'overview';
+export type PageView = 'landing' | 'dashboard' | 'worker-dashboard' | 'scan' | 'result' | 'workers' | 'history' | 'calibration' | 'kiosk' | 'explainability' | 'faq' | 'overview' | 'references';
 
 export type UserRole = 'WORKER' | 'OFFICER' | 'ADMIN';
 

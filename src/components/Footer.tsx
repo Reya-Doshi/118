@@ -74,6 +74,13 @@ export const Footer: React.FC = () => {
               <FileCheck2 className="w-3.5 h-3.5 text-[#C2CBBF]" />
               <span>FAQ</span>
             </button>
+            <button
+              onClick={() => handleNav('references')}
+              className="px-2.5 py-1 rounded-lg bg-[#4F5D4B] hover:bg-[#3D493A] text-white transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs font-bold"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-amber-300" />
+              <span>Reference Links</span>
+            </button>
           </div>
 
           {/* RAGEBYTERS SIH 2026 Section */}
