@@ -770,10 +770,10 @@ export const KioskPage: React.FC = () => {
 
                   <div className="flex items-center gap-3">
                     <div className="text-center">
-                      <div className="w-10 h-10 rounded-lg bg-[#B8728A] border border-gray-300 shadow-inner" />
+                      <div className="w-10 h-10 rounded-lg bg-[#EDECE5] border border-gray-300 shadow-inner" />
                       <span className="text-[9px] font-mono text-gray-500 mt-1 block">Fresh</span>
                     </div>
-                    <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-[#B8728A] via-[#7A5B43] to-[#3D2B1F]" />
+                    <div className="flex-1 h-2 rounded-full bg-gradient-to-r from-[#EDECE5] via-[#928D88] to-[#504A44]" />
                     <div className="text-center">
                       <div
                         className="w-10 h-10 rounded-lg border border-gray-300 shadow-inner"

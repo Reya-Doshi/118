@@ -37,8 +37,8 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const STORAGE_WORKERS_KEY = '118_workers_v1';
-const STORAGE_READINGS_KEY = '118_readings_v1';
+const STORAGE_WORKERS_KEY = '118_workers_v2';
+const STORAGE_READINGS_KEY = '118_readings_v2';
 const STORAGE_ALERTS_KEY = '118_alerts_v1';
 const STORAGE_USER_KEY = '118_user_profile_v2';
 

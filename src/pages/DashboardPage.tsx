@@ -507,11 +507,11 @@ export const DashboardPage: React.FC = () => {
                             <div
                               className="w-4 h-4 rounded-full border border-gray-300 shadow-2xs shrink-0"
                               style={{
-                                backgroundColor: w.status === 'NORMAL' ? '#B8728A' : w.status === 'MONITOR' ? '#7A5B43' : '#3D2B1F'
+                                backgroundColor: w.status === 'NORMAL' ? '#EDECE5' : w.status === 'MONITOR' ? '#928D88' : '#504A44'
                               }}
                             />
                             <span className="text-[10px] font-mono text-gray-500">
-                              {w.status === 'NORMAL' ? 'Pink' : w.status === 'MONITOR' ? 'Amber' : 'Bronze'}
+                              {w.status === 'NORMAL' ? 'Cream (#EDECE5)' : w.status === 'MONITOR' ? 'Slate (#928D88)' : 'Black (#504A44)'}
                             </span>
                           </div>
                         </td>
