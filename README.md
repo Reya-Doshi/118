@@ -3,8 +3,7 @@
 # 🛡️ SARVAS: Self-Actuating Resilient Vapor-Adsorbing Sensor
 ### Intelligent Passive $H_2S$ Cumulative Dosimetry & On-Device Optical Quantification System
 
-[![Smart India Hackathon 2026](https://img.shields.io/badge/SIH_2026-Problem_Statement_118-FF9933?style=for-the-badge&logo=target&logoColor=white)](https://sih.gov.in/)
-[![Team RageB8](https://img.shields.io/badge/Engineered_by-Team_RageB8-292925?style=for-the-badge&logo=shield&logoColor=F6F1E7)](https://github.com/Nxyen-labs/118)
+[![Team RageB8](https://img.shields.io/badge/Engineered_by-Team_RageB8-292925?style=for-the-badge&logo=shield&logoColor=F6F1E7)](https://github.com/Reya-Doshi/118)
 [![ATEX Zone 0](https://img.shields.io/badge/Intrinsic_Safety-ATEX_Zone_0_Compliant-008080?style=for-the-badge&logo=shield-halved&logoColor=white)](#-intrinsic-safety--atex-compliance)
 [![BOM Cost](https://img.shields.io/badge/Unit_Cost-%E2%82%B90.85_per_badge-2E7D32?style=for-the-badge&logo=currency-inr&logoColor=white)](#-hardware-anatomy--unit-economics-085-bom)
 [![On-Device ML](https://img.shields.io/badge/Edge_AI-CIEDE2000_%2B_Random_Forest-6A1B9A?style=for-the-badge&logo=scikit-learn&logoColor=white)](#-on-device-computational-optical--ml-pipeline)
@@ -404,7 +403,7 @@ SARVAS is designed to directly satisfy and integrate into international and Indi
 ### Installation
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Nxyen-labs/118.git
+git clone https://github.com/Reya-Doshi/118.git
 
 # 2. Navigate to the project root
 cd 118
@@ -443,7 +442,7 @@ npx cap open android
 ## 📂 Repository Structure
 
 ```
-118/
+sarvas/
 ├── src/
 │   ├── components/
 │   │   ├── Navbar.tsx             # Responsive nav with role switcher & kiosk link
@@ -475,14 +474,14 @@ npx cap open android
 ├── mobile/                        # Capacitor native mobile Android project
 ├── package.json                   # Dependencies and scripts
 ├── vite.config.ts                 # Vite bundler configuration
-└── README.md                      # Engineering dossier & jury documentation
+└── README.md                      # Engineering dossier & system documentation
 ```
 
 ---
 
 ## 👥 Engineering Team — RageB8
 
-Developed with precision and scientific rigour for **Smart India Hackathon 2026** (Problem Statement 118).
+Developed with precision and scientific rigour for industrial occupational hygiene and workforce safety.
 
 - **Team Name:** RageB8
 - **Domain:** Industrial Safety, Petrochemical Occupational Hygiene & Smart Wearables
