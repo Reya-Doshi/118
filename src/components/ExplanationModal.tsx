@@ -39,8 +39,8 @@ export const ExplanationModal: React.FC = () => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-[#F6F1E7] text-[#292925] rounded-xl max-w-2xl w-full p-6 md:p-8 shadow-xl border border-[#D8D0C2] relative overflow-hidden max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="bg-[#F6F1E7] text-[#292925] rounded-xl max-w-2xl w-full mx-3 p-4 sm:p-6 md:p-8 shadow-xl border border-[#D8D0C2] relative overflow-hidden max-h-[90vh] overflow-y-auto">
         
         {/* Close Button */}
         <button

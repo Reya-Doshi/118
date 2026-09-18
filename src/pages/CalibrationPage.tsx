@@ -291,7 +291,7 @@ export const CalibrationPage: React.FC = () => {
       </div>
 
       {/* METRIC OVERVIEW CARDS */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         <div className="bg-[#EDE5D6]/30 p-4 rounded-xl border border-[#D8D0C2] shadow-xs">
           <div className="text-[10px] font-mono font-bold text-[#292925]/60 uppercase">TOTAL SAMPLES</div>
           <div className="text-2xl font-bold font-mono text-[#292925] mt-1">{CALIBRATION_DATASET.length}</div>

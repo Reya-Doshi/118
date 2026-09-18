@@ -90,7 +90,7 @@ export const WristbandPreview: React.FC<WristbandPreviewProps> = ({
       </div>
 
       {showLabels && (
-        <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2 text-center border-t border-[#3E3C36] pt-3 text-[11px] text-[#A69F91]">
+        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-center border-t border-[#3E3C36] pt-3 text-[11px] text-[#A69F91]">
           <div>
             <span className="text-[#C2CBBF] font-semibold">Strip:</span> Reacts to cumulative H₂S
           </div>

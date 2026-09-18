@@ -514,7 +514,7 @@ export const LandingPage: React.FC = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           <div className="p-4 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
             <div className="text-[10px] font-mono text-[#878377] uppercase font-bold">ACTIVE WORKERS</div>
             <div className="text-2xl font-bold font-mono text-[#292925] mt-1">48</div>

@@ -188,26 +188,26 @@ export const LoginModal: React.FC = () => {
       onClick={closeLoginModal}
     >
       <div 
-        className="bg-[#F6F1E7] border border-[#D8D0C2] rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden text-[#292925] flex flex-col max-h-[90vh]"
+        className="bg-[#F6F1E7] border border-[#D8D0C2] rounded-3xl w-full max-w-lg mx-3 shadow-2xl overflow-hidden text-[#292925] flex flex-col max-h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
         
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-[#D8D0C2] bg-[#EDE5D6]/70">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-[#D8D0C2] bg-[#EDE5D6]/70">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <img 
               src="/sarvas_logo_v2.png" 
               alt="RageB8 Logo" 
-              className="w-10 h-10 rounded-xl object-contain bg-white p-1 border border-[#D8D0C2] shadow-xs"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-contain bg-white p-1 border border-[#D8D0C2] shadow-xs shrink-0"
             />
             <div>
-              <h3 className="text-base font-serif font-bold text-[#292925] tracking-tight flex items-center gap-2">
+              <h3 className="text-sm sm:text-base font-serif font-bold text-[#292925] tracking-tight flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <span>Personnel Authentication</span>
-                <span className="text-[10px] font-mono bg-[#71806B]/20 text-[#4F5D4B] px-2 py-0.5 rounded font-semibold uppercase">
+                <span className="text-[9px] sm:text-[10px] font-mono bg-[#71806B]/20 text-[#4F5D4B] px-1.5 py-0.5 rounded font-semibold uppercase">
                   MRPL Refinery
                 </span>
               </h3>
-              <p className="text-[11px] text-[#5D5B53] font-serif">
+              <p className="text-[10px] sm:text-[11px] text-[#5D5B53] font-serif">
                 Select your plant credentials to access your personal dashboard
               </p>
             </div>
@@ -215,7 +215,7 @@ export const LoginModal: React.FC = () => {
 
           <button
             onClick={closeLoginModal}
-            className="p-2 rounded-xl text-[#5D5B53] hover:text-[#292925] hover:bg-[#D8D0C2]/50 transition-colors cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-xl text-[#5D5B53] hover:text-[#292925] hover:bg-[#D8D0C2]/50 transition-colors cursor-pointer shrink-0"
             aria-label="Close modal"
           >
             <X className="w-4 h-4" />
@@ -223,34 +223,34 @@ export const LoginModal: React.FC = () => {
         </div>
 
         {/* Tab Toggle Navigation */}
-        <div className="px-6 pt-4 pb-2 border-b border-[#D8D0C2]/70 flex gap-2">
+        <div className="px-3 sm:px-6 pt-3 sm:pt-4 pb-2 border-b border-[#D8D0C2]/70 flex gap-2">
           <button
             onClick={() => setActiveTab('presets')}
-            className={`flex-1 py-2 px-3 rounded-xl text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            className={`flex-1 py-2 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-mono font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer ${
               activeTab === 'presets'
                 ? 'bg-[#292925] text-[#F6F1E7] shadow-xs'
                 : 'bg-[#EDE5D6]/60 text-[#5D5B53] hover:bg-[#EDE5D6] hover:text-[#292925]'
             }`}
           >
-            <KeyRound className="w-3.5 h-3.5" />
-            <span>Operational Passes (1-Tap)</span>
+            <KeyRound className="w-3.5 h-3.5 shrink-0" />
+            <span>Operational Passes</span>
           </button>
 
           <button
             onClick={() => setActiveTab('custom')}
-            className={`flex-1 py-2 px-3 rounded-xl text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            className={`flex-1 py-2 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-mono font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer ${
               activeTab === 'custom'
                 ? 'bg-[#292925] text-[#F6F1E7] shadow-xs'
                 : 'bg-[#EDE5D6]/60 text-[#5D5B53] hover:bg-[#EDE5D6] hover:text-[#292925]'
             }`}
           >
-            <IdCard className="w-3.5 h-3.5" />
+            <IdCard className="w-3.5 h-3.5 shrink-0" />
             <span>Custom Badge ID</span>
           </button>
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="p-6 overflow-y-auto space-y-4">
+        <div className="p-3.5 sm:p-6 overflow-y-auto space-y-4">
           
           {activeTab === 'presets' ? (
             <div className="space-y-3">
