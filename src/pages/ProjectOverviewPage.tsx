@@ -113,14 +113,14 @@ export const ProjectOverviewPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. THE PROBLEM VS OUR SOLUTION (PS-118 COMPLIANCE MATRIX) */}
+      {/* 2. THE PROBLEM VS OUR SOLUTION (SAFETY MANDATE COMPLIANCE MATRIX) */}
       <section className="space-y-4">
         <div className="border-b border-[#D8D0C2] pb-3">
           <span className="text-[10px] font-mono uppercase tracking-widest text-[#71806B] font-bold">
             Direct Problem Alignment
           </span>
           <h2 className="text-2xl font-bold text-[#292925] font-serif">
-            How SARVAS Solves Every Requirement of PS-118
+            How SARVAS Solves Industrial Gas Safety Requirements
           </h2>
           <p className="text-xs text-[#292925]/70 mt-1">
             Comparing industry limitations (electronic monitors &amp; legacy threshold badges) against our indigenously engineered architecture.
@@ -520,7 +520,7 @@ export const ProjectOverviewPage: React.FC = () => {
               </div>
               <h3 className="font-bold text-base text-[#292925]">Dual-Zone Chemosensing &amp; Anhydrous CuSO₄ Seal Indicator</h3>
               <p className="text-xs text-[#5D5B53] leading-relaxed">
-                Formulated the Dual-Zone chemistry: Silver Nitrate (AgNO₃) for trace detection (0.1–2 ppm·h) and Copper Sulfate (CuSO₄) for extended high-dose tracking (up to 160 ppm·h). Formulated the physical anhydrous CuSO₄ moisture dot to address PS-118's requirement that workers verify the badge hasn't degraded prior to donning.
+                Formulated the Dual-Zone chemistry: Silver Nitrate (AgNO₃) for trace detection (0.1–2 ppm·h) and Copper Sulfate (CuSO₄) for extended high-dose tracking (up to 160 ppm·h). Formulated the physical anhydrous CuSO₄ moisture dot to address industry requirements that workers verify the badge hasn't degraded prior to donning.
               </p>
             </div>
           </div>

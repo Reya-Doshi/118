@@ -183,7 +183,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
       fullAnswer: (
         <div className="space-y-3 text-xs leading-relaxed text-[#5D5B53]">
           <p>
-            PS-118 explicitly demands: <em>"no way to confirm the badge itself hasn't already expired or degraded before it's worn."</em> SARVAS solves this with an innovative triple-defense architecture:
+            Industrial safety mandates explicitly demand: <em>"no way to confirm the badge itself hasn't already expired or degraded before it's worn."</em> SARVAS solves this with an innovative triple-defense architecture:
           </p>
           <ol className="list-decimal list-inside space-y-1.5 pl-1 text-[11px]">
             <li><strong>Anhydrous CuSO₄ Moisture Breach Dot:</strong> Pristine anhydrous copper sulfate is stark white. If pouch integrity is breached during transport or storage, moisture hydrates it to vivid blue [Cu(H₂O)₄]SO₄·H₂O. Workers reject any badge with a blue dot before ever putting it on.</li>
@@ -607,7 +607,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
           </div>
         </div>
       ),
-      tags: ['superiority', 'ps-118', 'technology', 'innovation']
+      tags: ['superiority', 'dosimeter', 'technology', 'innovation']
     },
     {
       id: 'q-jury-1',

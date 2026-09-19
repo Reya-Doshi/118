@@ -231,7 +231,6 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
     const targetUrl = urlToSave || customServerUrl;
     if (targetUrl) {
       localStorage.setItem('SARVAS_BACKEND_URL', targetUrl.trim());
-      localStorage.setItem('RAGEB8_BACKEND_URL', targetUrl.trim());
       setCustomServerUrl(targetUrl.trim());
       setShowServerConfig(false);
       startAnalysis();
@@ -248,7 +247,7 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
         <div className="text-center space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-[11px] font-mono mb-1">
             <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            {isHindi ? 'एआई विश्लेषणात्मक पाइपलाइन · PS-118' : 'AI Analytical Pipeline · PS-118'}
+            {isHindi ? 'एआई विश्लेषणात्मक पाइपलाइन · SARVAS' : 'AI Analytical Pipeline · SARVAS'}
           </div>
           <h3 className="text-xl font-serif font-bold text-white">
             {errorState 

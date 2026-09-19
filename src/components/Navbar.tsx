@@ -44,7 +44,7 @@ export const Navbar: React.FC = () => {
   // Close mobile menu on escape key or resize to desktop
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 768) {
+      if (window.innerWidth >= 1024) {
         setIsMobileMenuOpen(false);
       }
     };
@@ -87,18 +87,18 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4 lg:gap-8 h-16">
           
-          {/* Left: Product Name "SARVAS" */}
-          <div className="flex items-center gap-6">
+          {/* Left: Product Name "SARVAS" & Desktop Nav */}
+          <div className="flex items-center gap-3 xl:gap-6 min-w-0">
             <button
               onClick={() => handleNavClick('landing')}
-              className="flex items-center gap-2.5 group text-left focus:outline-none cursor-pointer"
+              className="flex items-center gap-2.5 group text-left focus:outline-none cursor-pointer shrink-0"
             >
               <img
                 src="/sarvas_logo_v2.png"
                 alt="SARVAS Emblem"
                 className="w-8 h-8 rounded-lg object-contain bg-white p-0.5 border border-[#D8D0C2] shadow-2xs group-hover:scale-105 transition-transform"
               />
-              <div>
+              <div className="shrink-0">
                 <div className="flex items-center gap-1.5 leading-none">
                   <span className="text-xl font-bold tracking-tight block font-mono leading-none">
                     SARVAS
@@ -113,14 +113,14 @@ export const Navbar: React.FC = () => {
             </button>
 
             {/* Desktop Navigation Tabs */}
-            <nav className={`hidden md:flex items-center gap-1 ml-4 border-l pl-5 transition-colors ${
+            <nav className={`hidden lg:flex items-center gap-0.5 xl:gap-1.5 ml-2 xl:ml-3 border-l pl-2.5 xl:pl-4 transition-colors shrink-0 ${
               isTransparentOnHero ? 'border-white/20' : 'border-[#D8D0C2]'
             }`}>
               {!currentUser ? (
                 <>
                   <button
                     onClick={() => handleNavClick('landing', 'the-band')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       isTransparentOnHero
                         ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -131,7 +131,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('landing', 'how-it-works')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       isTransparentOnHero
                         ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -142,7 +142,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('overview')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'overview'
                         ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -153,7 +153,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('calibration')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'calibration'
                         ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -164,7 +164,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('landing', 'faq')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       isTransparentOnHero
                         ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -175,7 +175,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('references')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'references'
                         ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -186,7 +186,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('scan')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer mr-1 lg:mr-2 ${
+                    className={`flex items-center gap-1.5 px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer mr-0.5 xl:mr-2 ${
                       activePage === 'scan'
                         ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -200,7 +200,7 @@ export const Navbar: React.FC = () => {
                 <>
                   <button
                     onClick={() => handleNavClick('worker-dashboard')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'worker-dashboard'
                         ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -212,7 +212,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('scan')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'scan'
                         ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -224,7 +224,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('history')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'history'
                         ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -238,7 +238,7 @@ export const Navbar: React.FC = () => {
                 <>
                   <button
                     onClick={() => handleNavClick('dashboard')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'dashboard'
                         ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -250,7 +250,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('scan')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'scan'
                         ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -262,7 +262,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('workers')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'workers'
                         ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -274,7 +274,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('history')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'history'
                         ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -289,7 +289,7 @@ export const Navbar: React.FC = () => {
                 <>
                   <button
                     onClick={() => handleNavClick('dashboard')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'dashboard'
                         ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -301,7 +301,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('workers')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'workers'
                         ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -313,7 +313,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('calibration')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'calibration'
                         ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -325,7 +325,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('history')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'history'
                         ? 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -340,13 +340,13 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right: Desktop Controls + Mobile Hamburger */}
-          <div className={`flex items-center gap-2 sm:gap-2.5 ml-3 sm:ml-4 lg:ml-6 pl-3 sm:pl-4 lg:pl-5 border-l shrink-0 transition-colors ${
+          <div className={`flex items-center gap-1.5 sm:gap-2 lg:gap-2.5 ml-2 sm:ml-3 lg:ml-4 pl-2.5 sm:pl-3 lg:pl-4 border-l shrink-0 transition-colors ${
             isTransparentOnHero ? 'border-white/20' : 'border-[#D8D0C2]'
           }`}>
             {/* Interactive Kiosk Prototype Nav Button */}
             <button
               onClick={() => handleNavClick('kiosk')}
-              className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95 ${
+              className={`hidden sm:flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-xl border text-xs font-bold whitespace-nowrap shrink-0 transition-all cursor-pointer shadow-xs active:scale-95 ${
                 activePage === 'kiosk'
                   ? 'bg-[#292925] text-white border-[#292925]'
                   : isTransparentOnHero
@@ -357,7 +357,7 @@ export const Navbar: React.FC = () => {
             >
               <Scan className="w-3.5 h-3.5 text-emerald-500" />
               <span>Kiosk Prototype</span>
-              <span className="text-[9px] font-mono bg-emerald-600 text-white px-1.5 py-0.2 rounded font-bold uppercase">
+              <span className="text-[9px] font-mono bg-emerald-600 text-white px-1.5 py-0.5 rounded font-bold uppercase">
                 Flow
               </span>
             </button>
@@ -365,7 +365,7 @@ export const Navbar: React.FC = () => {
             {/* ML Explainability Video Nav Button */}
             <button
               onClick={() => handleNavClick('explainability')}
-              className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer shadow-xs active:scale-95 ${
+              className={`hidden sm:flex items-center gap-1.5 px-2 xl:px-2.5 py-1.5 rounded-xl border text-xs font-semibold whitespace-nowrap shrink-0 transition-all cursor-pointer shadow-xs active:scale-95 ${
                 activePage === 'explainability'
                   ? 'bg-[#4F5D4B] text-white border-[#4F5D4B]'
                   : isTransparentOnHero
@@ -375,7 +375,7 @@ export const Navbar: React.FC = () => {
               title="View Color-to-Dose ML Pipeline Diagram"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span className="hidden lg:inline">ML Pipeline</span>
+              <span className="hidden xl:inline">ML Pipeline</span>
               <span className="text-[9px] font-mono bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-bold">
                 AI
               </span>
@@ -384,7 +384,7 @@ export const Navbar: React.FC = () => {
             {!currentUser && (
               <button
                 onClick={openExplanation}
-                className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium transition-colors cursor-pointer ${
+                className={`hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
                   isTransparentOnHero
                     ? 'border-white/30 bg-white/10 text-[#F6F1E7] hover:bg-white/20'
                     : 'border-[#D8D0C2] bg-[#EDE5D6] text-[#292925] hover:bg-[#E5DDCB]'
@@ -441,7 +441,7 @@ export const Navbar: React.FC = () => {
             <button
               onClick={() => setIsMobileMenuOpen(prev => !prev)}
               aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-              className={`md:hidden p-2 rounded-lg border transition-colors cursor-pointer ${
+              className={`lg:hidden p-2 rounded-lg border transition-colors cursor-pointer ${
                 isTransparentOnHero
                   ? 'border-white/25 bg-black/25 text-[#F6F1E7] hover:bg-white/10'
                   : 'border-[#D8D0C2] bg-[#EDE5D6] text-[#292925] hover:bg-[#E5DDCB]'
@@ -461,7 +461,7 @@ export const Navbar: React.FC = () => {
 
       {/* MOBILE FULL-WIDTH SLIDE-DOWN DRAWER */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-[#F6F1E7] border-b border-[#D8D0C2] shadow-xl text-[#292925] animate-in slide-in-from-top duration-200">
+        <div className="lg:hidden bg-[#F6F1E7] border-b border-[#D8D0C2] shadow-xl text-[#292925] animate-in slide-in-from-top duration-200">
           <div className="max-w-7xl mx-auto px-4 py-4 space-y-3">
             
             {/* Interactive Prototypes Mobile Quick Actions */}

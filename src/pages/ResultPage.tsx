@@ -211,7 +211,7 @@ export const ResultPage: React.FC = () => {
               <Cpu className="w-3.5 h-3.5 text-[#4F5D4B]" />
               Dual-Zone Chemical Dosimeter Architecture (Ag / Cu)
             </span>
-            <span className="text-[10px] font-mono text-[#4F5D4B] font-bold">PS-118 Compliant</span>
+            <span className="text-[10px] font-mono text-[#4F5D4B] font-bold">Standard Compliant</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">

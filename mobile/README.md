@@ -1,6 +1,6 @@
 # 118 — Android Mobile Safety Platform Companion
 
-This directory contains the complete Android mobile application for the SIH 2026 prototype:
+This directory contains the complete Android mobile application for the SARVAS prototype:
 **“Passive Colorimetric H2S Exposure-Dosimeter Wristband with AI-Based Quantitative Reading.”**
 
 ---
@@ -17,7 +17,7 @@ This directory contains the complete Android mobile application for the SIH 2026
   - Live rear camera capture with full viewfinder.
   - Captured photo review with **Retake** and **Use Photo**.
   - Gallery photo upload fallback.
-  - Calibrated SIH demo samples drawer (Sample A 0.18 ppm·h Normal, Sample B 0.72 ppm·h Monitor, Sample C 1.24 ppm·h Review, Expired Badge).
+  - Calibrated demo samples drawer (Sample A 0.18 ppm·h Normal, Sample B 0.72 ppm·h Monitor, Sample C 1.24 ppm·h Review, Expired Badge).
 
 - **Multi-Step Colorimetric Analysis Animation**:
   - 5-step animated sequence with progress radar:
@@ -62,7 +62,7 @@ Open `http://localhost:5174/` on your browser or phone browser on the same Wi-Fi
 
 ## Demo Access Credentials
 
-To facilitate swift evaluation during SIH demonstration without requiring judges to type credentials, one-tap demo buttons are provided on the sign-in screen:
+To facilitate swift evaluation during demonstration without requiring evaluators to type credentials, one-tap demo buttons are provided on the sign-in screen:
 
 1. **Worker Demo**: Rahul Shetty (Hydrocracker Unit 2 · Process Operator · Band `DS-1088`)
 2. **Safety Officer Demo**: Inspector Meera Patel (Safety Team)

@@ -55,7 +55,7 @@ export class DosimeterApiService {
    */
   public static getBaseUrl(): string {
     // 1. Explicit user/runtime override in localStorage
-    const stored = localStorage.getItem('SARVAS_BACKEND_URL') || localStorage.getItem('RAGEB8_BACKEND_URL');
+    const stored = localStorage.getItem('SARVAS_BACKEND_URL');
     if (stored) return stored.trim().replace(/\/+$/, '');
 
     // 2. Vite environment variable
