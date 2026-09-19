@@ -262,7 +262,7 @@ export const KioskModeView: React.FC<KioskModeViewProps> = ({ onBack, onOpenScan
               {currentDoseConfig.dose.toFixed(2)} <span className="text-xs font-serif text-gray-500">ppm·h</span>
             </div>
             <div className="text-[10px] font-mono text-emerald-700 font-bold">
-              ΔE*ab = {currentDoseConfig.deltaE.toFixed(1)} (97% Confidence)
+              ΔE₀₀ = {currentDoseConfig.deltaE.toFixed(1)} (97% Confidence)
             </div>
           </div>
 

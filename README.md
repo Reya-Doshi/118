@@ -115,8 +115,8 @@ SARVAS completely bypasses organic dyes by implementing **Dual-Zone Inorganic Me
 - **Thermodynamic Stability:** Copper(II) Sulfide ($\text{CuS}$) exhibits a $K_{sp} \approx 6.3 \times 10^{-36}$, ensuring that high-concentration shift stains will never fade or volatilize during audit delays.
 - **Color Progression:** Transitions from pale sky-blue ($L^* \approx 84.0, b^* \approx -8.5$) through dull olive-slate to deep copper-black ($L^* \approx 32.0, b^* \approx 4.0$).
 
-### 3. Gas-Impermeable Silver Photodegradation Reference ($F_{ctrl}$)
-Silver salts undergo slight solarization (photochemical reduction to metallic $\text{Ag}^0$) under prolonged intense UV sunlight. SARVAS neutralizes this physical reality by incorporating a **fully sealed, gas-impermeable control patch** ($F_{ctrl}$) adjacent to Zone A under the identical optical amber filter:
+### 3. Top Optical UV-Blocking Barrier Filter & Sealed Reference ($F_{ctrl}$)
+Silver salts undergo slight solarization (photochemical reduction to metallic $\text{Ag}^0$) under prolonged intense UV sunlight. SARVAS neutralizes this physical reality by laminating the outer diffusion barrier with a **top optical UV-blocking filter (<390 nm cutoff)** that cuts UV radiation while permitting unhindered $\text{H}_2\text{S}$ gas diffusion. Combined with a **fully sealed, gas-impermeable control patch** ($F_{ctrl}$) adjacent to Zone A:
 $$F_{\text{Ag, corrected}} = 1 - \frac{1 - F_{\text{Ag, raw}}}{1 - F_{\text{ctrl}}}$$
 The software subtracts ambient solar darkening from genuine gas-induced mineralization, guaranteeing zero false alarms even in direct midday desert sunlight.
 
@@ -128,6 +128,11 @@ Passive chemical dosimeters must remain hermetically sealed prior to shift donni
 
 ### 5. Glycerol Humectant Micro-Environment
 Gas-solid precipitation kinetics require surface moisture. Both zones are treated with **5% (v/v) analytical glycerol**, establishing a stable hygroscopic boundary layer across varying climates. **Critical safety note:** Zone A is formulated strictly without sodium hydroxide ($\text{NaOH}$), eliminating the risk of spurious brown silver oxide ($\text{Ag}_2\text{O}$) precipitation.
+
+### 6. Stagnant Air Gap Diffusion & Wind Face Velocity Independence
+The physical badge operates under a **stagnant diffusion path cavity geometry** situated directly behind the micro-porous ePTFE membrane. According to **Fick's First Law of Diffusion**:
+$$J = -D \cdot \frac{\partial C}{\partial x} = -D \cdot \frac{C_{\text{ambient}} - C_{\text{surface}}}{L}$$
+Where $L$ is the fixed internal diffusion cavity depth ($1.2\text{ mm}$) and $D$ is the diffusion coefficient of $\text{H}_2\text{S}$ vapor in air ($0.163\text{ cm}^2/\text{s}$ at 25°C). Because the internal micro-cavity establishes a stagnant boundary layer, mass transfer is strictly Fickian diffusion-controlled rather than convective-draft limited. This renders gas uptake **strictly independent of external wind face velocity above 0.1 m/s** (conforming to SKC / Radiello passive sampler fluid dynamics across open refinery yards and offshore platforms).
 
 ---
 

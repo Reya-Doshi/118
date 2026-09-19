@@ -401,7 +401,7 @@ export const ExplainabilityPage: React.FC = () => {
             {/* Slider 1: Delta E */}
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs">
-                <span className="font-bold text-[#292925]">Color Distance (ΔE*ab from Unexposed Baseline):</span>
+                <span className="font-bold text-[#292925]">Color Distance (ΔE₀₀ CIEDE2000 from Unexposed Baseline):</span>
                 <span className="font-mono font-bold text-[#4F5D4B]">{simDeltaE.toFixed(1)}</span>
               </div>
               <input

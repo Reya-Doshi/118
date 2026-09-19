@@ -765,7 +765,7 @@ export const KioskPage: React.FC = () => {
                 <div className="bg-white/80 p-4 rounded-xl border border-gray-200/80 space-y-2.5">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-[#292925]">Color Transition: Baseline → Scanned</span>
-                    <span className="font-mono font-bold text-[#4F5D4B]">ΔE*ab = {calculatedResult.deltaE.toFixed(1)}</span>
+                    <span className="font-mono font-bold text-[#4F5D4B]">ΔE₀₀ = {calculatedResult.deltaE.toFixed(1)}</span>
                   </div>
 
                   <div className="flex items-center gap-3">
