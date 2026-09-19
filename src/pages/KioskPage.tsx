@@ -361,7 +361,7 @@ export const KioskPage: React.FC = () => {
             <div>
               <span className="text-[10px] font-mono uppercase text-[#71806B] font-bold">Step 1 of 4</span>
               <h2 className="text-lg font-serif font-bold text-[#292925]">Operator Check-In & Wristband Issuance</h2>
-              <p className="text-xs text-[#5D5B53]">Register personnel arriving on shift and pair with active Cu-PAN dosimeter badge.</p>
+              <p className="text-xs text-[#5D5B53]">Register personnel arriving on shift and pair with active SARVAS dosimeter badge.</p>
             </div>
             <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-800">
               <UserCheck className="w-5 h-5" />
@@ -430,7 +430,7 @@ export const KioskPage: React.FC = () => {
                 <div className="p-3 bg-white rounded-lg border border-[#D8D0C2] flex items-center justify-between">
                   <div>
                     <div className="font-mono font-bold text-xs text-[#292925]">{assignedBadgeId}</div>
-                    <div className="text-[10px] text-gray-500">SARVAS Cu-PAN Chelation Matrix · Batch #26B</div>
+                    <div className="text-[10px] text-gray-500">SARVAS Dual-Zone Chemosensing Matrix · Batch #26B</div>
                   </div>
                   <span className="text-[10px] font-mono bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">
                     VALID (52d left)

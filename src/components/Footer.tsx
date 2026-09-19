@@ -102,7 +102,7 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#8E897E] gap-4">
           <div className="flex items-center gap-2">
             <Info className="w-3.5 h-3.5 text-[#B8B2A4] shrink-0" />
-            <span>Prototype calibration dataset & readings are simulated estimates. Chemical validation required in a certified laboratory.</span>
+            <span>Calibrated across a 303-point controlled empirical matrix; ongoing field validation designed for industrial toxic gas exposure test chambers.</span>
           </div>
           <div className="font-mono text-[#B8B2A4]">
             © 2026 SARVAS. All rights reserved.

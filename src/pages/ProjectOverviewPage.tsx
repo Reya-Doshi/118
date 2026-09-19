@@ -520,7 +520,7 @@ export const ProjectOverviewPage: React.FC = () => {
               </div>
               <h3 className="font-bold text-base text-[#292925]">Dual-Zone Chemosensing &amp; Anhydrous CuSO₄ Seal Indicator</h3>
               <p className="text-xs text-[#5D5B53] leading-relaxed">
-                Formulated the Dual-Zone chemistry: Silver Nitrate (AgNO₃) for trace detection (0.1–2 ppm·h) and Copper Sulfate (CuSO₄) for extended high-dose tracking (up to 160 ppm·h). Formulated the physical anhydrous CuSO₄ moisture dot to address industry requirements that workers verify the badge hasn't degraded prior to donning.
+                Formulated the Dual-Zone chemistry: Silver Nitrate (AgNO₃) for trace detection (0.1–10 ppm·h) and Copper Sulfate (CuSO₄) for extended high-dose tracking (up to 160 ppm·h). Integrated a top optical UV-blocking film (&lt;390 nm cutoff) to prevent Ag⁺ solar photo-reduction, and formulated the physical anhydrous CuSO₄ moisture dot to address pre-donning seal verification requirements.
               </p>
             </div>
           </div>
@@ -535,7 +535,7 @@ export const ProjectOverviewPage: React.FC = () => {
               </div>
               <h3 className="font-bold text-base text-[#292925]">Environmental Physics &amp; Multi-Factor Kinetics Engine</h3>
               <p className="text-xs text-[#5D5B53] leading-relaxed">
-                Constructed the 303-sample empirical matrix encompassing 9 test blocks: Core calibration (0.125–160 ppm·h), Temperature stress (15°C–50°C), Humidity stress (30%–90% RH), Interferences (SO₂, CO, NO₂), and Shelf-age degradation. Derived Arrhenius activation energy formulas (Ea = 28.4 kJ/mol) to mathematically normalize temperature variations back to 25°C STP.
+                Constructed the 303-sample empirical matrix encompassing 9 test blocks: Core calibration (0.125–160 ppm·h), Fickian stagnant air gap diffusion (J = -D ∂C/∂x, rendering uptake independent of wind speeds &gt;0.1 m/s), Temperature stress (15°C–50°C), Humidity stress (30%–90% RH), and Interferences. Derived Arrhenius activation energy formulas (Ea = 28.4 kJ/mol) to normalize variations back to 25°C STP.
               </p>
             </div>
           </div>

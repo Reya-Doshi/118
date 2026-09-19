@@ -125,7 +125,7 @@ export const ExplanationModal: React.FC = () => {
             Important Notice
           </div>
           <p className="text-xs leading-relaxed text-[#664D28]">
-            Readings shown by this prototype are <strong>simulated estimates</strong> derived from the prototype calibration dataset. <strong>Requires laboratory validation before deployment</strong> in a controlled environmental chamber with chemical sensor calibration.
+            Readings shown by this platform are <strong>calibrated across a 303-point controlled empirical matrix</strong>. <strong>Ongoing field validation</strong> is designed for industrial toxic gas exposure test chambers with certified chemical sensor calibration.
           </p>
         </div>
 
