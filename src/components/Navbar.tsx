@@ -346,7 +346,7 @@ export const Navbar: React.FC = () => {
             {/* Interactive Kiosk Prototype Nav Button */}
             <button
               onClick={() => handleNavClick('kiosk')}
-              className={`hidden sm:flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-xl border text-xs font-bold whitespace-nowrap shrink-0 transition-all cursor-pointer shadow-xs active:scale-95 ${
+              className={`hidden 2xl:flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-xl border text-xs font-bold whitespace-nowrap shrink-0 transition-all cursor-pointer shadow-xs active:scale-95 ${
                 activePage === 'kiosk'
                   ? 'bg-[#292925] text-white border-[#292925]'
                   : isTransparentOnHero
@@ -365,7 +365,7 @@ export const Navbar: React.FC = () => {
             {/* ML Explainability Video Nav Button */}
             <button
               onClick={() => handleNavClick('explainability')}
-              className={`hidden sm:flex items-center gap-1.5 px-2 xl:px-2.5 py-1.5 rounded-xl border text-xs font-semibold whitespace-nowrap shrink-0 transition-all cursor-pointer shadow-xs active:scale-95 ${
+              className={`hidden 2xl:flex items-center gap-1.5 px-2 xl:px-2.5 py-1.5 rounded-xl border text-xs font-semibold whitespace-nowrap shrink-0 transition-all cursor-pointer shadow-xs active:scale-95 ${
                 activePage === 'explainability'
                   ? 'bg-[#4F5D4B] text-white border-[#4F5D4B]'
                   : isTransparentOnHero
@@ -384,7 +384,7 @@ export const Navbar: React.FC = () => {
             {!currentUser && (
               <button
                 onClick={openExplanation}
-                className={`hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
+                className={`hidden 2xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
                   isTransparentOnHero
                     ? 'border-white/30 bg-white/10 text-[#F6F1E7] hover:bg-white/20'
                     : 'border-[#D8D0C2] bg-[#EDE5D6] text-[#292925] hover:bg-[#E5DDCB]'
