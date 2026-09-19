@@ -30,15 +30,14 @@ export const LoginView: React.FC = () => {
         <div className="flex items-center gap-2.5 mb-3">
           <img 
             src="/sarvas_logo_v2.png" 
-            alt="SARVAS by RageB8 Logo" 
+            alt="SARVAS Logo" 
             className="w-10 h-10 rounded-xl object-contain bg-white p-1 border border-[#D8D0C2] shadow-xs" 
           />
           <div>
             <div className="flex items-center gap-1.5 leading-none">
               <h2 className="text-lg font-serif font-bold text-[#292925]">SARVAS</h2>
-              <span className="text-[9px] font-mono bg-[#4F5D4B]/15 text-[#2F6B38] px-1.5 py-0.5 rounded font-bold">by RageB8</span>
             </div>
-            <span className="text-[10px] text-[#71806B] font-mono tracking-wider font-semibold">PS-118 · SIH 2026</span>
+            <span className="text-[10px] text-[#71806B] font-mono tracking-wider font-semibold">Chemical Dosimeter</span>
           </div>
         </div>
         <h1 className="text-2xl font-serif font-bold text-[#292925] tracking-tight">
@@ -49,7 +48,7 @@ export const LoginView: React.FC = () => {
         </p>
       </div>
 
-      {/* Quick Demo Access Section (Recommended for SIH Demonstration) */}
+      {/* Quick Demo Access Section */}
       <div className="my-auto space-y-4">
         <div className="bg-[#EDE5D6] border border-[#D8D0C2] rounded-xl p-4 shadow-xs">
           <div className="flex items-center justify-between mb-3 border-b border-[#D8D0C2] pb-2">
@@ -57,7 +56,7 @@ export const LoginView: React.FC = () => {
               Demo Access (One-Tap Selection)
             </span>
             <span className="text-[10px] bg-[#71806B]/15 text-[#4F5D4B] px-2 py-0.5 rounded font-mono font-medium">
-              SIH 2026
+              Demo Access
             </span>
           </div>
 
@@ -173,7 +172,7 @@ export const LoginView: React.FC = () => {
       {/* Footer */}
       <div className="pt-6 text-center">
         <p className="text-[11px] text-[#878377]">
-          Autonomous SIH Dosimeter Companion · Hardware Version 1.2
+          Autonomous Dosimeter Companion · Hardware Version 1.2
         </p>
       </div>
     </div>

@@ -1,4 +1,4 @@
-# RageB8 Dosimeter Backend API Server
+# SARVAS Dosimeter Backend API Server
 
 FastAPI backend server that coordinates **Gemini Vision** (quality audit & region localization), **OpenCV** (spatial median color extraction & CIE $L^*a^*b^*$ conversion), and a calibrated **Random Forest Regressor** to estimate cumulative $H_2S$ exposure.
 

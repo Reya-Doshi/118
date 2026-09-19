@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-End-to-End Test Suite for RageB8 Passive Colorimetric H2S Dosimeter Pipeline
+End-to-End Test Suite for SARVAS Passive Colorimetric H2S Dosimeter Pipeline
 Tests:
   1. Existing prototype wristband design/diagram (src/assets/band design.png)
   2. Prototype State 1: Unexposed Baseline Safe (Purple) -> NORMAL

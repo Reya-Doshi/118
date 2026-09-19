@@ -1,5 +1,5 @@
 """
-Gemini Vision Service for RageB8 H2S Dosimeter Wristband
+Gemini Vision Service for SARVAS H2S Dosimeter Wristband
 SERVER-SIDE / BACKEND USE ONLY
 
 SECURITY POLICY:
@@ -56,7 +56,7 @@ def get_gemini_api_key():
 
 
 GEMINI_SYSTEM_PROMPT = """
-You are a precision computer-vision localization and quality-inspection assistant for an industrial passive chemical dosimeter wristband (SARVAS / RageB8 Dual-Zone H2S Dosimeter).
+You are a precision computer-vision localization and quality-inspection assistant for an industrial passive chemical dosimeter wristband (SARVAS Dual-Zone H2S Dosimeter).
 
 CRITICAL SAFETY DIRECTIVE:
 You must NEVER predict chemical concentration, gas dose, or ppm·h. Quantitative dosing is handled by a separate calibrated physics model.

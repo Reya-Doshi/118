@@ -103,7 +103,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onBack, workerLanguage
             {isHindi ? 'भूमिका बदलें (डेमो एक्सेस)' : 'Switch Active Role (Demo Access)'}
           </span>
           <span className="text-[10px] font-mono bg-[#71806B]/20 text-[#4F5D4B] px-1.5 py-0.5 rounded font-bold">
-            SIH 2026
+            SARVAS v1.2
           </span>
         </div>
 

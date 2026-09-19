@@ -296,12 +296,12 @@ const MainAppContent: React.FC = () => {
       className="min-h-screen bg-[#F6F1E7] text-[#292925] flex flex-col max-w-md mx-auto relative px-3.5 pb-8"
       style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 12px)' }}
     >
-      {/* Top Sleek Header Bar — SARVAS by RageB8 */}
+      {/* Top Sleek Header Bar — SARVAS */}
       <header className="flex items-center justify-between py-2 px-3 mb-3 bg-white rounded-2xl border border-[#D8D0C2] shadow-xs">
         <div className="flex items-center gap-2.5">
           <img 
             src="/sarvas_logo_v2.png" 
-            alt="SARVAS by RageB8 Logo" 
+            alt="SARVAS Logo" 
             className="w-9 h-9 rounded-xl object-contain bg-[#FAF8F5] p-0.5 border border-[#D8D0C2] shadow-2xs"
           />
           <div>
@@ -309,7 +309,7 @@ const MainAppContent: React.FC = () => {
               <span className="font-serif font-bold text-base text-[#292925] tracking-tight">SARVAS</span>
             </div>
             <span className="text-[9px] font-mono text-[#878377] block mt-0.5">
-              {isHindiWorker ? 'स्मार्ट रिस्टबैंड डॉसिमीटर' : 'SIH 2026 · PS-118 Dosimeter'}
+              {isHindiWorker ? 'स्मार्ट रिस्टबैंड डॉसिमीटर' : 'Chemical H₂S Dosimeter'}
             </span>
           </div>
         </div>
@@ -343,16 +343,14 @@ const MainAppContent: React.FC = () => {
         {renderCurrentView()}
       </main>
 
-      {/* Subtle Mobile Brand Footer with Team Attribution */}
+      {/* Subtle Mobile Brand Footer */}
       <footer className="text-center py-3 pb-20 text-[10px] font-mono text-[#878377] space-y-0.5">
         <div>
           <span className="font-bold text-[#292925]">SARVAS</span>
-          <span> · Built by </span>
-          <span className="font-bold text-[#2F6B38]">RageB8</span>
-          <span> (SIH 2026)</span>
+          <span> · Chemical Dosimeter Companion</span>
         </div>
         <div className="text-[9px] text-[#A8A398]">
-          PS-118 · Real-Time H₂S Dosimeter
+          Real-Time H₂S Exposure Dosimeter
         </div>
       </footer>
 

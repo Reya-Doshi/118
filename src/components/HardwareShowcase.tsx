@@ -9,7 +9,7 @@ export const HardwareShowcase: React.FC = () => {
         <div>
           <span className="text-[10px] font-mono tracking-widest text-[#C2CBBF] uppercase">Hardware Specifications</span>
           <h3 className="text-xl font-bold tracking-tight text-[#EDE5D6] mt-0.5">
-            118 Physical Passive Dosimeter Wristband
+            SARVAS Physical Passive Dosimeter Wristband
           </h3>
         </div>
         <div className="px-3 py-1 rounded bg-[#32322D] border border-[#4A4740] text-[#C2CBBF] text-xs font-mono font-medium">
@@ -23,11 +23,11 @@ export const HardwareShowcase: React.FC = () => {
         {/* Horizontal Wristband Graphic */}
         <div className="relative bg-[#32322D] border border-[#43423A] rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-6 z-10">
           
-          {/* Badge & 118 branding */}
+          {/* Badge & SARVAS branding */}
           <div className="relative flex items-center gap-3 p-3 bg-[#20201C] rounded-lg border border-[#383731] w-full md:w-auto">
             <div className="w-2.5 h-8 bg-[#4F5D4B] rounded-xs" />
             <div>
-              <div className="text-sm font-bold tracking-widest font-mono text-[#EDE5D6]">118</div>
+              <div className="text-sm font-bold tracking-widest font-mono text-[#EDE5D6]">SARVAS</div>
               <div className="text-[10px] text-[#A69F91] font-mono">ID: DS-1088</div>
             </div>
             <div className="w-2 h-2 rounded-full bg-[#71806B] ml-2" />

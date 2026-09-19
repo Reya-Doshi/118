@@ -175,13 +175,13 @@ const REFERENCE_ITEMS: ReferenceLinkItem[] = [
     isExternal: true
   },
 
-  // 4. PROJECT NAV & SIH 2026 LINKS
+  // 4. PROJECT NAV & TECHNICAL LINKS
   {
     id: 'ref-project-dossier',
     category: 'PROJECT',
-    title: 'SARVAS / RageB8 Project Dossier & Team Roadmap',
-    subtitle: 'SIH 2026 Problem Statement PS-118',
-    citation: 'RageB8 Technical Specification & Prototype Dossier',
+    title: 'SARVAS Project Dossier & Roadmap',
+    subtitle: 'Passive Chemical Dosimeter Technical Blueprint',
+    citation: 'SARVAS Technical Specification & Prototype Dossier',
     description: 'Comprehensive overview of hardware anatomy, dual-zone chemical physics, software stack, and commercial deployment roadmap.',
     url: '#overview',
     tag: 'Project Overview',
@@ -263,7 +263,7 @@ export const ReferencesPage: React.FC = () => {
         <div className="relative z-10 space-y-3 max-w-3xl">
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded bg-[#4F5D4B] text-[#F6F1E7] text-[10px] font-mono font-bold uppercase tracking-wider">
-              SIH 2026 · PS-118 Technical Bibliography
+              SARVAS Technical Bibliography
             </span>
             <span className="px-2.5 py-0.5 rounded bg-white/10 text-[#C2CBBF] text-[10px] font-mono">
               {REFERENCE_ITEMS.length} Citations &amp; Links

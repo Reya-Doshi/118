@@ -80,16 +80,13 @@ export const WorkerDashboardPage: React.FC = () => {
         <div className="flex items-center gap-3.5">
           <img 
             src="/sarvas_logo_v2.png" 
-            alt="SARVAS by RageB8 Logo" 
+            alt="SARVAS Logo" 
             className="w-12 h-12 rounded-2xl object-contain bg-white p-1 border border-[#D8D0C2] shadow-xs shrink-0"
           />
           <div>
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span className="text-[10px] font-mono bg-[#4F5D4B]/15 text-[#4F5D4B] px-2.5 py-0.5 rounded font-bold uppercase tracking-wider border border-[#4F5D4B]/20">
                 SARVAS · {isHindi ? 'कर्मचारी सुरक्षा साथी' : 'Worker Safety Portal'}
-              </span>
-              <span className="text-[10px] font-mono bg-[#B08A55]/15 text-[#826235] px-1.5 py-0.5 rounded font-bold">
-                by RageB8
               </span>
               <span className="text-[10px] font-mono text-[#878377]">
                 {isHindi ? 'एमआरपीएल' : 'MRPL Refinery'}

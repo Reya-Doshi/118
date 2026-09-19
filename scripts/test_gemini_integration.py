@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test Gemini Vision Integration for RageB8 H2S Dosimeter Wristband
+Test Gemini Vision Integration for SARVAS H2S Dosimeter Wristband
 
 STRICT SAFETY CONSTRAINTS:
   - Gemini does NOT predict H2S exposure or ppm·h.

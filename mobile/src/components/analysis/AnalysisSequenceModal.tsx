@@ -230,6 +230,7 @@ export const AnalysisSequenceModal: React.FC<AnalysisSequenceModalProps> = ({
   const handleSaveCustomServer = (urlToSave?: string) => {
     const targetUrl = urlToSave || customServerUrl;
     if (targetUrl) {
+      localStorage.setItem('SARVAS_BACKEND_URL', targetUrl.trim());
       localStorage.setItem('RAGEB8_BACKEND_URL', targetUrl.trim());
       setCustomServerUrl(targetUrl.trim());
       setShowServerConfig(false);

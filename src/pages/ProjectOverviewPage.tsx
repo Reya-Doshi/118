@@ -28,10 +28,10 @@ export const ProjectOverviewPage: React.FC = () => {
         <div className="relative z-10 space-y-6">
           <div className="flex flex-wrap items-center gap-3">
             <span className="px-3 py-1 rounded-full bg-[#71806B]/30 border border-[#71806B]/50 text-[#C2CBBF] text-xs font-mono font-bold uppercase tracking-wider">
-              SIH 2026 · Problem Statement 118
+              Chemical Dosimeter Blueprint
             </span>
             <span className="px-3 py-1 rounded-full bg-[#B08A55]/30 border border-[#B08A55]/50 text-[#F0E6D2] text-xs font-mono font-bold tracking-wide">
-              Team RageB8 · Engineering Dossier
+              Engineering Dossier
             </span>
             <span className="text-xs text-[#EDE5D6]/70 font-mono">
               TRL-4 Functional Prototype → Lab Validation Protocol Ready
@@ -291,7 +291,7 @@ export const ProjectOverviewPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. TEAM RAGEB8: 6-MEMBER TASK DIVISION */}
+      {/* 3. MULTIDISCIPLINARY TASK DIVISION */}
       <section className="space-y-4">
         <div className="border-b border-[#D8D0C2] pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
@@ -299,7 +299,7 @@ export const ProjectOverviewPage: React.FC = () => {
               Engineering Governance
             </span>
             <h2 className="text-2xl font-bold text-[#292925] font-serif">
-              Team RageB8 · Multidisciplinary Division of Responsibilities
+              Multidisciplinary Division of Responsibilities
             </h2>
             <p className="text-xs text-[#292925]/70 mt-0.5">
               Structured execution across 6 specialized engineering domains to deliver an end-to-end industrial safety solution.
@@ -461,13 +461,13 @@ export const ProjectOverviewPage: React.FC = () => {
               </span>
             </div>
             <div>
-              <h3 className="font-bold text-sm text-[#292925]">Regulatory Defense, PPT &amp; Protocols</h3>
-              <p className="text-xs text-[#71806B] font-mono">OSHA · DGMS · Lab Testing Protocol · SIH Master Deck</p>
+              <h3 className="font-bold text-sm text-[#292925]">Regulatory Defense, Presentation &amp; Protocols</h3>
+              <p className="text-xs text-[#71806B] font-mono">OSHA · DGMS · Lab Testing Protocol · Master Deck</p>
             </div>
             <ul className="text-xs text-[#5D5B53] space-y-1.5 list-disc list-inside">
               <li>Designed rigorous 4-stage controlled lab testing protocol with GC-FPD.</li>
               <li>Aligned system thresholds with OSHA 1910.1000 &amp; DGMS Indian mining standards.</li>
-              <li>Authored comprehensive SIH pitch presentation &amp; FAQ defense briefs.</li>
+              <li>Authored comprehensive pitch presentation &amp; FAQ defense briefs.</li>
               <li>Calculated statistical error bounds (±12% error with 95% confidence interval).</li>
             </ul>
             <div className="pt-2 border-t border-[#D8D0C2]/60 text-[11px] font-mono text-[#292925] flex justify-between">
@@ -483,13 +483,13 @@ export const ProjectOverviewPage: React.FC = () => {
       <section className="space-y-4">
         <div className="border-b border-[#D8D0C2] pb-3">
           <span className="text-[10px] font-mono uppercase tracking-widest text-[#71806B] font-bold">
-            Development History · SIH 2026 Sprint
+            Development History &amp; Rapid Sprint
           </span>
           <h2 className="text-2xl font-bold text-[#292925] font-serif">
             Engineering Journey &amp; Rapid Sprint Milestones
           </h2>
           <p className="text-xs text-[#292925]/70 mt-0.5">
-            How Team RageB8 executed an intensive 14-day multidisciplinary engineering sprint from initial PS-118 problem release to a fully validated functional prototype and software platform.
+            How the engineering team executed an intensive multidisciplinary development sprint to produce a fully validated functional prototype and software platform.
           </p>
         </div>
 

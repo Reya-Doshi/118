@@ -1,6 +1,6 @@
 # Cu-PAN Wristband Image-Analysis Pipeline (Prototype)
 
-This pipeline provides automated computer-vision color extraction and machine-learning exposure quantification for the **RageB8 Passive Colorimetric H₂S Dosimeter Wristband**.
+This pipeline provides automated computer-vision color extraction and machine-learning exposure quantification for the **SARVAS Passive Colorimetric H₂S Dosimeter Wristband**.
 
 > [!NOTE]
 > **SIMULATED / PROTOTYPE READING**  
@@ -106,7 +106,7 @@ python scripts/analyze_wristband.py test_images/wristband_low_monitor.png --roi 
 ```text
 =================================================================
       *** SIMULATED / PROTOTYPE READING ***
-  RageB8 Passive Colorimetric H2S Dosimeter Pipeline
+  SARVAS Passive Colorimetric H2S Dosimeter Pipeline
 =================================================================
 Target Image:      wristband_low_monitor.png
 Sensing Chemistry: Cu-PAN Chelation Dye (Porous Matrix)

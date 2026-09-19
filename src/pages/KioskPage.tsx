@@ -430,7 +430,7 @@ export const KioskPage: React.FC = () => {
                 <div className="p-3 bg-white rounded-lg border border-[#D8D0C2] flex items-center justify-between">
                   <div>
                     <div className="font-mono font-bold text-xs text-[#292925]">{assignedBadgeId}</div>
-                    <div className="text-[10px] text-gray-500">RageB8 Cu-PAN Chelation Matrix · Batch #26B</div>
+                    <div className="text-[10px] text-gray-500">SARVAS Cu-PAN Chelation Matrix · Batch #26B</div>
                   </div>
                   <span className="text-[10px] font-mono bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">
                     VALID (52d left)
@@ -483,7 +483,7 @@ export const KioskPage: React.FC = () => {
               <span className="text-[10px] font-mono uppercase text-[#71806B] font-bold">Step 2 of 4</span>
               <h2 className="text-lg font-serif font-bold text-[#292925]">Optical Wristband Scanning</h2>
               <p className="text-xs text-[#5D5B53]">
-                Align the RageB8 wristband sensing strip within the reticle. Gemini Vision audits image clarity and localizes color coordinates.
+                Align the SARVAS wristband sensing strip within the reticle. Gemini Vision audits image clarity and localizes color coordinates.
               </p>
             </div>
             <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-800">
@@ -863,10 +863,10 @@ export const KioskPage: React.FC = () => {
           <div className="bg-[#FAF8F5] p-6 rounded-2xl border-2 border-dashed border-[#D8D0C2] space-y-5">
             <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2">
-                <img src="/sarvas_logo_v2.png" alt="RageB8" className="w-8 h-8 rounded-lg bg-white p-0.5 border border-gray-200" />
+                <img src="/sarvas_logo_v2.png" alt="SARVAS" className="w-8 h-8 rounded-lg bg-white p-0.5 border border-gray-200" />
                 <div>
                   <span className="font-serif font-bold text-sm text-[#292925] block">SARVAS Shift Exposure Certificate</span>
-                  <span className="text-[9px] font-mono text-gray-500">SIH 2026 · Ministry of Mines Safety Protocol</span>
+                  <span className="text-[9px] font-mono text-gray-500">Ministry of Mines Safety Protocol</span>
                 </div>
               </div>
               <span className="font-mono text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-md">

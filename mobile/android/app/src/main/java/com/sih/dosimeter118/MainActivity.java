@@ -1,4 +1,4 @@
-package com.sih.dosimeter118;
+package com.sarvas.dosimeter;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -32,7 +32,7 @@ export const ExplanationModal: React.FC = () => {
     {
       num: '04',
       title: 'QUANTIFY',
-      desc: '118 extracts CIE L*a*b*, calculates ΔE, applies environmental compensation, and records dosage.',
+      desc: 'SARVAS extracts CIE L*a*b*, calculates ΔE, applies environmental compensation, and records dosage.',
       icon: BarChart3,
       color: 'text-[#4F5D4B] bg-[#E5EADF]'
     }
@@ -58,9 +58,6 @@ export const ExplanationModal: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold tracking-tight text-[#292925]">How does SARVAS work?</h2>
-              <span className="px-2 py-0.5 rounded bg-[#F3EDE2] text-[#826235] text-[10px] font-mono font-bold">
-                by RageB8
-              </span>
             </div>
             <p className="text-xs text-[#5D5B53]">4-step occupational safety dosimetry workflow</p>
           </div>

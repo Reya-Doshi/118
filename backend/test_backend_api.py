@@ -1,5 +1,5 @@
 """
-Automated Integration Test Suite for RageB8 Backend API
+Automated Integration Test Suite for SARVAS Backend API
 Tests:
   1. GET /health
   2. POST /api/analyze-wristband (multipart/form-data upload)

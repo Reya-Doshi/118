@@ -64,7 +64,16 @@ export const Navbar: React.FC = () => {
       }
     }
     setActivePage(pageId);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (sectionId) {
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -78,7 +87,7 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4 lg:gap-8 h-16">
           
-          {/* Left: Product Name "118" + Minimal Mark */}
+          {/* Left: Product Name "SARVAS" */}
           <div className="flex items-center gap-6">
             <button
               onClick={() => handleNavClick('landing')}
@@ -86,7 +95,7 @@ export const Navbar: React.FC = () => {
             >
               <img
                 src="/sarvas_logo_v2.png"
-                alt="SARVAS by RageB8 Emblem"
+                alt="SARVAS Emblem"
                 className="w-8 h-8 rounded-lg object-contain bg-white p-0.5 border border-[#D8D0C2] shadow-2xs group-hover:scale-105 transition-transform"
               />
               <div>
@@ -94,14 +103,11 @@ export const Navbar: React.FC = () => {
                   <span className="text-xl font-bold tracking-tight block font-mono leading-none">
                     SARVAS
                   </span>
-                  <span className="text-[9px] font-mono bg-[#4F5D4B]/20 text-[#4F5D4B] px-1.5 py-0.5 rounded font-bold">
-                    by RageB8
-                  </span>
                 </div>
                 <span className={`text-[9px] font-mono tracking-wider mt-0.5 block ${
                   isTransparentOnHero ? 'text-[#EDE5D6]/80' : 'text-[#878377]'
                 }`}>
-                  SIH 2026 · PS-118
+                  Chemical Dosimeter
                 </span>
               </div>
             </button>
@@ -383,10 +389,10 @@ export const Navbar: React.FC = () => {
                     ? 'border-white/30 bg-white/10 text-[#F6F1E7] hover:bg-white/20'
                     : 'border-[#D8D0C2] bg-[#EDE5D6] text-[#292925] hover:bg-[#E5DDCB]'
                 }`}
-                title="How 118 Works"
+                title="How SARVAS Works"
               >
                 <Info className="w-3.5 h-3.5 text-[#71806B]" />
-                <span>Understand 118</span>
+                <span>Understand SARVAS</span>
               </button>
             )}
 
@@ -424,7 +430,7 @@ export const Navbar: React.FC = () => {
               <button
                 onClick={logout}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
-                title="Sign out of RageB8"
+                title="Sign Out"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Sign Out</span>

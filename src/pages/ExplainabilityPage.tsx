@@ -136,7 +136,7 @@ export const ExplainabilityPage: React.FC = () => {
               ML Explainability Architecture
             </span>
             <span className="text-[10px] font-mono text-[#71806B] font-semibold">
-              RageB8 Computer Vision & Dosimetry Pipeline
+              SARVAS Computer Vision & Dosimetry Pipeline
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#292925]">

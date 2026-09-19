@@ -127,7 +127,7 @@ Evaluators review 40–80 presentations per session. They do NOT read lengthy pa
 5. **Direct-Reading Dosimeter Accuracy Standards:**
    * EN 45544-1/2:2015, *Workplace atmospheres — Electrical and optical apparatus used for the direct detection and direct concentration measurement of toxic gases and vapours* (Target MAPE < ±20%; RageB8 achieves ±8.4%).
 6. **Prototype Code & Empirical Dataset:**
-   * Live Interactive Prototype & 120-Point Calibration Matrix: `https://github.com/Nxyen-labs/118`
+   * Live Interactive Prototype & 120-Point Calibration Matrix: `https://github.com/Reya-Doshi/118`
 
 ---
 

@@ -153,16 +153,9 @@ export const LandingPage: React.FC = () => {
               <span className="text-xs font-bold font-mono tracking-widest text-white uppercase">
                 SARVAS
               </span>
-              <span className="text-[10px] font-mono bg-[#4F5D4B]/30 text-[#BACDB2] px-1.5 py-0.5 rounded font-bold">
-                by RageB8
-              </span>
               <span className="text-[#D8D0C2]/60 font-mono text-xs">•</span>
               <span className="text-[10px] sm:text-[11px] font-mono tracking-widest text-[#EDE5D6] uppercase font-semibold">
                 PASSIVE H₂S DOSIMETRY
-              </span>
-              <span className="text-[#D8D0C2]/60 font-mono text-xs">•</span>
-              <span className="text-[10px] sm:text-[11px] text-[#EDE5D6]/70 font-mono">
-                SIH 2026
               </span>
             </div>
 
@@ -309,9 +302,6 @@ export const LandingPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-2 py-0.5 rounded bg-[#32322D] border border-[#43423A] text-[#A69F91] text-[10px] font-mono">
                 Architecture: Micro-porous ePTFE
-              </span>
-              <span className="px-2 py-0.5 rounded bg-[#4F5D4B] text-[#EDE5D6] text-[10px] font-mono font-medium">
-                by RageB8
               </span>
             </div>
           </div>
@@ -579,7 +569,7 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="pt-6 border-t border-[#3E3C36] text-[11px] font-mono text-[#8E897E]">
-            Designed & developed by <strong>RageB8</strong> for SIH 2026
+            Designed & developed for passive industrial chemical dosimetry
           </div>
         </div>
       </section>

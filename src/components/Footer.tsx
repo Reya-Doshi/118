@@ -22,15 +22,15 @@ export const Footer: React.FC = () => {
             <div className="flex items-center gap-2.5">
               <img 
                 src="/sarvas_logo_v2.png" 
-                alt="SARVAS by RageB8 Logo" 
+                alt="SARVAS Logo" 
                 className="w-7 h-7 rounded-lg object-contain bg-white p-0.5 border border-white/20 shadow-xs"
               />
-              <span className="text-base font-bold font-mono tracking-wider text-white">SARVAS <span className="text-xs text-[#C2CBBF]">by RageB8</span></span>
+              <span className="text-base font-bold font-mono tracking-wider text-white">SARVAS</span>
             </div>
             <p className="text-xs text-[#B8B2A4]">Passive exposure intelligence for safer shifts in petroleum operations.</p>
           </div>
 
-          {/* Quick Links for Judges */}
+          {/* Quick Links */}
           <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
             <button
               onClick={() => handleNav('overview')}
@@ -83,10 +83,10 @@ export const Footer: React.FC = () => {
             </button>
           </div>
 
-          {/* RAGEBYTERS SIH 2026 Section */}
+          {/* SARVAS Technology Section */}
           <div className="flex flex-col md:items-end space-y-1">
             <div className="text-sm font-bold font-mono tracking-widest text-white">
-              RageB8 · SIH 2026
+              SARVAS Dosimeter
             </div>
             <div className="text-xs text-[#C2CBBF] font-mono">
               Hardware × AI × Worker Safety
@@ -105,7 +105,7 @@ export const Footer: React.FC = () => {
             <span>Prototype calibration dataset & readings are simulated estimates. Chemical validation required in a certified laboratory.</span>
           </div>
           <div className="font-mono text-[#B8B2A4]">
-            © 2026 SARVAS by RageB8 · SIH 2026
+            © 2026 SARVAS. All rights reserved.
           </div>
         </div>
 

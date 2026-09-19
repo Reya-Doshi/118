@@ -284,7 +284,7 @@ def create_annotated_image(img, strip_bbox, ref_bbox, housing_bbox, rgb, dose, s
 # ---------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser(
-        description="RageB8 Cu-PAN Wristband Image-Analysis Pipeline (OpenCV + ML)"
+        description="SARVAS Cu-PAN Wristband Image-Analysis Pipeline (OpenCV + ML)"
     )
     parser.add_argument("image_path", help="Path to photograph of wristband dosimeter")
     parser.add_argument("--temp", type=float, default=25.0, help="Ambient temperature in deg C (default: 25.0)")
@@ -468,7 +468,7 @@ def main():
     # User-Friendly Formatted Terminal Report
     print("\n" + "=" * 68)
     print("        *** SIMULATED / PROTOTYPE READING ***")
-    print("    RageB8 Passive Colorimetric H2S Dosimeter Pipeline")
+    print("    SARVAS Passive Colorimetric H2S Dosimeter Pipeline")
     print("=" * 68)
     print(f"Target Image:        {os.path.basename(args.image_path)}")
     print(f"Sensing Chemistry:   Cu-PAN Chelation Dye (Porous Matrix)")

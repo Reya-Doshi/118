@@ -1,5 +1,5 @@
 """
-RageB8 Passive Colorimetric H2S Dosimeter Wristband
+SARVAS Passive Colorimetric H2S Dosimeter Wristband
 Production-Grade Backend API Server (FastAPI + Gemini Vision + OpenCV + Random Forest)
 
 SECURITY DIRECTIVE:
@@ -52,7 +52,7 @@ print("Dual-Zone Ag/Cu Random Forest Model loaded successfully (100 estimators r
 # FASTAPI APP CONFIGURATION
 # ---------------------------------------------------------
 app = FastAPI(
-    title="RageB8 Passive H2S Dosimeter Backend API",
+    title="SARVAS Passive H2S Dosimeter Backend API",
     description="Quantitative colorimetric exposure estimation and image analysis service.",
     version="1.0.0"
 )
@@ -404,7 +404,7 @@ def process_wristband_analysis(
 @app.get("/")
 def root():
     return {
-        "service": "RageB8 Passive H2S Exposure Dosimeter Backend API",
+        "service": "SARVAS Passive H2S Exposure Dosimeter Backend API",
         "status": "ONLINE",
         "docs_url": "/docs",
         "endpoints": {
@@ -494,7 +494,7 @@ async def analyze_wristband_endpoint(request: Request):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     print(f"\n========================================================")
-    print(f" RageB8 H2S Dosimeter Backend Server Starting")
+    print(f" SARVAS H2S Dosimeter Backend Server Starting")
     print(f" Endpoint: http://localhost:{port}/api/analyze-wristband")
     print(f" API Docs: http://localhost:{port}/docs")
     print(f"========================================================\n")

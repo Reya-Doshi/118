@@ -3,7 +3,7 @@
 # 🛡️ SARVAS: Self-Actuating Resilient Vapor-Adsorbing Sensor
 ### Intelligent Passive $H_2S$ Cumulative Dosimetry & On-Device Optical Quantification System
 
-[![Team RageB8](https://img.shields.io/badge/Engineered_by-Team_RageB8-292925?style=for-the-badge&logo=shield&logoColor=F6F1E7)](https://github.com/Reya-Doshi/118)
+[![SARVAS Project](https://img.shields.io/badge/Repository-Reya--Doshi%2F118-292925?style=for-the-badge&logo=github&logoColor=F6F1E7)](https://github.com/Reya-Doshi/118)
 [![ATEX Zone 0](https://img.shields.io/badge/Intrinsic_Safety-ATEX_Zone_0_Compliant-008080?style=for-the-badge&logo=shield-halved&logoColor=white)](#-intrinsic-safety--atex-compliance)
 [![BOM Cost](https://img.shields.io/badge/Unit_Cost-%E2%82%B90.85_per_badge-2E7D32?style=for-the-badge&logo=currency-inr&logoColor=white)](#-hardware-anatomy--unit-economics-085-bom)
 [![On-Device ML](https://img.shields.io/badge/Edge_AI-CIEDE2000_%2B_Random_Forest-6A1B9A?style=for-the-badge&logo=scikit-learn&logoColor=white)](#-on-device-computational-optical--ml-pipeline)
@@ -282,7 +282,7 @@ Personal safety in high-hazard environments must be scalable to every single wor
 
 ### Capital Expenditure & Operating Cost Comparison
 
-| Parameter | Traditional Personal Electronic Monitors | Conventional Diffusion Tubes (e.g. Lead Acetate) | **SARVAS (RageB8)** |
+| Parameter | Traditional Personal Electronic Monitors | Conventional Diffusion Tubes (e.g. Lead Acetate) | **SARVAS** |
 | :--- | :---: | :---: | :---: |
 | **Unit Initial Cost (CapEx)** | ₹30,000 – ₹1,00,000 | ₹400 – ₹800 / tube | **₹0.85 / badge** |
 | **Worker Deployment Capacity** | 5% – 15% (Key personnel only) | Rare / Spot checks | **100% of all staff & contractors** |
@@ -477,13 +477,11 @@ sarvas/
 └── README.md                      # Engineering dossier & system documentation
 ```
 
----
-
-## 👥 Engineering Team — RageB8
+## 👥 Engineering & Project Dossier
 
 Developed with precision and scientific rigour for industrial occupational hygiene and workforce safety.
 
-- **Team Name:** RageB8
+- **Project:** SARVAS (Self-Actuating Resilient Vapor-Adsorbing Sensor)
 - **Domain:** Industrial Safety, Petrochemical Occupational Hygiene & Smart Wearables
 - **Focus Industry:** Petroleum Refining & Petrochemicals (MRPL Mangalore Case Context)
 - **License:** Open Source for Educational & Occupational Safety Advancement under the [MIT License](LICENSE).
@@ -491,7 +489,7 @@ Developed with precision and scientific rigour for industrial occupational hygie
 <div align="center">
 <br/>
 
-**SARVAS — Engineered by RageB8**  
+**SARVAS**  
 *Safeguarding the frontline workforce. One shift at a time.*
 
 </div>

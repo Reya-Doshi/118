@@ -29,10 +29,10 @@ export interface GeminiClientAuditResult {
 }
 
 const DEFAULT_KEY = (import.meta as any).env?.VITE_GEMINI_API_KEY || '';
-const STORAGE_KEY = 'RAGEB8_GEMINI_API_KEY';
+const STORAGE_KEY = 'SARVAS_GEMINI_API_KEY';
 
 const GEMINI_PROMPT = `
-You are an expert computer-vision localization and quality-inspection assistant for an industrial passive chemical dosimeter badge / wristband (SARVAS / RageB8 Dual-Zone H2S Dosimeter).
+You are an expert computer-vision localization and quality-inspection assistant for an industrial passive chemical dosimeter badge / wristband (SARVAS Dual-Zone H2S Dosimeter).
 
 CRITICAL SAFETY DIRECTIVE:
 Never predict quantitative gas dose (ppm·h) directly. Dosing calculation is executed by a separate calibrated physics model.

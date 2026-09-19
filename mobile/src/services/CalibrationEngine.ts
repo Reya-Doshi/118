@@ -208,7 +208,7 @@ export class CalibrationEngine {
         isSmartwatchOrScreen,
         rejectReason: isSmartwatchOrScreen
           ? 'SMARTWATCH / ELECTRONIC DISPLAY DETECTED: Scanned target is an electronic smartwatch, digital display, or reflective glass screen. SARVAS is a zero-power passive chemical dosimeter requiring calibrated colorimetric reagent chemistry. Exposure dose cannot be calculated.'
-          : 'NON-DOSIMETER DETECTED: Scanned surface does not match authentic SARVAS or RageB8 colorimetric reagent chemistry. Please align your chemical dosimeter wristband within the reticle.',
+          : 'NON-DOSIMETER DETECTED: Scanned surface does not match authentic SARVAS colorimetric reagent chemistry. Please align your chemical dosimeter wristband within the reticle.',
         matchedStage: undefined,
         bestDeltaE00
       };

@@ -402,7 +402,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
             {showDemoPicker && (
               <div className="bg-[#1a1a17] border border-white/20 rounded-xl p-3 space-y-2 animate-in fade-in duration-150">
                 <div className="text-[10px] font-mono text-[#C9BFAE] uppercase tracking-wider">
-                  Select Calibrated SIH Sample:
+                  Select Calibrated Demo Sample:
                 </div>
                 <div className="grid grid-cols-1 gap-2 max-h-56 overflow-y-auto pr-1">
                   {DEMO_SAMPLES.map((sample) => (

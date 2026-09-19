@@ -19,7 +19,7 @@ export const SplashView: React.FC<SplashViewProps> = ({ onComplete }) => {
     >
       <div className="w-full text-center pt-4">
         <span className="text-[11px] font-mono tracking-widest text-[#71806B] font-semibold uppercase bg-[#EDE5D6] border border-[#D8D0C2] px-3.5 py-1.5 rounded-full shadow-2xs">
-          SIH 2026 · Problem Statement 118
+          Colorimetric H₂S Exposure Dosimeter
         </span>
       </div>
 
@@ -27,15 +27,12 @@ export const SplashView: React.FC<SplashViewProps> = ({ onComplete }) => {
         <div className="relative overflow-hidden rounded-3xl shadow-lg border border-[#D8D0C2] bg-white p-5 mb-3">
           <img 
             src="/sarvas_logo_v2.png" 
-            alt="SARVAS by RageB8 Logo" 
+            alt="SARVAS Logo" 
             className="w-48 h-48 object-contain rounded-2xl" 
           />
         </div>
         <h1 className="text-3xl font-serif font-bold text-[#292925] tracking-tight">SARVAS</h1>
-        <span className="text-xs font-mono font-bold text-[#2F6B38] bg-[#4F5D4B]/15 px-2.5 py-0.5 rounded-md mt-1 mb-1">
-          by RageB8
-        </span>
-        <p className="text-xs text-[#5D5B53] font-mono tracking-wider uppercase font-semibold">
+        <p className="text-xs text-[#5D5B53] font-mono tracking-wider uppercase font-semibold mt-1">
           Zero-Power Cumulative H₂S Dosimetry
         </p>
       </div>

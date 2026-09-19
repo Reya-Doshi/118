@@ -59,7 +59,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
       category: 'chemistry',
       badge: 'Reaction Stoichiometry',
       question: 'What is the exact chemical mechanism? Why did you choose Dual-Zone Ag/Cu precipitation over Cu-PAN or lead acetate?',
-      quickPitch: 'PS-118 demands permanent darkening. Organic Cu-PAN chelation suffers from oxidation and color fading back over days (Engel et al., Sensors 2019), while lead acetate is toxic. SARVAS uses Dual-Zone metal-sulfide precipitation: Zone A (AgNO₃, Ksp ≈ 6×10⁻⁵¹) detects trace doses (0.125–10 ppm·h), while Zone B (CuSO₄, Ksp ≈ 6.3×10⁻³⁶) handles extended shifts (10–160 ppm·h). Mineral sulfides Ag₂S and CuS are completely insoluble and permanent.',
+      quickPitch: 'Industrial passive dosimetry demands permanent darkening. Organic Cu-PAN chelation suffers from oxidation and color fading back over days (Engel et al., Sensors 2019), while lead acetate is toxic. SARVAS uses Dual-Zone metal-sulfide precipitation: Zone A (AgNO₃, Ksp ≈ 6×10⁻⁵¹) detects trace doses (0.125–10 ppm·h), while Zone B (CuSO₄, Ksp ≈ 6.3×10⁻³⁶) handles extended shifts (10–160 ppm·h). Mineral sulfides Ag₂S and CuS are completely insoluble and permanent.',
       fullAnswer: (
         <div className="space-y-4 text-xs leading-relaxed text-[#5D5B53]">
           <p>

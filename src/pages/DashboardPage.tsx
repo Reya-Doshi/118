@@ -100,7 +100,7 @@ export const DashboardPage: React.FC = () => {
   const handleExportOSHA = () => {
     const oshaContent = `==========================================================\n` +
       `OSHA FORM 300 COMPLIANCE SUMMARY & AUDIT LOG\n` +
-      `SARVAS by RageB8 Industrial Passive Chemical Dosimeter\n` +
+      `SARVAS Industrial Passive Chemical Dosimeter\n` +
       `==========================================================\n\n` +
       `Facility: MRPL Refinery Sector 4 (Demo Unit)\n` +
       `Shift Date: ${new Date().toLocaleDateString()}\n` +
@@ -130,7 +130,7 @@ export const DashboardPage: React.FC = () => {
   const handleExportOISD = () => {
     const oisdContent = `====================================================================================\n` +
       `OIL INDUSTRY SAFETY DIRECTORATE (OISD-STD-113) & DGMS STATUTORY SHIFT REPORT\n` +
-      `SARVAS by RageB8 - Continuous Passive Dosimetry & Toxic Gas Surveillance System\n` +
+      `SARVAS - Continuous Passive Dosimetry & Toxic Gas Surveillance System\n` +
       `====================================================================================\n\n` +
       `Statutory Reference: OISD-113 (Refinery Toxic Gas Hazards) & DGMS Tech. Cir. 04\n` +
       `Refinery Complex: Mangalore Refinery & Petrochemicals Ltd (Sector 4 Claus Recovery)\n` +
@@ -177,7 +177,7 @@ export const DashboardPage: React.FC = () => {
         <div className="flex items-center gap-3.5">
           <img 
             src="/sarvas_logo_v2.png" 
-            alt="RageB8 Logo" 
+            alt="SARVAS Logo" 
             className="w-12 h-12 rounded-2xl object-contain bg-white p-1 border border-[#D8D0C2] shadow-xs shrink-0"
           />
           <div>
@@ -639,7 +639,7 @@ export const DashboardPage: React.FC = () => {
               <Scan className="w-4 h-4" />
               <span>Safety Officer Tool</span>
             </div>
-            <h4 className="text-sm font-semibold">Read New 118 Wristband</h4>
+            <h4 className="text-sm font-semibold">Read New SARVAS Wristband</h4>
             <p className="text-xs text-[#A69F91] leading-relaxed">
               Capture or select colorimetric strip images beside reference scales for automated exposure estimation.
             </p>
@@ -769,7 +769,7 @@ export const DashboardPage: React.FC = () => {
               <ul className="space-y-1.5 text-[11px] text-[#5D5B53]">
                 <li className="flex items-start gap-1.5">
                   <span className="text-[#B08A55] font-bold">•</span>
-                  <span><strong>Wear Protocol:</strong> Fasten 118 band securely on outer wrist without glove overlap.</span>
+                  <span><strong>Wear Protocol:</strong> Fasten SARVAS band securely on outer wrist without glove overlap.</span>
                 </li>
                 <li className="flex items-start gap-1.5">
                   <span className="text-[#B08A55] font-bold">•</span>

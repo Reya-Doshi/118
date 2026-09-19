@@ -175,7 +175,7 @@ export const CalibrationPage: React.FC = () => {
 
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', 'sih_ps118_dualzone_AgCu_calibration_dataset.csv');
+    link.setAttribute('download', 'sarvas_dualzone_AgCu_calibration_dataset.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -241,7 +241,7 @@ export const CalibrationPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-[#D8D0C2] gap-2">
           <div>
             <span className="text-[10px] font-mono uppercase tracking-widest text-[#71806B] font-bold">
-              SIH 2026 Evaluation Brief · PS-118
+              Technical Evaluation Brief &amp; Dataset
             </span>
             <h2 className="text-lg font-bold text-[#292925] font-serif">
               Complete Technical &amp; Empirical Validation Dossier

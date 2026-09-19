@@ -132,7 +132,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       <div className="pt-1 flex items-center gap-3">
         <img 
           src="/sarvas_logo_v2.png" 
-          alt="RageB8 Official Logo" 
+          alt="SARVAS Official Logo" 
           className="w-11 h-11 rounded-2xl object-contain bg-white p-1 border border-gray-200 shadow-xs shrink-0"
         />
         <div>

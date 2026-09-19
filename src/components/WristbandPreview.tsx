@@ -26,7 +26,7 @@ export const WristbandPreview: React.FC<WristbandPreviewProps> = ({
           <div className="flex items-center gap-2">
             <div className="w-2 h-6 bg-[#4F5D4B] rounded-xs" />
             <div>
-              <div className="text-xs font-bold tracking-widest text-[#EDE5D6] font-mono">118</div>
+              <div className="text-xs font-bold tracking-widest text-[#EDE5D6] font-mono">SARVAS</div>
               <div className="text-[9px] text-[#A69F91] font-mono">DOSIMETER</div>
             </div>
           </div>
