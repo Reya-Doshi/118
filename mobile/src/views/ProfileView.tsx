@@ -2,7 +2,7 @@ import React from 'react';
 import { useMobileAuth } from '../context/MobileAuthContext';
 import { repository } from '../services/DosimeterRepository';
 import type { UserRole } from '../types/mobile';
-import { User, LogOut, RefreshCw, HardHat, ShieldAlert, Sliders, ShieldCheck, Tag, Building2 } from 'lucide-react';
+import { LogOut, HardHat, ShieldAlert, Sliders, Tag } from 'lucide-react';
 
 interface ProfileViewProps {
   onBack: () => void;

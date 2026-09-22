@@ -1,4 +1,4 @@
-import type { ExposureStatus, Reading, DemoSampleBadge, BackendAnalyzeResponse } from '../types/mobile';
+import type { ExposureStatus, DemoSampleBadge, BackendAnalyzeResponse } from '../types/mobile';
 
 export interface CalibrationResult {
   estimatedDose: number; // ppm·h

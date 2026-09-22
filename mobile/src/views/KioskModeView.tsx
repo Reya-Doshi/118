@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import type { Worker } from '../types/mobile';
 import { repository } from '../services/DosimeterRepository';
 import {
-  Scan,
   UserCheck,
   Camera,
   Activity,
@@ -10,10 +8,6 @@ import {
   ArrowRight,
   RotateCcw,
   Sparkles,
-  ShieldCheck,
-  ShieldAlert,
-  AlertTriangle,
-  FileCheck2,
   Check
 } from 'lucide-react';
 

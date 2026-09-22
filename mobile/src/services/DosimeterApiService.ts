@@ -7,7 +7,6 @@
  *  - Communicates solely with the secure backend server.
  */
 
-import { Capacitor } from '@capacitor/core';
 import type { BackendAnalyzeResponse } from '../types/mobile';
 
 export interface AnalyzeWristbandParams {

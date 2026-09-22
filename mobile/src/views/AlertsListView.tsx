@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Alert } from '../types/mobile';
 import { repository } from '../services/DosimeterRepository';
-import { ArrowLeft, AlertTriangle, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 interface AlertsListViewProps {
   alerts: Alert[];

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Worker, Reading } from '../types/mobile';
-import { ArrowLeft, Search, Filter, ShieldCheck, ChevronRight, Clock, Tag, MapPin, Flame, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Search, MapPin, Flame } from 'lucide-react';
 
 interface WorkersListViewProps {
   workers: Worker[];
