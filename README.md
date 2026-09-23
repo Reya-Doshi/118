@@ -5,7 +5,7 @@
 
 [![SARVAS Project](https://img.shields.io/badge/Repository-Reya--Doshi%2F118-292925?style=for-the-badge&logo=github&logoColor=F6F1E7)](https://github.com/Reya-Doshi/118)
 [![ATEX Zone 0](https://img.shields.io/badge/Intrinsic_Safety-ATEX_Zone_0_Compliant-008080?style=for-the-badge&logo=shield-halved&logoColor=white)](#-intrinsic-safety--atex-compliance)
-[![BOM Cost](https://img.shields.io/badge/Unit_Cost-%E2%82%B90.85_per_badge-2E7D32?style=for-the-badge&logo=currency-inr&logoColor=white)](#-hardware-anatomy--unit-economics-085-bom)
+[![BOM Cost](https://img.shields.io/badge/Unit_Cost-%E2%82%B97.50_per_strip-2E7D32?style=for-the-badge&logo=currency-inr&logoColor=white)](#-hardware-anatomy--unit-economics-750-bom)
 [![On-Device ML](https://img.shields.io/badge/Edge_AI-CIEDE2000_%2B_Random_Forest-6A1B9A?style=for-the-badge&logo=scikit-learn&logoColor=white)](#-on-device-computational-optical--ml-pipeline)
 
 <br/>
@@ -71,7 +71,7 @@ At these persistent sub-alarm levels:
 - **Economic Infeasibility of 100% Coverage:** Certified personal electronic detectors cost ₹30,000–₹1,00,000 per unit, require frequent sensor-head swaps, periodic toxic span-gas calibration, and daily battery recharge protocols. As a result, facilities restrict active units to select permanent operators, leaving transient contractors, maintenance crews, and shift laborers completely unmonitored.
 
 ### The SARVAS Solution
-**SARVAS** (*Self-Actuating Resilient Vapor-Adsorbing Sensor*) is an enterprise-grade occupational hygiene ecosystem pairing an **ultra-low-cost (₹0.85/strip) zero-power chemochromic wristband** with an **on-device perceptual computer vision and machine learning engine**.
+**SARVAS** (*Self-Actuating Resilient Vapor-Adsorbing Sensor*) is an enterprise-grade occupational hygiene ecosystem pairing an **ultra-low-cost (₹7.50/strip consumable, ₹18.50 reusable chassis) zero-power chemochromic wristband** with an **on-device perceptual computer vision and machine learning engine**.
 1. **Passive Physical Dosimeter:** Worn comfortably on the wrist, requiring zero batteries, zero electronics, and zero operational training.
 2. **Irreversible Dual-Zone Inorganic Precipitation:** Leverages high-affinity silver ($Ag_2S$) and copper ($CuS$) mineralization, eliminating the notorious oxidation and color-fading flaws of organic dye systems.
 3. **Multi-Tier Computer Vision Gate:** Instantly detects, frames, and verifies dosimeter presence, automatically rejecting non-wristband images, bare tables, skin artifacts, and poor framing before analytical inference.
@@ -262,7 +262,7 @@ $$95\%\text{ Confidence Interval} = D_{\text{fused}} \pm 1.96 \cdot \sigma_{\tex
 
 ---
 
-## 💰 Hardware Anatomy & Unit Economics (₹0.85 BOM)
+## 💰 Hardware Anatomy & Unit Economics (₹7.50 Consumable BOM)
 
 Personal safety in high-hazard environments must be scalable to every single worker, including contract and daily-wage personnel.
 
@@ -270,31 +270,33 @@ Personal safety in high-hazard environments must be scalable to every single wor
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
 │                             SARVAS BILL OF MATERIALS (BOM)                                  │
 │                                                                                             │
-│  Item Description                                Material / Quantity       Cost / Badge (₹) │
+│  Item Description                                Material / Specification  Cost / Strip (₹) │
 │  ─────────────────────────────────────────────────────────────────────────────────────────  │
-│  1. Zone A Reagent                               AgNO₃ (0.05 M, 10 µL pad)         ₹0.12    │
-│  2. Zone B Reagent                               CuSO₄·5H₂O (0.5 M, 10 µL pad)     ₹0.02    │
-│  3. Substrate Matrix                             Whatman No. 1 Filter Cellulose    ₹0.08    │
-│  4. Humectant Layer                              Glycerol (5% v/v analytical)      ₹0.01    │
-│  5. Diffusion & UV Barrier                       PTFE + Amber UV-Blocking Film     ₹0.14    │
-│  6. Optical Calibration Card                     Printed D65 Target + Expiry Dot   ₹0.18    │
-│  7. Wristband Chassis                            Medical-Grade Silicone / Tyvek    ₹0.20    │
-│  8. Hermetic Barrier Packaging                   Heat-Sealed Foil Pouch + Desiccant₹0.10    │
+│  1. Substrate Matrix                             Whatman No. 1 Cellulose            ₹0.80    │
+│  2. Zone A Reagent                               AgNO₃ (0.05 M, 10 µL pad)          ₹0.90    │
+│  3. Zone B Reagent                               CuSO₄·5H₂O (0.1 M, 10 µL pad)      ₹0.15    │
+│  4. Diffusion & UV Barrier                       ePTFE Membrane + Amber UV Film     ₹2.65    │
+│  5. Optical Scale Card                           Printed D65 Target + CuSO₄ Seal Dot₹1.20    │
+│  6. Hermetic Barrier Packaging                   Heat-Sealed Foil Blister Pouch     ₹1.80    │
 │  ─────────────────────────────────────────────────────────────────────────────────────────  │
-│  TOTAL UNIT MANUFACTURING COST PER BADGE                                           ₹0.85    │
+│  TOTAL DISPOSABLE CARTRIDGE MATERIAL COST (PER SHIFT)                               ₹7.50    │
+│                                                                                             │
+│  7. Reusable Chassis / Strap (Amortized 1–2 yrs) Anti-Static Silicone Clip / Band   ₹18.50   │
 └─────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Capital Expenditure & Operating Cost Comparison
+### Capital Expenditure & Operating Cost Comparison (2,500 Workers, 1 Year / 300 Shifts)
 
-| Parameter | Traditional Personal Electronic Monitors | Conventional Diffusion Tubes (e.g. Lead Acetate) | **SARVAS** |
+| Parameter | Traditional Personal Electronic Monitors | Conventional Diffusion Tubes (e.g. Lead Acetate) | **SARVAS Ecosystem** |
 | :--- | :---: | :---: | :---: |
-| **Unit Initial Cost (CapEx)** | ₹30,000 – ₹1,00,000 | ₹400 – ₹800 / tube | **₹0.85 / badge** |
-| **Worker Deployment Capacity** | 5% – 15% (Key personnel only) | Rare / Spot checks | **100% of all staff & contractors** |
+| **Unit Hardware Cost** | ₹30,000 – ₹1,00,000 / detector | ₹400 – ₹800 / tube | **₹7.50 / strip** (+ ₹18.50 reusable chassis) |
+| **Per-Worker / Year Outlay** | ~₹11,700 (amortized CapEx + cell swaps) | ~₹24,000 (periodic batching) | **₹2,260 / worker / year** (300 shifts @ ₹7.50 + strap) |
+| **Annual Facility Budget (2,500 Workers)** | **₹2.92 Crore / year** | ₹6.0+ Crore / year | **₹56.5 Lakh / year** (80% net OPEX savings) |
+| **Worker Deployment Capacity** | 5% – 15% (Key permanent staff only) | Rare / Periodic spot checks | **100% of all staff & transient contractors** |
 | **Power & Battery Maintenance** | Daily charging docks required | Zero power | **Zero power (Zero battery)** |
 | **Calibration Requirements** | Monthly span gas & test benches | Lab spectrophotometer | **Auto on-device optical D65 calibration** |
 | **Intrinsic Safety Risk** | Requires costly ATEX Zone 0 cert | Non-electronic | **Inherently ATEX Zone 0 safe by physics** |
-| **Toxicity of Chemistry** | Toxic electrochemical electrolytes| Toxic Lead ($Pb$) Acetate carcinogen | **Eco-benign silver/copper mineralization** |
+| **Toxicity of Chemistry** | Toxic electrochemical electrolytes | Toxic Lead ($Pb$) Acetate carcinogen | **Eco-benign silver/copper mineralization** |
 | **Readout Velocity** | Instantaneous audible alarm only | 24–48 hr third-party laboratory | **Under 3 seconds via kiosk / phone camera** |
 
 ---
