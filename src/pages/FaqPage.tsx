@@ -696,7 +696,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
             </li>
             <li className="flex items-start gap-2 p-2.5 rounded-lg bg-white border border-[#D8D0C2]">
               <span className="font-bold text-[#2F6B38] shrink-0">Desiccated Pouch Packaging:</span>
-              <span>Pre-shift badges are sealed under inert nitrogen with food-grade silica gel, ensuring a guaranteed 60-day shelf life before activation.</span>
+              <span>Pre-shift badges are sealed under inert nitrogen with food-grade molecular sieve desiccant, ensuring 180-day sealed shelf life (&lt;30°C) and 90-day accelerated stability at 45°C before activation.</span>
             </li>
           </ul>
         </div>

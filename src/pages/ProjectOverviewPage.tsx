@@ -763,7 +763,7 @@ export const ProjectOverviewPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-3 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2] text-xs space-y-1">
+            <div className="p-3 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2] text-xs space-y-1.5">
               <div className="flex justify-between font-bold text-[#292925]">
                 <span>Reusable Silicone Strap / Clip:</span>
                 <span className="font-mono text-[#4F5D4B]">₹18.50</span>
@@ -771,6 +771,16 @@ export const ProjectOverviewPage: React.FC = () => {
               <p className="text-[11px] text-[#5D5B53]">
                 Anti-static silicone chassis. Lasts 1–2 years across hundreds of shifts.
               </p>
+              <div className="pt-1.5 border-t border-[#D8D0C2]/60 text-[11px] space-y-1 text-[#5D5B53]">
+                <div className="flex justify-between">
+                  <span className="font-medium text-[#292925]">Sealed Shelf-Life:</span>
+                  <span className="font-mono font-bold text-emerald-800">180 Days (&lt;30°C) / 90d (@45°C)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-[#292925]">Pre-Donning QA Dot:</span>
+                  <span className="text-amber-800 font-medium">Anhydrous CuSO₄ (White ➔ Blue)</span>
+                </div>
+              </div>
             </div>
           </div>
 

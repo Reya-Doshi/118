@@ -297,6 +297,8 @@ Personal safety in high-hazard environments must be scalable to every single wor
 | **Calibration Requirements** | Monthly span gas & test benches | Lab spectrophotometer | **Auto on-device optical D65 calibration** |
 | **Intrinsic Safety Risk** | Requires costly ATEX Zone 0 cert | Non-electronic | **Inherently ATEX Zone 0 safe by physics** |
 | **Toxicity of Chemistry** | Toxic electrochemical electrolytes | Toxic Lead ($Pb$) Acetate carcinogen | **Eco-benign silver/copper mineralization** |
+| **Storage Shelf-Life** | 1–2 yrs (sensor cells degrade in ~12 mo) | 6–12 months in fragile glass | **180 days in hermetic foil blister (90d @ 45°C)** |
+| **Pre-Donning Quality Assurance** | Requires daily span-gas bump test | None (blind reagent fading) | **Anhydrous CuSO₄ dot (instant blue on seal breach)** |
 | **Readout Velocity** | Instantaneous audible alarm only | 24–48 hr third-party laboratory | **Under 3 seconds via kiosk / phone camera** |
 
 ---
