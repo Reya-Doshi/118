@@ -184,7 +184,7 @@ export const Navbar: React.FC = () => {
                         : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
                     }`}
                   >
-                    Dossier &amp; BOM
+                    Dossier
                   </button>
 
                   <button
@@ -461,15 +461,15 @@ export const Navbar: React.FC = () => {
                       </div>
                       <div>
                         <div className="text-xs font-bold text-white group-hover:text-emerald-300 transition-colors">
-                          Dossier &amp; BOM Table
+                          Project Dossier
                         </div>
                         <div className="text-[10px] text-[#A69F91]">
-                          Unit economics, BOM &amp; ₹7.50 strip specs
+                          Technical specs, BOM &amp; architecture
                         </div>
                       </div>
                     </div>
                     <span className="text-[9px] font-mono bg-emerald-700 text-white px-1.5 py-0.5 rounded font-bold uppercase">
-                      BOM
+                      DOC
                     </span>
                   </button>
                 </div>
@@ -625,7 +625,7 @@ export const Navbar: React.FC = () => {
                         : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
                     }`}
                   >
-                    <span>Project Dossier &amp; BOM Table (₹7.50)</span>
+                    <span>Project Dossier (Team, Tech &amp; Roadmap)</span>
                     <ChevronRight className="w-4 h-4 text-[#878377]" />
                   </button>
 
