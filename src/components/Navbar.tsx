@@ -8,23 +8,38 @@ import {
   Menu,
   X,
   ChevronRight,
+  ChevronDown,
   LogOut,
   Users,
   User,
   Clock,
-  Sparkles
+  Sparkles,
+  Info
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { 
     activePage, 
     setActivePage, 
+    openExplanation,
     currentUser, 
     openLoginModal,
     logout
   } = useApp();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDemosOpen, setIsDemosOpen] = useState(false);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest('#demos-dropdown-container')) {
+        setIsDemosOpen(false);
+      }
+    };
+    window.addEventListener('click', handleOutsideClick);
+    return () => window.removeEventListener('click', handleOutsideClick);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -136,6 +151,17 @@ export const Navbar: React.FC = () => {
                     }`}
                   >
                     How It Works
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('landing', 'ehs-showcase')}
+                    className={`px-2 xl:px-2.5 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
+                      isTransparentOnHero
+                        ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10'
+                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    }`}
+                  >
+                    EHS Dashboard
                   </button>
 
                   <button
@@ -318,6 +344,111 @@ export const Navbar: React.FC = () => {
           <div className={`flex items-center gap-2 sm:gap-3 ml-2 border-l pl-2 sm:pl-3 shrink-0 transition-colors ${
             isTransparentOnHero ? 'border-white/20' : 'border-[#D8D0C2]'
           }`}>
+            {/* Interactive Demos & AI Dropdown */}
+            <div id="demos-dropdown-container" className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsDemosOpen(prev => !prev);
+                }}
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg border text-xs font-semibold whitespace-nowrap shrink-0 transition-all cursor-pointer shadow-xs active:scale-95 ${
+                  isDemosOpen || activePage === 'kiosk' || activePage === 'explainability'
+                    ? 'bg-[#292925] text-white border-[#292925]'
+                    : isTransparentOnHero
+                    ? 'border-white/30 bg-white/10 text-[#F6F1E7] hover:bg-white/20'
+                    : 'border-[#D8D0C2] bg-white text-[#292925] hover:bg-[#EDE5D6]'
+                }`}
+                title="Explore interactive demos and AI features"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span className="hidden sm:inline">Demos &amp; AI</span>
+                <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isDemosOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Dropdown Menu */}
+              {isDemosOpen && (
+                <div className="absolute right-0 mt-2 w-64 rounded-xl bg-[#292925] text-[#EDE5D6] border border-[#3E3C36] shadow-2xl p-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  {/* Item 1: Kiosk Prototype */}
+                  <button
+                    onClick={() => {
+                      setIsDemosOpen(false);
+                      handleNavClick('kiosk');
+                    }}
+                    className="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-[#383630] transition-colors text-left group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-md bg-emerald-950/80 border border-emerald-600/40 flex items-center justify-center text-emerald-400">
+                        <Scan className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white group-hover:text-emerald-300 transition-colors">
+                          Kiosk Prototype
+                        </div>
+                        <div className="text-[10px] text-[#A69F91]">
+                          Simulate shift-end gate turnstile
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-[9px] font-mono bg-emerald-600 text-white px-1.5 py-0.5 rounded font-bold uppercase">
+                      FLOW
+                    </span>
+                  </button>
+
+                  {/* Item 2: ML Pipeline */}
+                  <button
+                    onClick={() => {
+                      setIsDemosOpen(false);
+                      handleNavClick('explainability');
+                    }}
+                    className="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-[#383630] transition-colors text-left group cursor-pointer mt-0.5"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-md bg-amber-950/80 border border-amber-600/40 flex items-center justify-center text-amber-400">
+                        <Sparkles className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors">
+                          ML Pipeline
+                        </div>
+                        <div className="text-[10px] text-[#A69F91]">
+                          Color-to-dose model architecture
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-[9px] font-mono bg-amber-500 text-[#1C1C19] px-1.5 py-0.5 rounded font-bold uppercase">
+                      AI
+                    </span>
+                  </button>
+
+                  {/* Item 3: Understand SARVAS */}
+                  <button
+                    onClick={() => {
+                      setIsDemosOpen(false);
+                      openExplanation();
+                    }}
+                    className="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-[#383630] transition-colors text-left group cursor-pointer border-t border-[#3E3C36] mt-1 pt-2"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-md bg-[#383630] border border-[#4E4C44] flex items-center justify-center text-[#C2CBBF]">
+                        <Info className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white group-hover:text-[#C2CBBF] transition-colors">
+                          Understand SARVAS
+                        </div>
+                        <div className="text-[10px] text-[#A69F91]">
+                          Interactive guided explainer
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-[9px] font-mono bg-[#4F5D4B] text-white px-1.5 py-0.5 rounded font-bold uppercase">
+                      INFO
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Primary Action: Read Wristband */}
             <button
               onClick={() => handleNavClick('scan')}
@@ -448,6 +579,14 @@ export const Navbar: React.FC = () => {
                     className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold text-[#5D5B53] hover:bg-[#EDE5D6]/60 transition-colors cursor-pointer"
                   >
                     <span>How It Works (Workflow)</span>
+                    <ChevronRight className="w-4 h-4 text-[#878377]" />
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('landing', 'ehs-showcase')}
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold text-[#5D5B53] hover:bg-[#EDE5D6]/60 transition-colors cursor-pointer"
+                  >
+                    <span>EHS Exposure Dashboard &amp; Simulator</span>
                     <ChevronRight className="w-4 h-4 text-[#878377]" />
                   </button>
 
