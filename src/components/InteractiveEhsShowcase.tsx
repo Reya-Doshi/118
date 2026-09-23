@@ -211,8 +211,8 @@ export const InteractiveEhsShowcase: React.FC = () => {
         {/* 4 Bottom Highlight Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-[#3E3C36]">
           <div className="text-center p-2.5 rounded-lg bg-[#242420] border border-[#383730]">
-            <div className="text-base sm:text-lg font-bold font-mono text-[#EDE5D6]">₹7.50</div>
-            <div className="text-[10px] text-[#A69F91] uppercase tracking-wider font-mono">Cartridge Material Cost</div>
+            <div className="text-base sm:text-lg font-bold font-mono text-[#EDE5D6]">₹0.85</div>
+            <div className="text-[10px] text-[#A69F91] uppercase tracking-wider font-mono">Unit Manufacturing BOM</div>
           </div>
           <div className="text-center p-2.5 rounded-lg bg-[#242420] border border-[#383730]">
             <div className="text-base sm:text-lg font-bold font-mono text-[#EDE5D6]">60–90 Days</div>
