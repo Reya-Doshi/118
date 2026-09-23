@@ -401,7 +401,7 @@ def process_wristband_analysis(
 # ---------------------------------------------------------
 # ENDPOINTS
 # ---------------------------------------------------------
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def root():
     return {
         "service": "SARVAS Passive H2S Exposure Dosimeter Backend API",
@@ -414,7 +414,7 @@ def root():
     }
 
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health_check():
     key_configured = bool(get_gemini_api_key())
     return {
