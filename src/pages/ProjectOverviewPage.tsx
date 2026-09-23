@@ -750,7 +750,7 @@ export const ProjectOverviewPage: React.FC = () => {
                 <span className="font-mono font-bold text-[#292925]">₹2.65</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-[#D8D0C2]/50">
-                <span className="text-[#5D5B53]">Optical Scale Card + CuSO₄ Seal Dot</span>
+                <span className="text-[#5D5B53]">Optical Scale Card + QR Print</span>
                 <span className="font-mono font-bold text-[#292925]">₹1.20</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-[#D8D0C2]/50">
@@ -777,8 +777,8 @@ export const ProjectOverviewPage: React.FC = () => {
                   <span className="font-mono font-bold text-emerald-800">180 Days (&lt;30°C) / 90d (@45°C)</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-[#292925]">Pre-Donning QA Dot:</span>
-                  <span className="text-amber-800 font-medium">Anhydrous CuSO₄ (White ➔ Blue)</span>
+                  <span className="font-medium text-[#292925]">Traceability:</span>
+                  <span className="text-amber-800 font-medium font-mono">Unique QR &amp; Batch Expiry</span>
                 </div>
               </div>
             </div>

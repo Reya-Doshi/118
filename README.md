@@ -89,13 +89,13 @@ SARVAS uses **Dual-Zone Inorganic Metal Precipitation**. Instead of dyes, the ga
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
 │                               SARVAS STRIP ARCHITECTURE                                     │
 │                                                                                             │
-│  ┌──────────────┬──────────────┬──────────────┬──────────────┬──────────────┬────────────┐  │
-│  │ PRINTED D65  │    ZONE A    │    ZONE B    │   CONTROL    │ SEAL-BREACH  │  QR CODE   │  │
-│  │ COLOR SCALE  │   (AgNO₃)    │   (CuSO₄)    │ (Sealed Ag)  │ (Anhyd.CuSO₄)│   MATRIX   │  │
-│  │              │              │              │              │              │            │  │
-│  │ White/Gray   │ 0.125–10ppm·h│  10–160ppm·h │ UV Sun Blind │ Stark White  │ Worker &   │  │
-│  │ Reference    │ Trace Doses  │ Heavy Leaks  │ Math Offset  │ Blue = FAIL  │ Batch ID   │  │
-│  └──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴────────────┘  │
+│  ┌──────────────────┬──────────────┬──────────────┬──────────────┬───────────────────────┐  │
+│  │   PRINTED D65    │    ZONE A    │    ZONE B    │   CONTROL    │        QR CODE        │  │
+│  │   COLOR SCALE    │   (AgNO₃)    │   (CuSO₄)    │ (Sealed Ag)  │        MATRIX         │  │
+│  │                  │              │              │              │                       │  │
+│  │  White / Gray    │ 0.125–10ppm·h│  10–160ppm·h │ UV Sun Blind │ Worker Association &  │  │
+│  │  Reference Ring  │ Trace Doses  │ Heavy Leaks  │ Math Offset  │ Batch Expiry Serial   │  │
+│  └──────────────────┴──────────────┴──────────────┴──────────────┴───────────────────────┘  │
 │   ◄────────────────────── Micro-Porous Hydrophobic ePTFE Membrane ────────────────────────► │
 └─────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -114,7 +114,7 @@ SARVAS uses **Dual-Zone Inorganic Metal Precipitation**. Instead of dyes, the ga
 * **Amber UV-Blocking Film:** Blocks solar ultraviolet rays (<390 nm) so sunlight won't discolor the silver.
 * **Sealed Control Dot ($F_{ctrl}$):** An identical silver dot sealed under airtight film. If extreme sunlight causes any background darkening, the software subtracts it automatically.
 * **Hydrophobic ePTFE Membrane:** Rain and sweat bead right off (water contact angle > 120°), while gas molecules pass through freely.
-* **Pre-Donning Quality Dot (Anhydrous $\text{CuSO}_4$):** A dry test dot inside the package. It stays chalk-white when sealed. If moisture ever leaks into the package during warehouse storage, it turns bright blue. Workers discard any blue dot before wearing.
+* **Optical Scale Card & QR Print:** Embedded high-contrast D65 grayscale reference ring plus high-density QR code for automated worker assignment and shelf-age expiration verification.
 
 ---
 
@@ -132,7 +132,7 @@ SARVAS uses **Dual-Zone Inorganic Metal Precipitation**. Instead of dyes, the ga
 │  2. Zone A Reagent                               AgNO₃ (0.05 M analytical)          ₹0.90   │
 │  3. Zone B Reagent                               CuSO₄·5H₂O (0.1 M analytical)      ₹0.15   │
 │  4. Weather & UV Shield                          ePTFE Membrane + Amber UV Film     ₹2.65   │
-│  5. Calibration & Seal Card                      D65 Color Targets + CuSO₄ Dot      ₹1.20   │
+│  5. Optical Scale Card + QR Print                Printed D65 Target + QR Matrix     ₹1.20   │
 │  6. Hermetic Foil Packaging                      Heat-sealed blister + desiccant    ₹1.80   │
 │  ─────────────────────────────────────────────────────────────────────────────────────────  │
 │  TOTAL CONSUMABLE MATERIAL COST (PER SHIFT)                                         ₹7.50   │
@@ -168,7 +168,7 @@ SARVAS uses **Dual-Zone Inorganic Metal Precipitation**. Instead of dyes, the ga
 | **Hazardous Area Safety** | Requires expensive ATEX Zone 0 cert | Non-electronic | **Inherently ATEX Zone 0 safe by physics** |
 | **Chemical Toxicity** | Toxic liquid electrolytes | Toxic lead carcinogen | **Eco-benign silver and copper mineral salts** |
 | **Storage Shelf-Life** | Sensor cells expire in 12 months | 6–12 months in fragile glass | **180 days in sealed blister (90d @ 45°C)** |
-| **Pre-Shift Quality Check** | Daily bump test with toxic gas bottle | None (risk of faded badge) | **Anhydrous CuSO₄ dot (instant blue on seal leak)** |
+| **Pre-Shift Quality Check** | Daily bump test with toxic gas bottle | None (risk of faded badge) | **QR batch scanning & hermetic blister integrity** |
 | **Readout Speed & Privacy** | Instantaneous alarm beep only | 24–48 hours lab turnaround | **Under 3 seconds on-device (zero raw photos sent to cloud)** |
 
 ---
@@ -244,8 +244,7 @@ Petrochemical processing areas contain volatile hydrocarbon vapors classified un
 ```
 1. SHIFT START (15 Seconds)
    • Worker grabs factory-sealed ₹7.50 strip.
-   • Quick glance at test dot: White = OK (Blue = Discard).
-   • Snaps strip into reusable wristband, taps badge ID at entrance.
+   • Snaps strip into reusable wristband, taps QR badge at entrance turnstile.
 
 2. DURING SHIFT (8 Hours)
    • Worn comfortably on wrist inside hazardous units.
