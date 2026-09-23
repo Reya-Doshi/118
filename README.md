@@ -1,14 +1,14 @@
 <div align="center">
 
-# 🛡️ SARVAS
-### **Self-Actuating Resilient Vapor-Adsorbing Sensor**
-#### *Intelligent Passive $H_2S$ Cumulative Dosimeter with On-Device Optical Readout*
+<img src="public/sarvas_logo_v2.png" alt="SARVAS Logo" width="130" />
 
-**Smart India Hackathon 2026** • **Problem Statement SIH26118**  
-*Mangalore Refinery and Petrochemicals Limited (MRPL) • Ministry of Petroleum & Natural Gas*
+# SARVAS
+### **Autonomous Industrial Vapor Dosimeter & Edge Optical Quantification System**
+#### *Zero-Power Chemochromic Cumulative Exposure Monitoring with On-Device Perceptual Readout*
 
 <br/>
 
+[![Developed by Nxyen Labs](https://img.shields.io/badge/Made_by-Nxyen_Labs-0F172A?style=for-the-badge&logo=shield&logoColor=white)](#-about-nxyen-labs)
 [![ATEX Zone 0](https://img.shields.io/badge/Intrinsic_Safety-ATEX_Zone_0_Compliant-008080?style=for-the-badge&logo=shield-halved&logoColor=white)](#-intrinsic-safety-zero-electronics-zero-sparks)
 [![Consumable BOM](https://img.shields.io/badge/Consumable_Strip-%E2%82%B97.50-2E7D32?style=for-the-badge&logo=currency-inr&logoColor=white)](#-hardware-anatomy--grounded-unit-economics)
 [![Reusable Strap](https://img.shields.io/badge/Reusable_Chassis-%E2%82%B918.50-4E342E?style=for-the-badge)](#-hardware-anatomy--grounded-unit-economics)
@@ -17,7 +17,7 @@
 <br/>
 
 > **"Because not all industrial danger announces itself with an alarm."**  
-> *A zero-power chemical dosimeter wristband that catches silent, chronic gas exposure for every single worker—measured instantly on any phone or gate turnstile.*
+> *A zero-power chemical dosimeter wristband that catches silent, chronic gas exposure for every single worker—measured instantly on any smartphone or gate turnstile.*
 
 <br/>
 
@@ -26,7 +26,7 @@
 [The Chemistry](#-the-chemistry-permanent-mineral-stains) • 
 [BOM & Pricing](#-hardware-anatomy--grounded-unit-economics) • 
 [Optical & AI Pipeline](#-how-the-optical--ai-readout-works) • 
-[Industrial Comparison](#-industrial-benchmark-comparison) • 
+[Industrial Benchmark](#-industrial-benchmark-comparison) • 
 [Shift Lifecycle](#-the-daily-shift-lifecycle) • 
 [Quickstart](#-getting-started--local-development)
 
@@ -36,9 +36,9 @@
 
 ## 🚨 The Problem: The Silent Gas Leak
 
-In petroleum refineries (like **MRPL**), chemical plants, and gas sweetening units, **Hydrogen Sulfide ($H_2S$)** is an invisible, highly toxic gas. 
+In petroleum refining, gas processing complexes, and petrochemical installations, **Hydrogen Sulfide ($H_2S$)** is an invisible, highly toxic hazard. 
 
-Refineries already have expensive electronic gas detectors. **So why do workers still get hurt?**
+Heavy industrial facilities already invest in expensive electronic gas detectors. **So why do frontline workers still face chronic toxicity?**
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -48,7 +48,7 @@ Refineries already have expensive electronic gas detectors. **So why do workers 
 │       ▲                                                                                     │
 │ 15 ppm┼ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  Statutory Ceiling      │
 │       │                                                                                     │
-│ 10 ppm┼ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  Electronic Alarm Sound │
+│ 10 ppm┼ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  Electronic Alarm Floor │
 │       │    ▲                 ▲                                                              │
 │       │   ╱ ╲               ╱ ╲   ◄── Audible alarm sounds only during sudden big spikes    │
 │  5 ppm┼───   ───────────────   ────────────────────────────────────                         │
@@ -62,8 +62,8 @@ Refineries already have expensive electronic gas detectors. **So why do workers 
 └─────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-1. **The Alarm Blind Spot:** Electronic monitors only beep when gas spikes past 10 ppm. If gas leaks slowly at 2–5 ppm, **no alarm ever sounds**. But over an 8-hour shift, breathing 3 ppm constantly damages the lungs, causes nerve fatigue, and destroys the sense of smell.
-2. **Cost Cuts Out 85% of Workers:** Electronic monitors cost ₹30,000 to ₹1,00,000 each. Refineries can only afford them for a small number of permanent operators. Contract workers, cleaners, and daily turnaround crews enter the same danger zones with **zero monitoring**.
+1. **The Peak-Alarm Blind Spot:** Electronic monitors only beep when gas spikes past 10 ppm. If gas seeps slowly at 2–5 ppm, **no alarm ever sounds**. But over an 8-hour shift, breathing 3 ppm constantly damages the lungs, causes nerve fatigue, and destroys the sense of smell.
+2. **Cost Excludes 85% of the Workforce:** Electronic monitors cost ₹30,000 to ₹1,00,000 each. Refineries can only afford them for a small fraction of permanent operators. Contract workers, turnaround crews, and cleaning technicians enter the same hazardous units with **zero monitoring**.
 3. **No Cumulative Record:** Electronic beepers tell you what is happening *this exact second*. They do not calculate total toxic dose absorbed over a full workday or workweek.
 
 ---
@@ -73,15 +73,15 @@ Refineries already have expensive electronic gas detectors. **So why do workers 
 SARVAS uses a **two-part system**:
 
 1. **On the Worker's Wrist (Zero Electronics):**  
-   The worker wears a comfortable silicone strap holding a **₹7.50 chemical cartridge strip**. As they walk through the refinery, any $H_2S$ gas in the air naturally touches the strip and permanently darkens it. It requires no battery, no charging, and no buttons.
+   The worker wears a comfortable silicone strap holding a **₹7.50 chemical cartridge strip**. As they walk through the facility, any $H_2S$ gas in the air naturally touches the strip and permanently darkens it. It requires no battery, no charging, and zero buttons.
 2. **At Shift End (Instant Optical Readout):**  
-   As the worker exits the gate, they hold their wrist under a camera (or a smartphone app) for **under 3 seconds**. The software reads the darkness of the strip, adjusts for refinery temperature and lighting, and calculates their exact dose in **ppm·hours**.
+   As the worker exits the gate, they hold their wrist under a camera (or a smartphone app) for **under 3 seconds**. The software reads the darkness of the strip, adjusts for ambient temperature and lighting, and calculates their exact shift dose in **ppm·hours**.
 
 ---
 
 ## 🔬 The Chemistry: Permanent Mineral Stains
 
-Earlier chemical badges used organic dye solutions that had a critical flaw: **they faded backwards** when exposed to sunlight and fresh air (*Engel et al., Sensors 2019*). If a badge fades before it is scanned, the worker's toxic exposure is dangerously undercounted.
+Earlier chemical badges used organic dye solutions that had a critical flaw: **they faded backwards** when exposed to sunlight and ambient air (*Engel et al., Sensors 2019*). If a badge fades before it is scanned, the worker's toxic exposure is dangerously undercounted.
 
 SARVAS uses **Dual-Zone Inorganic Metal Precipitation**. Instead of dyes, the gas chemically turns metal salts into insoluble rock-stable minerals:
 
@@ -141,18 +141,18 @@ SARVAS uses **Dual-Zone Inorganic Metal Precipitation**. Instead of dyes, the ga
 └─────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 2. Annual Refinery Cost Math (2,500 Workers)
+### 2. Facility Cost Math (2,500-Worker Plant Model)
 
 * **Cost per worker per year:**
   $$300\text{ shifts} \times ₹7.50\text{ strip} + ₹10\text{ (strap amortized)} = \mathbf{₹2,260 / \text{worker / year}}$$
 * **Cost per worker per month:**
   $$\frac{₹2,260}{12\text{ months}} \approx \mathbf{₹188 / \text{month}}$$
-* **Total annual cost for entire refinery (2,500 workers):**
+* **Total annual operational outlay for 2,500 workers:**
   $$2,500 \times ₹2,260 = \mathbf{₹56.5\text{ Lakh / year}}$$
 
 > [!NOTE]
-> **Why ₹188/Month is Superior to Competitor Models:**  
-> Competitors proposing a monthly subscription expect one fragile badge to survive 30 straight days of refinery grease, sweat, and rain without saturating. SARVAS provides **25 brand-new, fresh strips every month** (1 per shift). If a maintenance contractor works only 3 days during a shutdown, the plant spends just $3 \times ₹7.50 = \mathbf{₹22.50}$, not a locked monthly fee.
+> **Why ₹188/Month is Superior to Monthly Subscriptions:**  
+> Monthly subscription models expect one fragile badge to survive 30 straight days of refinery grease, sweat, and rain without saturating. SARVAS provides **25 brand-new, fresh strips every month** (1 per shift). If a maintenance contractor works only 3 days during a shutdown, the plant spends just $3 \times ₹7.50 = \mathbf{₹22.50}$, not a locked monthly fee.
 
 ---
 
@@ -161,7 +161,7 @@ SARVAS uses **Dual-Zone Inorganic Metal Precipitation**. Instead of dyes, the ga
 | Performance Metric | Electronic Gas Detectors | Glass Diffusion Tubes (Lead Acetate) | **SARVAS Solution** |
 | :--- | :---: | :---: | :---: |
 | **Unit Hardware Cost** | ₹30,000 to ₹1,00,000 | ₹400 to ₹800 per tube | **₹7.50 / strip** (+ ₹18.50 reusable chassis) |
-| **Annual Refinery Cost (2,500 staff)** | **₹2.92 Crore / year** | ₹6.0+ Crore / year | **₹56.5 Lakh / year (80% net OPEX savings)** |
+| **Annual Facility Cost (2,500 staff)** | **₹2.92 Crore / year** | ₹6.0+ Crore / year | **₹56.5 Lakh / year (80% net OPEX savings)** |
 | **Workforce Coverage** | 5% to 15% (Key operators only) | Periodic spot checks only | **100% Universal Coverage (Permanent + Contractors)** |
 | **Maintenance Burden** | Daily battery docks & monthly span gas | Zero power, offsite lab | **Zero power, zero battery, on-device instant read** |
 | **Cumulative Dose Tracking** | ❌ No cumulative dose integration | ❌ Delayed lab report | ✅ **Dual (Physical shift integral + digital career ledger)** |
@@ -175,7 +175,7 @@ SARVAS uses **Dual-Zone Inorganic Metal Precipitation**. Instead of dyes, the ga
 
 ## 🧠 How the Optical & AI Readout Works
 
-All image processing runs **100% on the device** (in the phone or turnstile mini-PC). No photos are ever uploaded to an external server.
+All image processing runs **100% on the device** (in the phone or turnstile mini-PC). No raw photos are ever uploaded to an external server.
 
 ```
 [Captured Camera Frame]
@@ -220,17 +220,17 @@ The system is calibrated with **303 systematic multi-block exposure trials** rec
 | **`E_shelf`** | 24 | Sealed vs unsealed at 0, 30, 60, 90 days | Proves 180-day storage stability in foil blister. |
 | **`F_light`** | 24 | UV-filtered vs unprotected (0–800 klux·h) | Amber film blocks sunlight discoloration; control patch offsets drift. |
 | **`G_delay`** | 15 | Scans delayed 0, 24, 48, 72, 168 hours | Mineral stain does not fade; error stays within $\pm 8.2\%$ at 72 hours. |
-| **`H_inter`** | 18 | Cross-gases: $SO_2, NO_2, NH_3, CO, CH_4$ | Zero interference from common combustion and sweetening gases. |
+| **`H_inter`** | 18 | Cross-gases: $SO_2, NO_2, NH_3, CO, CH_4$ | Zero interference from common combustion and process gases. |
 | **`I_shift`** | 30 | Realistic dynamic shift gas curves | Proves mathematical convergence of $\int C(t) dt$ over full 8 hours. |
 
-* **Quantification Accuracy:** Within $\pm 8.4\%$ to $\pm 12.0\%$ of reference laboratory standards.
+* **Quantification Accuracy:** Within $\pm 8.4\%$ to $\pm 12.0\%$ of reference standards.
 * **Limit of Quantification (LoQ):** $0.20\text{ ppm}\cdot\text{h}$ (below this, reads `BELOW_LOQ` to prevent false precision).
 
 ---
 
 ## ⚡ Intrinsic Safety: Zero Electronics, Zero Sparks
 
-Petroleum refineries contain volatile hydrocarbon gases classified under **ATEX Zone 0 / Zone 1**. Any device entering these zones must guarantee it cannot create an ignition spark.
+Petrochemical processing areas contain volatile hydrocarbon vapors classified under **ATEX Zone 0 / Zone 1**. Any device entering these zones must guarantee it cannot create an ignition spark.
 
 * **Zero Batteries:** Cannot overheat, leak, or short-circuit.
 * **Zero Capacitors or Inductors:** Cannot store electrical energy.
@@ -248,7 +248,7 @@ Petroleum refineries contain volatile hydrocarbon gases classified under **ATEX 
    • Snaps strip into reusable wristband, taps badge ID at entrance.
 
 2. DURING SHIFT (8 Hours)
-   • Worn comfortably on wrist inside refinery units.
+   • Worn comfortably on wrist inside hazardous units.
    • Silently absorbs any ambient H₂S gas.
    • Nanoparticles precipitate permanently. Rain and sweat bead off.
 
@@ -260,7 +260,7 @@ Petroleum refineries contain volatile hydrocarbon gases classified under **ATEX 
 4. SAFETY DASHBOARD (Automated)
    • EHS safety officer sees live plant exposure heatmaps.
    • System automatically alerts if any worker's rolling 7-day dose nears OEL limits.
-   • Digital audit ledger updates for OSHA / DGMS statutory compliance.
+   • Digital audit ledger updates for statutory compliance.
 ```
 
 ---
@@ -285,8 +285,8 @@ Petroleum refineries contain volatile hydrocarbon gases classified under **ATEX 
 ### Quick Start
 ```bash
 # 1. Clone repository
-git clone https://github.com/Reya-Doshi/118.git
-cd 118
+git clone <repository-url>
+cd sarvas
 
 # 2. Install dependencies
 npm install
@@ -307,18 +307,19 @@ Open `http://localhost:5173/` in your browser.
 
 ---
 
-## 👥 Project & Team Dossier
+## 🏢 About Nxyen Labs
 
-* **Project:** SARVAS (*Self-Actuating Resilient Vapor-Adsorbing Sensor*)
-* **Hackathon:** Smart India Hackathon 2026 (SIH 2026)
-* **Problem Statement:** SIH26118 (MRPL / Ministry of Petroleum & Natural Gas)
-* **Team:** RageB8 (Reya Doshi, Vaish / Vaishu)
+SARVAS is developed as an open-architecture occupational health research initiative by **Nxyen Labs**.
+
+* **Organization:** Nxyen Labs
+* **Domain:** Deep-Tech Industrial Safety, Applied Chemochromics & Edge Machine Vision
 * **License:** Open Source under the [MIT License](LICENSE).
 
 <div align="center">
 <br/>
 
 **SARVAS**  
-*Safeguarding the frontline workforce. One shift at a time.*
+*Safeguarding the frontline workforce. One shift at a time.*  
+**Made by Nxyen Labs.**
 
 </div>
