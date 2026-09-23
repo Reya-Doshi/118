@@ -9,10 +9,10 @@ import {
   ChevronDown,
   CheckCircle2,
   AlertTriangle,
-  Scan,
   Database
 } from 'lucide-react';
 import { FaqSection } from './FaqPage';
+import { InteractiveEhsShowcase } from '../components/InteractiveEhsShowcase';
 
 export const LandingPage: React.FC = () => {
   const { setActivePage, currentUser } = useApp();
@@ -437,95 +437,9 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 05 — DIGITAL READING INTERACTIVE MOCKUP */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6">
-        <div className="bg-[#EDE5D6] rounded-xl border border-[#D8D0C2] p-5 sm:p-8 space-y-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[#D8D0C2] pb-6">
-            <div>
-              <span className="text-[11px] font-mono font-semibold text-[#71806B] uppercase">
-                AI-ASSISTED COLORIMETRIC QUANTIFICATION
-              </span>
-              <h3 className="text-xl sm:text-2xl font-bold text-[#292925] mt-0.5">
-                Precision Reading from Any Smartphone Photo
-              </h3>
-              <p className="text-xs text-[#5D5B53] mt-0.5">
-                Normalizes for plant illumination, ambient temperature, and relative humidity.
-              </p>
-            </div>
-            <button
-              onClick={() => setActivePage('scan')}
-              className="w-full sm:w-auto px-5 py-2.5 rounded bg-[#4F5D4B] text-[#F6F1E7] text-xs font-semibold hover:bg-[#3D493A] transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-            >
-              <Scan className="w-3.5 h-3.5" />
-              <span>Launch Wristband Scanner</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] space-y-1.5">
-              <div className="text-xs font-bold text-[#292925] font-mono">01 · Reference Calibration</div>
-              <p className="text-xs text-[#5D5B53] leading-relaxed">
-                Extracts the printed scale values adjacent to the sensor strip to eliminate color temperature shifts.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] space-y-1.5">
-              <div className="text-xs font-bold text-[#292925] font-mono">02 · CIE L*a*b* Extraction</div>
-              <p className="text-xs text-[#5D5B53] leading-relaxed">
-                Converts pixel data into device-independent color coordinates, calculating true perceptual color difference (ΔEab*).
-              </p>
-            </div>
-
-            <div className="p-4 rounded-lg bg-[#F6F1E7] border border-[#D8D0C2] space-y-1.5">
-              <div className="text-xs font-bold text-[#292925] font-mono">03 · Environmental Compensation</div>
-              <p className="text-xs text-[#5D5B53] leading-relaxed">
-                Applies Arrhenius reaction rate scaling and relative humidity sorption factors before estimating exposure dose.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 06 — SAFETY DASHBOARD PREVIEW */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div>
-            <span className="text-[11px] font-mono font-semibold text-[#71806B] uppercase">
-              OCCUPATIONAL SAFETY INTELLIGENCE
-            </span>
-            <h3 className="text-2xl font-bold text-[#292925]">MRPL Shift Safety Overview</h3>
-          </div>
-          <button
-            onClick={() => setActivePage('dashboard')}
-            className="text-xs font-bold text-[#4F5D4B] hover:underline flex items-center gap-1.5"
-          >
-            <span>Open Safety Dashboard</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-          <div className="p-4 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
-            <div className="text-[10px] font-mono text-[#878377] uppercase font-bold">ACTIVE WORKERS</div>
-            <div className="text-2xl font-bold font-mono text-[#292925] mt-1">48</div>
-            <div className="text-[11px] text-[#5D5B53]">Morning Shift</div>
-          </div>
-          <div className="p-4 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
-            <div className="text-[10px] font-mono text-[#878377] uppercase font-bold">WRISTBANDS SCANNED</div>
-            <div className="text-2xl font-bold font-mono text-[#292925] mt-1">42</div>
-            <div className="text-[11px] text-[#4F5D4B] font-medium">87.5% compliance</div>
-          </div>
-          <div className="p-4 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
-            <div className="text-[10px] font-mono text-[#878377] uppercase font-bold">EXPOSURE FLAGS</div>
-            <div className="text-2xl font-bold font-mono text-[#B08A55] mt-1">3</div>
-            <div className="text-[11px] text-[#826235]">Requires review</div>
-          </div>
-          <div className="p-4 rounded-lg bg-[#EDE5D6] border border-[#D8D0C2]">
-            <div className="text-[10px] font-mono text-[#878377] uppercase font-bold">CALIBRATION POINTS</div>
-            <div className="text-2xl font-bold font-mono text-[#4F5D4B] mt-1">303</div>
-            <div className="text-[11px] text-[#5D5B53]">Dual-Zone empirical matrix</div>
-          </div>
-        </div>
+      {/* 05 — INTERACTIVE EHS SHOWCASE & LIVE SIMULATOR */}
+      <section id="ehs-showcase" className="max-w-5xl mx-auto px-4 sm:px-6">
+        <InteractiveEhsShowcase />
       </section>
 
       {/* 06.5 — FREQUENTLY ASKED QUESTIONS & TECHNICAL SPECIFICATIONS */}
