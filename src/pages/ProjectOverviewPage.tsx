@@ -637,8 +637,8 @@ export const ProjectOverviewPage: React.FC = () => {
               <div className="p-3 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2] flex items-start gap-3">
                 <div className="w-2 h-2 rounded-full bg-[#4F5D4B] mt-1.5 shrink-0" />
                 <div className="text-xs text-[#292925]">
-                  <strong className="block text-sm font-semibold">5. Blister Seal Foil Packaging Prototypes</strong>
-                  Individually sealed hermetic aluminum-polyethylene pouches with internal desiccant and clear viewing window for the anhydrous indicator dot.
+                  <strong className="block text-sm font-semibold">5. Tamper-Evident Foil Packaging Prototypes</strong>
+                  Individually sealed hermetic aluminum-polyethylene pouches with tamper-evident seal and laser-printed batch manufacturing &amp; expiry code.
                 </div>
               </div>
             </div>
@@ -754,7 +754,7 @@ export const ProjectOverviewPage: React.FC = () => {
                 <span className="font-mono font-bold text-[#292925]">₹1.20</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-[#D8D0C2]/50">
-                <span className="text-[#5D5B53]">Hermetic Foil Blister Packaging</span>
+                <span className="text-[#5D5B53]">Tamper-Evident Foil Packaging</span>
                 <span className="font-mono font-bold text-[#292925]">₹1.80</span>
               </div>
               <div className="flex justify-between pt-2 font-bold text-sm text-[#292925]">

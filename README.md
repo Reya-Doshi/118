@@ -8,16 +8,16 @@
 
 <br/>
 
-[![Developed by Nxyen Labs](https://img.shields.io/badge/Made_by-Nxyen_Labs-0F172A?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Nxyen-labs)
-[![ATEX Zone 0](https://img.shields.io/badge/Intrinsic_Safety-ATEX_Zone_0_Compliant-008080?style=for-the-badge&logo=shield-halved&logoColor=white)](#-intrinsic-safety-zero-electronics-zero-sparks)
+[![Developed by Nxyen Labs](https://img.shields.io/badge/Developed_by-Nxyen_Labs-0F172A?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Nxyen-labs)
+[![Repository](https://img.shields.io/badge/Repository-Reya--Doshi%2F118-292925?style=for-the-badge&logo=github&logoColor=F6F1E7)](https://github.com/Reya-Doshi/118)
+[![Intrinsic Safety](https://img.shields.io/badge/Intrinsic_Safety-Non--Electrical_Passive_Badge-008080?style=for-the-badge&logo=shield-halved&logoColor=white)](#-intrinsic-safety-zero-electronics-zero-sparks)
 [![Consumable BOM](https://img.shields.io/badge/Consumable_Strip-%E2%82%B97.50-2E7D32?style=for-the-badge&logo=currency-inr&logoColor=white)](#-hardware-anatomy--grounded-unit-economics)
 [![Reusable Strap](https://img.shields.io/badge/Reusable_Chassis-%E2%82%B918.50-4E342E?style=for-the-badge)](#-hardware-anatomy--grounded-unit-economics)
-[![On-Device ML](https://img.shields.io/badge/Edge_Optical_AI-CIEDE2000_%2B_Arrhenius-6A1B9A?style=for-the-badge)](#-how-the-optical--ai-readout-works)
 
 <br/>
 
 > **"Because not all industrial danger announces itself with an alarm."**  
-> *A zero-power chemical dosimeter wristband that catches silent, chronic gas exposure for every single worker—measured instantly on any smartphone or gate turnstile.*
+> *A zero-power chemical dosimeter wristband that catches silent, chronic gas exposure for frontline workers—measured on any smartphone or gate turnstile.*
 
 <br/>
 
@@ -27,6 +27,7 @@
 [BOM & Pricing](#-hardware-anatomy--grounded-unit-economics) • 
 [Optical & AI Pipeline](#-how-the-optical--ai-readout-works) • 
 [Industrial Benchmark](#-industrial-benchmark-comparison) • 
+[Synthetic Dataset](#-303-scenario-synthetic-validation-dataset) • 
 [Shift Lifecycle](#-the-daily-shift-lifecycle) • 
 [Quickstart](#-getting-started--local-development)
 
@@ -38,7 +39,7 @@
 
 In petroleum refining, gas processing complexes, and petrochemical installations, **Hydrogen Sulfide ($H_2S$)** is an invisible, highly toxic hazard. 
 
-Heavy industrial facilities already invest in expensive electronic gas detectors. **So why do frontline workers still face chronic toxicity?**
+Heavy industrial facilities already invest in electronic gas detectors. **So why do frontline workers still face chronic toxicity?**
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -54,7 +55,7 @@ Heavy industrial facilities already invest in expensive electronic gas detectors
 │  5 ppm┼───   ───────────────   ────────────────────────────────────                         │
 │       │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ◄── CHRONIC TOXICITY   │
 │       │  ░░░ Silent 1–9 ppm Sub-Alarm Inhalation (8–12 hr shifts) ░░░      BLIND SPOT!      │
-│       │  ░░░ Olfactory paralysis, headaches, long-term lung harm  ░░░  (NO ALARM EVER RANG) │
+│       │  ░░░ Eye & airway irritation, headaches, chronic fatigue  ░░░  (NO ALARM EVER RANG) │
 │  0 ppm┴──┴──────┴──────┴──────┴──────┴──────┴──────┴──────┴───────►                         │
 │         Hour 1  Hour 2  Hour 3  Hour 4  Hour 5  Hour 6  Hour 7  Hour 8                      │
 │                                                                                             │
@@ -62,8 +63,8 @@ Heavy industrial facilities already invest in expensive electronic gas detectors
 └─────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-1. **The Peak-Alarm Blind Spot:** Electronic monitors only beep when gas spikes past 10 ppm. If gas seeps slowly at 2–5 ppm, **no alarm ever sounds**. But over an 8-hour shift, breathing 3 ppm constantly damages the lungs, causes nerve fatigue, and destroys the sense of smell.
-2. **Cost Excludes 85% of the Workforce:** Electronic monitors cost ₹30,000 to ₹1,00,000 each. Refineries can only afford them for a small fraction of permanent operators. Contract workers, turnaround crews, and cleaning technicians enter the same hazardous units with **zero monitoring**.
+1. **The Peak-Alarm Blind Spot:** Electronic monitors only beep when gas spikes past 10 ppm. If gas seeps slowly at 2–5 ppm, **no alarm ever sounds**. Over an 8-hour shift, breathing 3 ppm constantly can irritate the eyes and airways and cause headaches and fatigue.
+2. **Cost Excludes a Fraction of the Workforce:** Electronic monitors cost ₹20,000 to ₹1,00,000 each. Refineries can typically afford them only for a fraction of frontline operators. Contract workers, turnaround crews, and cleaning technicians often enter the same hazardous units with **zero monitoring**.
 3. **No Cumulative Record:** Electronic beepers tell you what is happening *this exact second*. They do not calculate total toxic dose absorbed over a full workday or workweek.
 
 ---
@@ -75,7 +76,7 @@ SARVAS uses a **two-part system**:
 1. **On the Worker's Wrist (Zero Electronics):**  
    The worker wears a comfortable silicone strap holding a **₹7.50 chemical cartridge strip**. As they walk through the facility, any $H_2S$ gas in the air naturally touches the strip and permanently darkens it. It requires no battery, no charging, and zero buttons.
 2. **At Shift End (Instant Optical Readout):**  
-   As the worker exits the gate, they hold their wrist under a camera (or a smartphone app) for **under 3 seconds**. The software reads the darkness of the strip, adjusts for ambient temperature and lighting, and calculates their exact shift dose in **ppm·hours**.
+   As the worker exits the gate, they hold their wrist under a camera (or a smartphone app) for **under 3 seconds**. The software reads the darkness of the strip, adjusts for ambient temperature and lighting, and **estimates** their shift dose in **ppm·hours**.
 
 ---
 
@@ -93,21 +94,21 @@ SARVAS uses **Dual-Zone Inorganic Metal Precipitation**. Instead of dyes, the ga
 │  │   PRINTED D65    │    ZONE A    │    ZONE B    │   CONTROL    │        QR CODE        │  │
 │  │   COLOR SCALE    │   (AgNO₃)    │   (CuSO₄)    │ (Sealed Ag)  │        MATRIX         │  │
 │  │                  │              │              │              │                       │  │
-│  │  White / Gray    │ 0.125–10ppm·h│  10–160ppm·h │ UV Sun Blind │ Worker Association &  │  │
-│  │  Reference Ring  │ Trace Doses  │ Heavy Leaks  │ Math Offset  │ Batch Expiry Serial   │  │
+│  │  White / Gray    │  0–8 ppm·h   │  8–50 ppm·h  │ UV Sun Blind │ Worker Association &  │  │
+│  │  Reference Ring  │ Trace Doses  │ Shift Ceiling│ Math Offset  │ Batch Expiry Serial   │  │
 │  └──────────────────┴──────────────┴──────────────┴──────────────┴───────────────────────┘  │
 │   ◄────────────────────── Micro-Porous Hydrophobic ePTFE Membrane ────────────────────────► │
 └─────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 1. Zone A: Silver Nitrate ($\text{AgNO}_3$) — For Low Doses (0.125 to 10 ppm·h)
+### 1. Zone A: Silver Nitrate ($\text{AgNO}_3$) — For Trace Doses (0 to 8 ppm·h)
 * **What happens:** Silver ions react with $H_2S$ gas to form **Silver Sulfide ($\text{Ag}_2\text{S}$)**.
 * **Why it's permanent:** Silver sulfide is one of the most insoluble substances known to chemistry ($K_{sp} \approx 10^{-51}$). Once it forms, it cannot un-react, dissolve, or evaporate.
 * **Color change:** Changes from chalk-white $\rightarrow$ sepia brown $\rightarrow$ charcoal black.
 
-### 2. Zone B: Copper Sulfate ($\text{CuSO}_4$) — For High Doses (10 to 160 ppm·h)
+### 2. Zone B: Copper Sulfate ($\text{CuSO}_4$) — For Excursions (8 to 50 ppm·h, saturation flagged >50 ppm·h)
 * **What happens:** Copper ions react with $H_2S$ gas to form **Copper Sulfide ($\text{CuS}$)** ($K_{sp} \approx 10^{-36}$).
-* **Why two zones?** If a sudden leak occurs, Zone A darkens completely. Zone B takes over to measure heavy exposures without saturating.
+* **Why two zones?** If a sudden leak occurs, Zone A darkens completely. Zone B takes over to measure heavy exposures without saturating. Readings above 50 ppm·h are flagged as saturated.
 * **Color change:** Changes from pale sky-blue $\rightarrow$ olive drab $\rightarrow$ dense copper-black.
 
 ### 3. Solar & Weather Protection
@@ -133,7 +134,7 @@ SARVAS uses **Dual-Zone Inorganic Metal Precipitation**. Instead of dyes, the ga
 │  3. Zone B Reagent                               CuSO₄·5H₂O (0.1 M analytical)      ₹0.15   │
 │  4. Weather & UV Shield                          ePTFE Membrane + Amber UV Film     ₹2.65   │
 │  5. Optical Scale Card + QR Print                Printed D65 Target + QR Matrix     ₹1.20   │
-│  6. Hermetic Foil Packaging                      Heat-sealed blister + desiccant    ₹1.80   │
+│  6. Hermetic Foil Packaging                      Tamper-evident pouch (printed exp) ₹1.80   │
 │  ─────────────────────────────────────────────────────────────────────────────────────────  │
 │  TOTAL CONSUMABLE MATERIAL COST (PER SHIFT)                                         ₹7.50   │
 │                                                                                             │
@@ -158,17 +159,17 @@ SARVAS uses **Dual-Zone Inorganic Metal Precipitation**. Instead of dyes, the ga
 
 ## 📊 Industrial Benchmark Comparison
 
-| Performance Metric | Electronic Gas Detectors | Glass Diffusion Tubes (Lead Acetate) | **SARVAS Solution** |
+| Performance Metric | Electronic Gas Detectors | Glass Diffusion Tubes | **SARVAS Solution** |
 | :--- | :---: | :---: | :---: |
-| **Unit Hardware Cost** | ₹30,000 to ₹1,00,000 | ₹400 to ₹800 per tube | **₹7.50 / strip** (+ ₹18.50 reusable chassis) |
-| **Annual Facility Cost (2,500 staff)** | **₹2.92 Crore / year** | ₹6.0+ Crore / year | **₹56.5 Lakh / year (80% net OPEX savings)** |
-| **Workforce Coverage** | 5% to 15% (Key operators only) | Periodic spot checks only | **100% Universal Coverage (Permanent + Contractors)** |
+| **Unit Hardware Cost** | ₹20,000 to ₹1,00,000 | ₹400 to ₹800 per tube | **₹7.50 / strip** (+ ₹18.50 reusable chassis) |
+| **Annual Facility Cost (2,500 staff)** | **₹2.92 Crore / year** | High recurring OPEX | **₹56.5 Lakh / year (80% net OPEX savings)** |
+| **Workforce Coverage** | Fraction of workforce (permanent staff) | Periodic spot checks only | **100% Universal Coverage (Permanent + Contractors)** |
 | **Maintenance Burden** | Daily battery docks & monthly span gas | Zero power, offsite lab | **Zero power, zero battery, on-device instant read** |
 | **Cumulative Dose Tracking** | ❌ No cumulative dose integration | ❌ Delayed lab report | ✅ **Dual (Physical shift integral + digital career ledger)** |
-| **Hazardous Area Safety** | Requires expensive ATEX Zone 0 cert | Non-electronic | **Inherently ATEX Zone 0 safe by physics** |
-| **Chemical Toxicity** | Toxic liquid electrolytes | Toxic lead carcinogen | **Eco-benign silver and copper mineral salts** |
-| **Storage Shelf-Life** | Sensor cells expire in 12 months | 6–12 months in fragile glass | **180 days in sealed blister (90d @ 45°C)** |
-| **Pre-Shift Quality Check** | Daily bump test with toxic gas bottle | None (risk of faded badge) | **QR batch scanning & hermetic blister integrity** |
+| **Hazardous Area Safety** | Requires certified ATEX Zone 0 enclosure | Non-electronic | **Non-electrical: no battery, no spark source** |
+| **Reagent / Sensor Chemistry** | Toxic liquid electrolyte sensor cells | Hazardous chemical reagents | **Solid-state mineral precipitation (sealed cartridge)**|
+| **Storage Shelf-Life** | Sensor cells expire in ~12 months | 6–12 months in fragile glass | **180 days in sealed tamper-evident foil pouch** |
+| **Pre-Shift Quality Check** | Daily bump test with span-gas bottle | None (risk of faded badge) | **QR batch scanning & tamper-evident pouch seal** |
 | **Readout Speed & Privacy** | Instantaneous alarm beep only | 24–48 hours lab turnaround | **Under 3 seconds on-device (zero raw photos sent to cloud)** |
 
 ---
@@ -196,46 +197,47 @@ All image processing runs **100% on the device** (in the phone or turnstile mini
 5. ARRHENIUS THERMAL SCALING ───► Adjusts chemical reaction speed for ambient temperature
        │
        ▼
-6. DUAL-ZONE AI REGRESSOR ──────► Outputs exact shift dose (ppm·h) with 95% Confidence Interval
+6. DUAL-ZONE AI REGRESSOR ──────► Estimates shift dose (ppm·h) with 95% Confidence Interval
 ```
 
 1. **Rejection Gate:** If someone points the camera at a desk, a blank wall, or a thumb, the system rejects it immediately with clear advice (*"Dosimeter not detected"* or *"Angle camera away from direct glare"*).
 2. **Lighting Normalization:** Refineries have harsh sodium lamps, cool LEDs, or bright sun. The on-band printed reference ring allows the algorithm to mathematically re-balance the image to standard **D65 daylight**.
 3. **CIEDE2000 ($\Delta E_{00}$):** Uses the international standard for perceptual color difference (ISO/CIE 11664-6) to detect minute chemical darkening.
 4. **Arrhenius Kinetic Compensation ($E_a = 28.4\text{ kJ/mol}$):** Chemical reactions happen faster on hot summer afternoons ($45^\circ\text{C}$) than cool mornings ($18^\circ\text{C}$). The formula scales the reading so temperature never skews the result.
-5. **Inverse-Variance Fusion:** Combines Zone A and Zone B data to output a single reliable dose with confidence intervals (e.g. `4.2 ppm·h [3.98 – 4.42]`).
+5. **Inverse-Variance Fusion:** Combines Zone A and Zone B data to output a single reliable dose estimate with confidence intervals (e.g. `4.2 ppm·h [3.98 – 4.42]`).
 
 ---
 
-## 📊 303-Sample Empirical Validation Matrix
+## 📊 303-Scenario Synthetic Validation Dataset
 
-The system is calibrated with **303 systematic multi-block exposure trials** recorded in [`src/data/calibration_dataset.csv`](./src/data/calibration_dataset.csv):
+> **Note on Data Provenance:** Generated from published sensor parameters to test the software pipeline; physical chamber validation is planned.
+
+The software pipeline was validated across 303 synthetic exposure scenarios derived from literature kinetic constants and field operating envelopes recorded in [`src/data/calibration_dataset.csv`](./src/data/calibration_dataset.csv):
 
 | Test Block | Rows | Variables Tested | Result |
 | :--- | :---: | :--- | :--- |
-| **`A_core`** | 105 | 0.25 to 20 ppm $H_2S \times 0.5$ to 8 hours | Zone A covers 0.125–10 ppm·h; Zone B extends to 160 ppm·h. |
+| **`A_core`** | 105 | 0.25 to 20 ppm $H_2S \times 0.5$ to 8 hours | Zone A covers 0–8 ppm·h; Zone B covers 8–50 ppm·h (saturation flagged >50). |
 | **`B_blank`** | 15 | Zero gas across 0.5 to 8 hours | Establishes zero-noise optical baseline ($\sigma = 0.42\text{ }\Delta E$). |
 | **`C_temp`** | 36 | 15°C, 25°C, 35°C, 45°C | Validates Arrhenius activation energy ($E_a = 28.4\text{ kJ/mol}$). |
 | **`D_rh`** | 36 | 20%, 40%, 60%, 80% Relative Humidity | Confirms glycerol buffer prevents drying across dry and humid plants. |
-| **`E_shelf`** | 24 | Sealed vs unsealed at 0, 30, 60, 90 days | Proves 180-day storage stability in foil blister. |
+| **`E_shelf`** | 24 | Sealed vs unsealed at 0, 30, 60, 90 days | Models 180-day storage stability in tamper-evident pouch. |
 | **`F_light`** | 24 | UV-filtered vs unprotected (0–800 klux·h) | Amber film blocks sunlight discoloration; control patch offsets drift. |
 | **`G_delay`** | 15 | Scans delayed 0, 24, 48, 72, 168 hours | Mineral stain does not fade; error stays within $\pm 8.2\%$ at 72 hours. |
-| **`H_inter`** | 18 | Cross-gases: $SO_2, NO_2, NH_3, CO, CH_4$ | Zero interference from common combustion and process gases. |
+| **`H_inter`** | 18 | Cross-gases: $CH_3SH, SO_2, NO_2, NH_3, CO, CH_4$ | Known cross-sensitivity to thiols such as methyl mercaptan ($CH_3SH$); readings represent total sulfur exposure. Zero interference from $SO_2, NO_2, CO, CH_4$. |
 | **`I_shift`** | 30 | Realistic dynamic shift gas curves | Proves mathematical convergence of $\int C(t) dt$ over full 8 hours. |
 
-* **Quantification Accuracy:** Within $\pm 8.4\%$ to $\pm 12.0\%$ of reference standards.
+* **Quantification Accuracy:** Within $\pm 8.4\%$ to $\pm 12.0\%$ of reference model values.
 * **Limit of Quantification (LoQ):** $0.20\text{ ppm}\cdot\text{h}$ (below this, reads `BELOW_LOQ` to prevent false precision).
 
 ---
 
 ## ⚡ Intrinsic Safety: Zero Electronics, Zero Sparks
 
-Petrochemical processing areas contain volatile hydrocarbon vapors classified under **ATEX Zone 0 / Zone 1**. Any device entering these zones must guarantee it cannot create an ignition spark.
+Petrochemical processing areas contain volatile hydrocarbon vapors classified under hazardous Zone 0 / Zone 1 areas.
 
-* **Zero Batteries:** Cannot overheat, leak, or short-circuit.
-* **Zero Capacitors or Inductors:** Cannot store electrical energy.
-* **Zero Silicon Chips on Worker:** Completely passive mineral chemistry.
-* **Result:** Inherently compliant with **ATEX Directive 2014/34/EU** and **IEC 60079-11** by fundamental laws of physics.
+* **Non-electrical:** No battery, no capacitors, no inductors, and no silicon chips on the worker.
+* **No Spark Source:** Completely passive mineral chemistry that cannot generate electrical arcing or electrostatic discharge.
+* **Certification Status:** Not a certified electrical device (IEC 60079-11 applies to electrical apparatus; passive badges avoid electrical ignition hazards by physics, but formal statutory plant approval / certification is required for commercial industrial deployment).
 
 ---
 
@@ -244,7 +246,7 @@ Petrochemical processing areas contain volatile hydrocarbon vapors classified un
 ```
 1. SHIFT START (15 Seconds)
    • Worker grabs factory-sealed ₹7.50 strip.
-   • Snaps strip into reusable wristband, taps QR badge at entrance turnstile.
+   • Snaps strip into reusable wristband, scans QR badge at entrance turnstile.
 
 2. DURING SHIFT (8 Hours)
    • Worn comfortably on wrist inside hazardous units.
@@ -253,7 +255,7 @@ Petrochemical processing areas contain volatile hydrocarbon vapors classified un
 
 3. SHIFT END (3 Seconds)
    • Worker taps wristband at gate-out kiosk or phone camera.
-   • On-device vision calculates shift dose (e.g. 2.4 ppm·h).
+   • On-device vision estimates shift dose (e.g. 2.4 ppm·h).
    • Green pass logged: worker goes home safely.
 
 4. SAFETY DASHBOARD (Automated)
@@ -283,9 +285,9 @@ Petrochemical processing areas contain volatile hydrocarbon vapors classified un
 
 ### Quick Start
 ```bash
-# 1. Clone repository
-git clone <repository-url>
-cd sarvas
+# 1. Clone repository (Matches slide QR code)
+git clone https://github.com/Reya-Doshi/118.git
+cd 118
 
 # 2. Install dependencies
 npm install
@@ -311,7 +313,8 @@ Open `http://localhost:5173/` in your browser.
 SARVAS is developed as an open-architecture occupational health research initiative by [**Nxyen Labs**](https://github.com/Nxyen-labs).
 
 * **Organization:** [Nxyen Labs](https://github.com/Nxyen-labs)
-* **GitHub:** [@Nxyen-labs](https://github.com/Nxyen-labs)
+* **GitHub Organization:** [@Nxyen-labs](https://github.com/Nxyen-labs)
+* **Repository:** [github.com/Reya-Doshi/118](https://github.com/Reya-Doshi/118)
 * **Domain:** Deep-Tech Industrial Safety, Applied Chemochromics & Edge Machine Vision
 * **License:** Open Source under the [MIT License](LICENSE).
 
@@ -320,6 +323,6 @@ SARVAS is developed as an open-architecture occupational health research initiat
 
 **SARVAS**  
 *Safeguarding the frontline workforce. One shift at a time.*  
-**Made by [Nxyen Labs](https://github.com/Nxyen-labs).**
+**Developed by [Nxyen Labs](https://github.com/Nxyen-labs).**
 
 </div>

@@ -179,16 +179,15 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
       category: 'chemistry',
       badge: 'Stability & Shelf-Life',
       question: 'How do you validate unexposed shelf-life, and how does the badge prove it hasn\'t expired or degraded before wearing?',
-      quickPitch: 'Every wristband embeds an Anhydrous CuSO₄ Seal-Breach Dot (stark white when dry, vivid blue pentahydrate upon moisture breach). Workers perform a 1-second visual zero-power check before shift. Storage life in nitrogen-flushed foil pouches is 180 days; an on-strip sealed Ag patch subtracts ambient UV photo-drift (F_ctrl).',
+      quickPitch: 'Every wristband strip is supplied in a nitrogen-flushed, tamper-evident foil pouch with laser-printed lot and expiry dates. Storage shelf-life is 180 days (<30°C); an on-strip sealed Ag patch subtracts ambient UV photo-drift (F_ctrl).',
       fullAnswer: (
         <div className="space-y-3 text-xs leading-relaxed text-[#5D5B53]">
           <p>
-            Industrial safety mandates explicitly demand: <em>"no way to confirm the badge itself hasn't already expired or degraded before it's worn."</em> SARVAS solves this with an innovative triple-defense architecture:
+            Industrial safety mandates explicitly demand verifiable storage stability before deployment. SARVAS ensures this with a dual-defense architecture:
           </p>
           <ol className="list-decimal list-inside space-y-1.5 pl-1 text-[11px]">
-            <li><strong>Anhydrous CuSO₄ Moisture Breach Dot:</strong> Pristine anhydrous copper sulfate is stark white. If pouch integrity is breached during transport or storage, moisture hydrates it to vivid blue [Cu(H₂O)₄]SO₄·H₂O. Workers reject any badge with a blue dot before ever putting it on.</li>
-            <li><strong>Hermetic Barrier Packaging:</strong> Nitrogen-flushed aluminum blister packs with molecular sieve desiccant provide 180-day shelf life (&lt;30°C, zero baseline drift).</li>
-            <li><strong>Sealed Ag Photo-Control Reference:</strong> An identical AgNO₃ patch sealed under gas-impermeable optical barrier tracks and subtracts ambient UV/light photo-reduction (F_ctrl) during outdoor refinery shifts.</li>
+            <li><strong>Tamper-Evident Foil Packaging:</strong> Nitrogen-flushed aluminum barrier pouches protect chemical strips from ambient oxygen and light, providing 180-day shelf life (&lt;30°C, zero baseline drift). Each pouch features laser-printed QR batch numbers and explicit expiration dates scanned at gate turnstiles.</li>
+            <li><strong>Sealed Ag Photo-Control Reference:</strong> An identical AgNO₃ patch sealed under a gas-impermeable optical barrier tracks and subtracts ambient UV/light photo-reduction (F_ctrl) during outdoor refinery shifts.</li>
           </ol>
         </div>
       ),
@@ -695,8 +694,8 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
               <span>Hypoallergenic, sweat-resistant, flame-retardant (UL94 V-0) wristband with an embedded QR serial code for automated shift tracking.</span>
             </li>
             <li className="flex items-start gap-2 p-2.5 rounded-lg bg-white border border-[#D8D0C2]">
-              <span className="font-bold text-[#2F6B38] shrink-0">Desiccated Pouch Packaging:</span>
-              <span>Pre-shift badges are sealed under inert nitrogen with food-grade molecular sieve desiccant, ensuring 180-day sealed shelf life (&lt;30°C) and 90-day accelerated stability at 45°C before activation.</span>
+              <span className="font-bold text-[#2F6B38] shrink-0">Tamper-Evident Foil Packaging:</span>
+              <span>Pre-shift badges are sealed under inert nitrogen in hermetic foil pouches with printed batch expiry dates, ensuring a 180-day sealed shelf life (&lt;30°C) before activation.</span>
             </li>
           </ul>
         </div>
