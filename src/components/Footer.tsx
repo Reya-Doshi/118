@@ -104,8 +104,8 @@ export const Footer: React.FC = () => {
             <Info className="w-3.5 h-3.5 text-[#B8B2A4] shrink-0" />
             <span>Calibrated across a 303-point controlled empirical matrix; ongoing field validation designed for industrial toxic gas exposure test chambers.</span>
           </div>
-          <div className="font-mono text-[#B8B2A4]">
-            © 2026 SARVAS. All rights reserved.
+          <div className="font-mono text-[#B8B2A4] text-right">
+            © 2026 SARVAS • Made by <a href="https://github.com/Nxyen-labs" target="_blank" rel="noopener noreferrer" className="text-white hover:underline font-semibold">Nxyen Labs</a>
           </div>
         </div>
 

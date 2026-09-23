@@ -8,7 +8,7 @@
 
 <br/>
 
-[![Developed by Nxyen Labs](https://img.shields.io/badge/Made_by-Nxyen_Labs-0F172A?style=for-the-badge&logo=shield&logoColor=white)](#-about-nxyen-labs)
+[![Developed by Nxyen Labs](https://img.shields.io/badge/Made_by-Nxyen_Labs-0F172A?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Nxyen-labs)
 [![ATEX Zone 0](https://img.shields.io/badge/Intrinsic_Safety-ATEX_Zone_0_Compliant-008080?style=for-the-badge&logo=shield-halved&logoColor=white)](#-intrinsic-safety-zero-electronics-zero-sparks)
 [![Consumable BOM](https://img.shields.io/badge/Consumable_Strip-%E2%82%B97.50-2E7D32?style=for-the-badge&logo=currency-inr&logoColor=white)](#-hardware-anatomy--grounded-unit-economics)
 [![Reusable Strap](https://img.shields.io/badge/Reusable_Chassis-%E2%82%B918.50-4E342E?style=for-the-badge)](#-hardware-anatomy--grounded-unit-economics)
@@ -309,9 +309,10 @@ Open `http://localhost:5173/` in your browser.
 
 ## 🏢 About Nxyen Labs
 
-SARVAS is developed as an open-architecture occupational health research initiative by **Nxyen Labs**.
+SARVAS is developed as an open-architecture occupational health research initiative by [**Nxyen Labs**](https://github.com/Nxyen-labs).
 
-* **Organization:** Nxyen Labs
+* **Organization:** [Nxyen Labs](https://github.com/Nxyen-labs)
+* **GitHub:** [@Nxyen-labs](https://github.com/Nxyen-labs)
 * **Domain:** Deep-Tech Industrial Safety, Applied Chemochromics & Edge Machine Vision
 * **License:** Open Source under the [MIT License](LICENSE).
 
@@ -320,6 +321,6 @@ SARVAS is developed as an open-architecture occupational health research initiat
 
 **SARVAS**  
 *Safeguarding the frontline workforce. One shift at a time.*  
-**Made by Nxyen Labs.**
+**Made by [Nxyen Labs](https://github.com/Nxyen-labs).**
 
 </div>
