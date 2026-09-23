@@ -412,7 +412,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
       category: 'hardware',
       badge: 'Intrinsic Safety',
       question: 'Why use a passive chemical wristband instead of issuing active battery-powered gas detectors to every worker?',
-      quickPitch: 'Electronic gas badges cost ₹15,000–₹45,000 each, require daily bump tests, and carry lithium batteries requiring expensive ATEX/IECEx Zone 0 explosion-proof certification. SARVAS bands cost ₹35, have 0% ignition risk, and achieve 100% workforce coverage.',
+      quickPitch: 'Electronic gas badges cost ₹15,000–₹45,000 each, require daily bump tests, and carry lithium batteries requiring expensive ATEX/IECEx Zone 0 explosion-proof certification. SARVAS strips cost ~₹7.50 in materials (with an ₹18.50 reusable strap), have 0% ignition risk, and achieve 100% workforce coverage.',
       fullAnswer: (
         <div className="space-y-4 text-xs leading-relaxed text-[#5D5B53]">
           <p>
@@ -431,7 +431,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
                 <tr>
                   <td className="p-2.5 font-bold">Per-Unit Cost</td>
                   <td className="p-2.5 font-mono text-red-700">₹18,000 - ₹45,000</td>
-                  <td className="p-2.5 font-mono text-emerald-700 font-bold">₹35 / strip</td>
+                  <td className="p-2.5 font-mono text-emerald-700 font-bold">₹7.50 / strip (₹18.50 strap)</td>
                 </tr>
                 <tr>
                   <td className="p-2.5 font-bold">ATEX Zone 0 Spark Risk</td>
@@ -525,7 +525,7 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
       category: 'operations',
       badge: 'ROI & Business Case',
       question: 'What is the return on investment (ROI) and total cost of ownership for a plant adopting SARVAS?',
-      quickPitch: 'Reduces plant personal exposure monitoring OPEX by 82%. A standard 2,500-worker refinery saves ~₹3.2 Crore annually compared to deploying active electronic badges, while preventing fatal toxic gas exposure incidents.',
+      quickPitch: 'Reduces personal exposure monitoring costs by ≈80%. A standard 2,500-worker refinery spends ~₹56 Lakh annually on SARVAS compared to ~₹2.9 Crore for electronic detectors, saving ~₹2.3 Crore per year.',
       fullAnswer: (
         <div className="space-y-4 text-xs leading-relaxed text-[#5D5B53]">
           <p>
@@ -542,24 +542,24 @@ export const FaqSection: React.FC<{ isEmbedded?: boolean }> = ({ isEmbedded = fa
               </thead>
               <tbody className="divide-y divide-[#D8D0C2] bg-white">
                 <tr>
-                  <td className="p-2.5 font-bold">Hardware CAPEX</td>
-                  <td className="p-2.5 font-mono text-red-700">₹4.5 Crore (2,500 units @ ₹18k)</td>
-                  <td className="p-2.5 font-mono text-emerald-700 font-bold">₹4.2 Lakh (6 Kiosks + Software)</td>
+                  <td className="p-2.5 font-bold">Hardware Deployment</td>
+                  <td className="p-2.5 font-mono text-red-700">₹2.92 Crore (2,500 units @ ₹11.7k/yr amortized)</td>
+                  <td className="p-2.5 font-mono text-emerald-700 font-bold">₹4.2 Lakh (6 Kiosks + Software) + ₹46k (straps)</td>
                 </tr>
                 <tr>
-                  <td className="p-2.5 font-bold">Annual Sensor Replacement</td>
-                  <td className="p-2.5 font-mono text-red-700">₹75 Lakh (toxic sensor cells)</td>
-                  <td className="p-2.5 font-mono text-emerald-700 font-bold">Zero (passive strip substrate)</td>
+                  <td className="p-2.5 font-bold">Annual Calibration &amp; Gas</td>
+                  <td className="p-2.5 font-mono text-red-700">Included in maintenance overhead</td>
+                  <td className="p-2.5 font-mono text-emerald-700 font-bold">Zero (auto on-device D65 calibration)</td>
                 </tr>
                 <tr>
                   <td className="p-2.5 font-bold">Consumable Strips (Daily)</td>
                   <td className="p-2.5 font-mono">Zero</td>
-                  <td className="p-2.5 font-mono text-[#292925]">₹26.2 Lakh (₹35 / strip)</td>
+                  <td className="p-2.5 font-mono text-[#292925]">₹56.25 Lakh (2,500 workers × 300 shifts @ ₹7.50)</td>
                 </tr>
                 <tr>
-                  <td className="p-2.5 font-bold">Total 1st Year Outlay</td>
-                  <td className="p-2.5 font-mono text-red-700 font-bold">₹5.25 Crore</td>
-                  <td className="p-2.5 font-mono text-emerald-700 font-bold">₹30.4 Lakh (88% Savings)</td>
+                  <td className="p-2.5 font-bold">Total Annual Outlay</td>
+                  <td className="p-2.5 font-mono text-red-700 font-bold">₹2.92 Crore / year</td>
+                  <td className="p-2.5 font-mono text-emerald-700 font-bold">₹56.5 Lakh / year (≈80% Savings, ₹2.3 Cr Saved)</td>
                 </tr>
               </tbody>
             </table>

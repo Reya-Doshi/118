@@ -57,8 +57,8 @@ export const ProjectOverviewPage: React.FC = () => {
 
             <div className="bg-white/5 backdrop-blur-xs rounded-xl p-3 border border-white/10">
               <div className="text-[11px] font-mono text-[#C2CBBF] uppercase">Strip Unit Cost</div>
-              <div className="text-lg font-bold text-emerald-400 font-mono mt-0.5">&lt; ₹1.00</div>
-              <div className="text-[10px] text-[#EDE5D6]/60">per 8h shift</div>
+              <div className="text-lg font-bold text-emerald-400 font-mono mt-0.5">₹7.50</div>
+              <div className="text-[10px] text-[#EDE5D6]/60">material / shift</div>
             </div>
 
             <div className="bg-white/5 backdrop-blur-xs rounded-xl p-3 border border-white/10">
@@ -728,44 +728,48 @@ export const ProjectOverviewPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-[#4F5D4B] uppercase">Bill of Materials (BOM)</span>
               <span className="text-xs font-mono font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
-                Per Strip: ₹0.85
+                Per Strip: ₹7.50
               </span>
             </div>
             
             <div className="space-y-2 text-xs">
               <div className="flex justify-between py-1.5 border-b border-[#D8D0C2]/50">
-                <span className="text-[#5D5B53]">Whatman Filter Paper (20×6mm)</span>
-                <span className="font-mono font-bold text-[#292925]">₹0.18</span>
+                <span className="text-[#5D5B53]">Whatman No. 1 Filter Cellulose</span>
+                <span className="font-mono font-bold text-[#292925]">₹0.80</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-[#D8D0C2]/50">
-                <span className="text-[#5D5B53]">Silver Nitrate (Zone A: 10 µL of 0.05M)</span>
-                <span className="font-mono font-bold text-[#292925]">₹0.24</span>
+                <span className="text-[#5D5B53]">Silver Nitrate (Zone A: 0.05M)</span>
+                <span className="font-mono font-bold text-[#292925]">₹0.90</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-[#D8D0C2]/50">
-                <span className="text-[#5D5B53]">Copper Sulfate (Zone B: 10 µL of 0.1M)</span>
-                <span className="font-mono font-bold text-[#292925]">₹0.04</span>
+                <span className="text-[#5D5B53]">Copper Sulfate (Zone B: 0.1M)</span>
+                <span className="font-mono font-bold text-[#292925]">₹0.15</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-[#D8D0C2]/50">
-                <span className="text-[#5D5B53]">Anhydrous CuSO₄ Dot + Glycerol</span>
-                <span className="font-mono font-bold text-[#292925]">₹0.09</span>
+                <span className="text-[#5D5B53]">ePTFE Membrane + Amber UV Film</span>
+                <span className="font-mono font-bold text-[#292925]">₹2.65</span>
+              </div>
+              <div className="flex justify-between py-1.5 border-b border-[#D8D0C2]/50">
+                <span className="text-[#5D5B53]">Optical Scale Card + CuSO₄ Seal Dot</span>
+                <span className="font-mono font-bold text-[#292925]">₹1.20</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-[#D8D0C2]/50">
                 <span className="text-[#5D5B53]">Hermetic Foil Blister Packaging</span>
-                <span className="font-mono font-bold text-[#292925]">₹0.30</span>
+                <span className="font-mono font-bold text-[#292925]">₹1.80</span>
               </div>
               <div className="flex justify-between pt-2 font-bold text-sm text-[#292925]">
-                <span>Total Disposable Chemical Strip:</span>
-                <span className="text-emerald-700 font-mono">₹0.85</span>
+                <span>Total Disposable Chemical Cartridge:</span>
+                <span className="text-emerald-700 font-mono">₹7.50</span>
               </div>
             </div>
 
             <div className="p-3 bg-[#F6F1E7] rounded-xl border border-[#D8D0C2] text-xs space-y-1">
               <div className="flex justify-between font-bold text-[#292925]">
-                <span>Reusable Silicone Wristband:</span>
+                <span>Reusable Silicone Strap / Clip:</span>
                 <span className="font-mono text-[#4F5D4B]">₹18.50</span>
               </div>
               <p className="text-[11px] text-[#5D5B53]">
-                Food-grade silicone with molded buckle. Lasts 1–2 years across hundreds of shifts.
+                Anti-static silicone chassis. Lasts 1–2 years across hundreds of shifts.
               </p>
             </div>
           </div>
@@ -773,7 +777,7 @@ export const ProjectOverviewPage: React.FC = () => {
           {/* Comparative Industry Table */}
           <div className="lg:col-span-2 bg-white rounded-2xl p-5 border border-[#D8D0C2] shadow-xs space-y-4">
             <h3 className="font-bold text-sm text-[#292925] uppercase tracking-wide">
-              Market Comparison: 500 Workers for 1 Year (250 Shifts/Year)
+              Market Comparison: 2,500 Workers for 1 Year (300 Shifts/Year)
             </h3>
 
             <div className="overflow-x-auto">
@@ -781,9 +785,9 @@ export const ProjectOverviewPage: React.FC = () => {
                 <thead>
                   <tr className="border-b border-[#D8D0C2] text-[#71806B] font-mono uppercase text-[10px]">
                     <th className="py-2.5 px-3">Solution Type</th>
-                    <th className="py-2.5 px-3">Initial CAPEX</th>
-                    <th className="py-2.5 px-3">Annual OPEX</th>
-                    <th className="py-2.5 px-3">Per-Shift Cost</th>
+                    <th className="py-2.5 px-3">Initial Setup</th>
+                    <th className="py-2.5 px-3">Annual Operations</th>
+                    <th className="py-2.5 px-3">Per-Worker / Year</th>
                     <th className="py-2.5 px-3">Cumulative Tracking?</th>
                   </tr>
                 </thead>
@@ -793,23 +797,23 @@ export const ProjectOverviewPage: React.FC = () => {
                       <span className="w-2 h-2 rounded-full bg-emerald-600" />
                       <span>SARVAS Dosimeter (Our Solution)</span>
                     </td>
-                    <td className="py-2.5 px-3 font-mono text-emerald-800">₹9,250 (Bands)</td>
-                    <td className="py-2.5 px-3 font-mono text-emerald-800">₹1,06,250 (Strips)</td>
-                    <td className="py-2.5 px-3 font-mono text-emerald-800">&lt; ₹1.00</td>
+                    <td className="py-2.5 px-3 font-mono text-emerald-800">₹46,250 (Straps)</td>
+                    <td className="py-2.5 px-3 font-mono text-emerald-800">₹56,25,000 (Strips)</td>
+                    <td className="py-2.5 px-3 font-mono text-emerald-800">₹2,260 / yr</td>
                     <td className="py-2.5 px-3 text-emerald-700 font-bold">YES (0.125–160 ppm·h)</td>
                   </tr>
                   <tr className="text-[#5D5B53]">
                     <td className="py-2.5 px-3">Electronic Detectors (e.g. Dräger/Honeywell)</td>
-                    <td className="py-2.5 px-3 font-mono">₹1,25,00,000</td>
-                    <td className="py-2.5 px-3 font-mono">₹25,00,000 (Sensors/Gas)</td>
-                    <td className="py-2.5 px-3 font-mono">~₹80.00</td>
+                    <td className="py-2.5 px-3 font-mono">₹4.5 Crore</td>
+                    <td className="py-2.5 px-3 font-mono">₹2.92 Crore (Maint/Gas)</td>
+                    <td className="py-2.5 px-3 font-mono">₹11,700 / yr</td>
                     <td className="py-2.5 px-3 text-red-700 font-medium">NO (Instant alarm only)</td>
                   </tr>
                   <tr className="text-[#5D5B53]">
-                    <td className="py-2.5 px-3">Imported Lead-Acetate Badges (Morphix)</td>
+                    <td className="py-2.5 px-3">Imported Diffusion Badges (Morphix)</td>
                     <td className="py-2.5 px-3 font-mono">₹0</td>
-                    <td className="py-2.5 px-3 font-mono">₹62,50,000 ($6/badge)</td>
-                    <td className="py-2.5 px-3 font-mono">~₹50.00</td>
+                    <td className="py-2.5 px-3 font-mono">₹3.75 Crore ($6/badge)</td>
+                    <td className="py-2.5 px-3 font-mono">₹15,000 / yr</td>
                     <td className="py-2.5 px-3 text-amber-700 font-medium">Approximate eye visual</td>
                   </tr>
                 </tbody>
@@ -819,10 +823,10 @@ export const ProjectOverviewPage: React.FC = () => {
             <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-900 flex items-center justify-between">
               <div>
                 <strong className="block font-bold">Net Financial Advantage for Plant Operators:</strong>
-                <span>Saves over ₹1.4 Crores per 500 workers annually while adding continuous chronic exposure compliance.</span>
+                <span>Saves ~₹2.3 Crore annually for a 2,500-worker facility (≈80% OPEX reduction) while enabling universal coverage.</span>
               </div>
               <div className="text-right font-mono font-extrabold text-lg text-emerald-800">
-                &gt;92% Savings
+                ≈80% Savings
               </div>
             </div>
           </div>
