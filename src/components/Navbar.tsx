@@ -14,7 +14,8 @@ import {
   User,
   Clock,
   Sparkles,
-  Info
+  Info,
+  FileText
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -177,13 +178,13 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('overview')}
-                    className={`hidden xl:inline-block px-2 xl:px-2.5 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
+                    className={`hidden lg:inline-block px-2 xl:px-2.5 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'overview'
                         ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
                     }`}
                   >
-                    Dossier
+                    Dossier &amp; BOM
                   </button>
 
                   <button
@@ -445,6 +446,32 @@ export const Navbar: React.FC = () => {
                       INFO
                     </span>
                   </button>
+
+                  {/* Item 4: Dossier & BOM */}
+                  <button
+                    onClick={() => {
+                      setIsDemosOpen(false);
+                      handleNavClick('overview');
+                    }}
+                    className="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-[#383630] transition-colors text-left group cursor-pointer border-t border-[#3E3C36] mt-1 pt-2"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-md bg-emerald-950/80 border border-emerald-600/40 flex items-center justify-center text-emerald-400">
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white group-hover:text-emerald-300 transition-colors">
+                          Dossier &amp; BOM Table
+                        </div>
+                        <div className="text-[10px] text-[#A69F91]">
+                          Unit economics, BOM &amp; ₹7.50 strip specs
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-[9px] font-mono bg-emerald-700 text-white px-1.5 py-0.5 rounded font-bold uppercase">
+                      BOM
+                    </span>
+                  </button>
                 </div>
               )}
             </div>
@@ -598,7 +625,7 @@ export const Navbar: React.FC = () => {
                         : 'text-[#5D5B53] hover:bg-[#EDE5D6]/60'
                     }`}
                   >
-                    <span>Project Dossier (Team, Tech & Roadmap)</span>
+                    <span>Project Dossier &amp; BOM Table (₹7.50)</span>
                     <ChevronRight className="w-4 h-4 text-[#878377]" />
                   </button>
 
