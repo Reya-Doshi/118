@@ -4,7 +4,6 @@ import type { PageView } from '../types';
 import {
   Scan,
   LayoutDashboard,
-  Info,
   Database,
   Menu,
   X,
@@ -20,7 +19,6 @@ export const Navbar: React.FC = () => {
   const { 
     activePage, 
     setActivePage, 
-    openExplanation, 
     currentUser, 
     openLoginModal,
     logout
@@ -120,7 +118,7 @@ export const Navbar: React.FC = () => {
                 <>
                   <button
                     onClick={() => handleNavClick('landing', 'the-band')}
-                    className={`px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
+                    className={`px-2 xl:px-2.5 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       isTransparentOnHero
                         ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -131,7 +129,7 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => handleNavClick('landing', 'how-it-works')}
-                    className={`px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
+                    className={`px-2 xl:px-2.5 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       isTransparentOnHero
                         ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10'
                         : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
@@ -141,59 +139,36 @@ export const Navbar: React.FC = () => {
                   </button>
 
                   <button
-                    onClick={() => handleNavClick('overview')}
-                    className={`px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
-                      activePage === 'overview'
-                        ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
-                        : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
-                    }`}
-                  >
-                    Project Dossier
-                  </button>
-
-                  <button
                     onClick={() => handleNavClick('calibration')}
-                    className={`px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
+                    className={`px-2 xl:px-2.5 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'calibration'
                         ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
                     }`}
                   >
-                    Validation & Dataset
+                    Validation
                   </button>
 
                   <button
-                    onClick={() => handleNavClick('landing', 'faq')}
-                    className={`px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
-                      isTransparentOnHero
-                        ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10'
-                        : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
+                    onClick={() => handleNavClick('overview')}
+                    className={`hidden xl:inline-block px-2 xl:px-2.5 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
+                      activePage === 'overview'
+                        ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
+                        : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
                     }`}
                   >
-                    FAQ
+                    Dossier
                   </button>
 
                   <button
                     onClick={() => handleNavClick('references')}
-                    className={`px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
+                    className={`hidden 2xl:inline-block px-2 xl:px-2.5 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                       activePage === 'references'
                         ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
                         : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
                     }`}
                   >
                     References
-                  </button>
-
-                  <button
-                    onClick={() => handleNavClick('scan')}
-                    className={`flex items-center gap-1.5 px-2 xl:px-3 py-1.5 rounded-md text-xs font-medium tracking-wide whitespace-nowrap shrink-0 transition-all cursor-pointer mr-0.5 xl:mr-2 ${
-                      activePage === 'scan'
-                        ? isTransparentOnHero ? 'bg-white/90 text-[#292925] font-semibold' : 'bg-[#4F5D4B] text-[#F6F1E7] font-semibold'
-                        : isTransparentOnHero ? 'text-[#EDE5D6] hover:text-white hover:bg-white/10' : 'text-[#5D5B53] hover:text-[#292925] hover:bg-[#EDE5D6]'
-                    }`}
-                  >
-                    <Scan className="w-3.5 h-3.5" />
-                    <span>Read Wristband</span>
                   </button>
                 </>
               ) : currentUser.role === 'WORKER' ? (
@@ -340,61 +315,23 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right: Desktop Controls + Mobile Hamburger */}
-          <div className={`flex items-center gap-1.5 sm:gap-2 lg:gap-2.5 ml-2 sm:ml-3 lg:ml-4 pl-2.5 sm:pl-3 lg:pl-4 border-l shrink-0 transition-colors ${
+          <div className={`flex items-center gap-2 sm:gap-3 ml-2 border-l pl-2 sm:pl-3 shrink-0 transition-colors ${
             isTransparentOnHero ? 'border-white/20' : 'border-[#D8D0C2]'
           }`}>
-            {/* Interactive Kiosk Prototype Nav Button */}
+            {/* Primary Action: Read Wristband */}
             <button
-              onClick={() => handleNavClick('kiosk')}
-              className={`hidden 2xl:flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-xl border text-xs font-bold whitespace-nowrap shrink-0 transition-all cursor-pointer shadow-xs active:scale-95 ${
-                activePage === 'kiosk'
-                  ? 'bg-[#292925] text-white border-[#292925]'
+              onClick={() => handleNavClick('scan')}
+              className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0 transition-all cursor-pointer shadow-xs active:scale-95 ${
+                activePage === 'scan'
+                  ? 'bg-[#4F5D4B] text-white font-bold'
                   : isTransparentOnHero
-                  ? 'border-emerald-400/40 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-900/60'
-                  : 'border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+                  ? 'bg-white/20 text-white hover:bg-white/30 border border-white/30'
+                  : 'bg-[#4F5D4B] text-[#F6F1E7] hover:bg-[#3D493A]'
               }`}
-              title="Open Interactive Kiosk Flow (Start Shift -> Scan -> Dose -> Close)"
             >
-              <Scan className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Kiosk Prototype</span>
-              <span className="text-[9px] font-mono bg-emerald-600 text-white px-1.5 py-0.5 rounded font-bold uppercase">
-                Flow
-              </span>
+              <Scan className="w-3.5 h-3.5" />
+              <span>Read Wristband</span>
             </button>
-
-            {/* ML Explainability Video Nav Button */}
-            <button
-              onClick={() => handleNavClick('explainability')}
-              className={`hidden 2xl:flex items-center gap-1.5 px-2 xl:px-2.5 py-1.5 rounded-xl border text-xs font-semibold whitespace-nowrap shrink-0 transition-all cursor-pointer shadow-xs active:scale-95 ${
-                activePage === 'explainability'
-                  ? 'bg-[#4F5D4B] text-white border-[#4F5D4B]'
-                  : isTransparentOnHero
-                  ? 'border-white/30 bg-white/10 text-[#F6F1E7] hover:bg-white/20'
-                  : 'border-[#D8D0C2] bg-white text-[#292925] hover:bg-[#EDE5D6]'
-              }`}
-              title="View Color-to-Dose ML Pipeline Diagram"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span className="hidden xl:inline">ML Pipeline</span>
-              <span className="text-[9px] font-mono bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-bold">
-                AI
-              </span>
-            </button>
-
-            {!currentUser && (
-              <button
-                onClick={openExplanation}
-                className={`hidden 2xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
-                  isTransparentOnHero
-                    ? 'border-white/30 bg-white/10 text-[#F6F1E7] hover:bg-white/20'
-                    : 'border-[#D8D0C2] bg-[#EDE5D6] text-[#292925] hover:bg-[#E5DDCB]'
-                }`}
-                title="How SARVAS Works"
-              >
-                <Info className="w-3.5 h-3.5 text-[#71806B]" />
-                <span>Understand SARVAS</span>
-              </button>
-            )}
 
             {/* Top Login / Account Option (Desktop & Mobile) */}
             <button
