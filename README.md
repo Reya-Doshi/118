@@ -17,7 +17,7 @@
 
 <br/>
 
-> **"Because not all industrial dangers announces itself with an alarm."**  
+> **"Because not all industrial danger announces itself with an alarm."**  
 > *A zero-power chemical dosimeter wristband that catches silent, chronic gas exposure for frontline workers—measured on any smartphone or gate turnstile.*
 
 <br/>
