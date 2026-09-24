@@ -13,6 +13,7 @@
 [![Intrinsic Safety](https://img.shields.io/badge/Intrinsic_Safety-Non--Electrical_Passive_Badge-008080?style=for-the-badge&logo=shield-halved&logoColor=white)](#-intrinsic-safety-zero-electronics-zero-sparks)
 [![Consumable BOM](https://img.shields.io/badge/Consumable_Strip-%E2%82%B97.50-2E7D32?style=for-the-badge&logo=currency-inr&logoColor=white)](#-hardware-anatomy--grounded-unit-economics)
 [![Reusable Strap](https://img.shields.io/badge/Reusable_Chassis-%E2%82%B918.50-4E342E?style=for-the-badge)](#-hardware-anatomy--grounded-unit-economics)
+[![Status](https://img.shields.io/badge/Status-Submitted_%26_Under_Evaluation-15803D?style=for-the-badge&logo=check-circle&logoColor=white)](#-project-status--milestones)
 
 <br/>
 
@@ -308,6 +309,18 @@ Open `http://localhost:5173/` in your browser.
 
 ---
 
+## 📌 Project Status & Milestones
+
+| Phase / Milestone | Status | Scope & Deliverables |
+| :--- | :---: | :--- |
+| **System Architecture & Unit BOM** | ✅ Completed | ₹7.50 consumable cartridge + ₹18.50 reusable chassis specifications finalized |
+| **Optical Vision & Kinetic ML Models** | ✅ Completed | On-device CIEDE2000 colorimetry, Bradford adaptation & Arrhenius normalization |
+| **Turnstile Kiosk & Mobile PWA Prototypes** | ✅ Completed | Sub-3-second optical inference with full offline local cache capability |
+| **Formal Submission Milestone** | 🚀 **Submitted** | **Official technical dossier submitted & currently under active evaluation** |
+| **Industrial Chamber Trials** | ⏳ Planned | Multi-gas chamber validation protocol & refinery pilot field testing |
+
+---
+
 ## 🏢 About Nxyen Labs
 
 SARVAS is developed as an open-architecture occupational health research initiative by [**Nxyen Labs**](https://github.com/Nxyen-labs).
@@ -316,6 +329,7 @@ SARVAS is developed as an open-architecture occupational health research initiat
 * **GitHub Organization:** [@Nxyen-labs](https://github.com/Nxyen-labs)
 * **Repository:** [github.com/Reya-Doshi/118](https://github.com/Reya-Doshi/118)
 * **Domain:** Deep-Tech Industrial Safety, Applied Chemochromics & Edge Machine Vision
+* **Current Status:** Submitted & Under Evaluation
 * **License:** Open Source under the [MIT License](LICENSE).
 
 <div align="center">
